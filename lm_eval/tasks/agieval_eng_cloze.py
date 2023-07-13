@@ -23,7 +23,7 @@ _CITATION = """
 """
 
 class AGIEvalEngCloze(Task):
-    VERSION = 0
+    VERSION = 1
     DATASET_PATH = "v-xchen-v/agieval_eng_cloze"
     DATASET_NAME = None
 
@@ -53,9 +53,44 @@ class AGIEvalEngCloze(Task):
     def _process_doc(self, doc):
         return doc
 
-    def doc_to_text(self, doc):
-        return "Q: "+ doc['question'] +"\n"\
-                + "A: The answer is "
+    def doc_to_zeroshot_prompt(self, doc):
+        prompt = ("" if doc["passage"] is None else doc["passage"]) + "Q: " +   doc["question"] + "\n" + \
+           "A: The answer is "
+        return prompt
+
+    def doc_to_fewshot_prompt(self, doc, num_fewshot):
+        description = "Here are the answers for the problems in the exam.\n"
+
+        # generate labeled examples
+        def doc_to_question_input(doc, question_idx):
+            passage = "" if doc["passage"] is None else doc["passage"]
+            return "Problem {}.   ".format(question_idx) + passage + " " + doc["question"] + "\n" + "The anwser is "
+        
+        labeled_examples = ""
+        fewshotex = self.fewshot_examples(k=num_fewshot)
+        for fewshot_idx, fewshot_doc in enumerate(fewshotex):
+            question_input = doc_to_question_input(fewshot_doc, fewshot_idx+1)
+            question_output = self.doc_to_target(fewshot_doc)
+            labeled_examples += question_input + question_output + "\n"
+
+        end_of_labeled_example = "\n"
+
+        example = doc_to_question_input(doc, num_fewshot+1)
+        #         question_input = "Problem {}.   ".format(n_shot + 1) + passage + " " + question + "\n" \
+        #     + "Choose from the following options:    " + " ".join(options) + "\n"
+        #     # + "Explanation for Problem {}:   ".format(n_shot + 1)
+        prompt = description + labeled_examples + end_of_labeled_example + example
+        return prompt
+    
+    def doc_to_text(self, doc, num_fewshot):
+        query_prompt = ""
+        if num_fewshot == 0:
+            query_prompt = self.doc_to_zeroshot_prompt(doc)
+        elif num_fewshot > 0:
+            query_prompt = self.doc_to_fewshot_prompt(doc, num_fewshot)
+
+        # The query prompt portion of the document example.
+        return query_prompt
 
     def doc_to_target(self, doc):
         target = doc['answer']
@@ -154,23 +189,18 @@ class AGIEvalEngCloze(Task):
 
             description = description + "\n\n" if description else ""
 
-            if num_fewshot == 0:
-                labeled_examples = ""
-            else:
-                fewshotex = self.fewshot_examples(k=num_fewshot)
+            # if num_fewshot == 0:
+            #     labeled_examples = ""
+            # else:
+            #     fewshotex = self.fewshot_examples(k=num_fewshot)
                 
-                labeled_examples = (
-                    "\n\n".join(
-                        [
-                            self.doc_to_text(doc) + self.doc_to_target(doc)
-                            for doc in fewshotex
-                        ]
-                    )
-                    + "\n\n"
-                )
+            #     labeled_examples = ""
+            #     for fewshot_idx, doc in enumerate(fewshotex):
+            #         "Problem {}.   ".format(fewshot_idx + 1) + self.doc_to_text(doc) + self.doc_to_target(doc) + "\n\n"
 
-            example = self.doc_to_text(doc)
-            return description + labeled_examples + example
+            # example = self.doc_to_text(doc)
+            # return description + labeled_examples + example
+            return self.doc_to_text(doc, num_fewshot)
         
     def get_answer_with_dollar_sign(self, s):
         first_pattern = "\$(.*)\$"

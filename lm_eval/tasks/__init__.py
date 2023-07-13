@@ -62,6 +62,8 @@ from . import xnli
 from . import mgsm
 from . import agieval_eng_qa
 from . import agieval_eng_cloze
+from . import agieval_eng_qa_cot
+from . import agieval_eng_cloze_cot
 
 ########################################
 # Translation tasks
@@ -189,10 +191,13 @@ TASK_REGISTRY = {
     "arithmetic_2dm": arithmetic.Arithmetic2DMultiplication,
     "arithmetic_1dc": arithmetic.Arithmetic1DComposite,
     "agieval_eng_cloze": agieval_eng_cloze.AGIEvalEngCloze,
+    "agieval_eng_cloze_cot": agieval_eng_cloze_cot.AGIEvalEngClozeCoT,
     # TODO Perhaps make these groups of tasks
     #   e.g. anli, arithmetic, openai_translations, harness_translations
     # AGIEvalEngQA (9 tasks)
     **agieval_eng_qa.create_all_tasks(),
+     # AGIEvalEngQACoT (9 tasks)
+    **agieval_eng_qa_cot.create_all_tasks(),
     # hendrycksTest (57 tasks)
     **hendrycks_test.create_all_tasks(),
     # e.g. wmt14-fr-en

@@ -7,7 +7,8 @@ import lm_eval.models
 import lm_eval.tasks
 import lm_eval.base
 from lm_eval.utils import positional_deprecated, run_task_tests
-
+from lm_eval.tasks.agieval_eng_qa_cot import GeneralAGIEvalEngQACoT
+from lm_eval.tasks.agieval_eng_cloze_cot import AGIEvalEngClozeCoT
 
 @positional_deprecated
 def simple_evaluate(
@@ -235,9 +236,14 @@ def evaluate(
                 )
 
             docs[(task_name, doc_id)] = doc
-            ctx = task.fewshot_context(
-                doc=doc, num_fewshot=num_fewshot, rnd=rnd, description=description
-            )
+            if isinstance(task, GeneralAGIEvalEngQACoT) or isinstance(task, AGIEvalEngClozeCoT):
+                ctx = task.fewshot_context(
+                    doc=doc, num_fewshot=num_fewshot, lm = lm, rnd=rnd, description=description
+                )
+            else:
+                ctx = task.fewshot_context(
+                    doc=doc, num_fewshot=num_fewshot, rnd=rnd, description=description
+                )
             reqs = task.construct_requests(doc, ctx)
 
             if write_out:

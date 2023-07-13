@@ -6,143 +6,107 @@ AGIEval is a human-centric benchmark specifically designed to evaluate the gener
 
 Homepage: https://github.com/microsoft/AGIEval
 """
-from lm_eval.base import MultipleChoiceTask
 
-_CITATION = """
-@misc{zhong2023agieval,
-      title={AGIEval: A Human-Centric Benchmark for Evaluating Foundation Models}, 
-      author={Wanjun Zhong and Ruixiang Cui and Yiduo Guo and Yaobo Liang and Shuai Lu and Yanlin Wang and Amin Saied and Weizhu Chen and Nan Duan},
-      year={2023},
-      eprint={2304.06364},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL}
-}
-"""
+from lm_eval.base import Task, rf
+from lm_eval.metrics import mean
+import re
+from lm_eval.tasks.agieval_eng_cloze import _CITATION
+from lm_eval.tasks.agieval_eng_cloze import AGIEvalEngCloze
 
-SUBJECTS = [
-    "lsat-ar",
-    "lsat-lr",
-    "lsat-rc",
-    "logiqa-en",
-    "sat-math",
-    "sat-en",
-    "aqua-rat",
-    "sat-en-without-passage",
-    "gaokao-english"
-]
+_CITATION = _CITATION
 
-def create_all_tasks():
-    """Creates a dictionary of task from a list of subjects
-    :return: {task_name: task}
-        e.g. {agieval_eng_qa_lsat-ar: Task, agieval_eng_qa_lsat-lr: Task}
-    """
-    return {f"agieval_eng_qa_{sub}": create_task(sub) for sub in SUBJECTS}
-
-def create_task(subject):
-    class AGIEvalEngQA(GeneralAGIEvalEngQA):
-        def __init__(self):
-            super().__init__(subject)
-
-    return AGIEvalEngQA
-
-class GeneralAGIEvalEngQA(MultipleChoiceTask):
+class AGIEvalEngClozeCoT(AGIEvalEngCloze):
     VERSION = 1
-    DATASET_PATH = "v-xchen-v/agieval_eng_qa"
-    DATASET_NAME = None
 
-    def __init__(self, subject):
-        self.DATASET_NAME = subject
-        super().__init__()
-
-    def has_training_docs(self):
-        return False
-
-    def has_validation_docs(self):
-        return True
-
-    def has_test_docs(self):
-        return False
-
-    def training_docs(self):
-        if self.has_training_docs():
-            if self._training_docs is None:
-                self._training_docs = list(
-                    map(self._process_doc, self.dataset["train"])
-                )
-            return self._training_docs
-
-    def validation_docs(self):
-        if self.has_validation_docs():
-            return map(self._process_doc, self.dataset["validation"])
-
-    def test_docs(self):
-        if self.has_test_docs():
-            # Return the test document generator from `self.dataset`.
-            # In most case you can leave this as is unless the dataset split is
-            # named differently than the default `"test"`.
-            return map(self._process_doc, self.dataset["test"])
-
-    def _process_doc(self, doc):
-
-        choice_names = ["A", "B", "C", "D", "E"]
-        return {
-            "doc": doc,  # The doc to generate query prompt.
-            "choices": choice_names,  # The list of choices.
-            "gold": doc["label"],  # The integer used to index into the correct element of `"choices"`.
-        }
-    
-    def doc_to_zeroshot_prompt(self, doc):
-        prompt = ("" if doc["passage"] is None else doc["passage"]) + "Q: " +   doc["question"] + " " \
-            + "Answer Choices: " + " ".join(doc["options"]) + "\n" + \
-           "A: Among A through E, the answer is"
+    def doc_to_zeroshot_prompt(self, doc, lm, max_length=None):
+        stage1_prompt = ("" if doc["passage"] is None else doc["passage"]) + "Q: " +   doc["question"] + "\n" + \
+           "A: Let's think step by step."
+        generated_explanation = self.call_model_generate(lm, stage1_prompt, None, max_length)
+        prompt = self.generate_second_stage_input(stage1_prompt, generated_explanation)
         return prompt
+
+    def call_model_generate(self, lm, context, until, max_length):   
+        if isinstance(until, str):
+            until = [until]
+        stop_sequences = until
+        max_generation_length = max_length
+
+        assert (
+                isinstance(max_generation_length, int) or max_generation_length is None
+            )
+        assert isinstance(stop_sequences, list) or stop_sequences is None
+
+        # TODO: Find a better way to handle stop sequences for 0-shot.
+        if stop_sequences is None:
+            until = [lm.eot_token]
+        else:
+            until = stop_sequences + [lm.eot_token]
+
+        if max_generation_length is None:
+            max_tokens = lm.max_gen_toks
+        else:
+            max_tokens = max_generation_length
+
+        token_context = lm.tok_encode_batch(context)
+
+        responses = lm._model_generate(
+            inputs=token_context,
+            max_tokens=max_tokens,
+            stop=until,
+        )
+        responses = lm.tok_decode(responses.tolist())
+
+        results = []
+        for response in responses:
+            # Ensure the generated responses do not contain the stop sequences.
+            for term in until:
+                response = response.split(term)[0]
+            results.append(response)
+
+        return results[0]
+    
+    def generate_second_stage_input(self, stage1, generated_explanation):
+        prompt_suffix = "Therefore, the answer is "
+        return stage1 + generated_explanation + "\n" + prompt_suffix
     
     def doc_to_fewshot_prompt(self, doc, num_fewshot):
         description = "Here are the answers for the problems in the exam.\n"
 
         # generate labeled examples
-        def doc_to_question_input(doc, question_idx):
+        def doc_to_question_input(doc, question_idx, with_explanation=True):
             passage = "" if doc["passage"] is None else doc["passage"]
-            return "Problem {}.   ".format(question_idx) + passage + " " + doc["question"] + "\n" + "Choose from the following options:    " + " ".join(doc["options"]) + "\n" + "The anwser is"
+            return "Problem {}.   ".format(question_idx) + passage + " " + doc["question"] + "\n" \
+            + ("Explanation for Problem {}:   ".format(question_idx) + doc['explanation'] + "\n" if with_explanation else "")\
+            + "The anwser is "
         
         labeled_examples = ""
         fewshotex = self.fewshot_examples(k=num_fewshot)
         for fewshot_idx, fewshot_doc in enumerate(fewshotex):
-            question_input = doc_to_question_input(fewshot_doc["doc"], fewshot_idx+1)
+            question_input = doc_to_question_input(fewshot_doc, fewshot_idx+1)
             question_output = self.doc_to_target(fewshot_doc)
             labeled_examples += question_input + question_output + "\n"
 
         end_of_labeled_example = "\n"
 
-        example = doc_to_question_input(doc, num_fewshot+1)
+        example = doc_to_question_input(doc, num_fewshot+1, with_explanation=False)
         #         question_input = "Problem {}.   ".format(n_shot + 1) + passage + " " + question + "\n" \
         #     + "Choose from the following options:    " + " ".join(options) + "\n"
         #     # + "Explanation for Problem {}:   ".format(n_shot + 1)
         prompt = description + labeled_examples + end_of_labeled_example + example
         return prompt
-
-        
-    def doc_to_text(self, doc, num_fewshot):
+    
+    def doc_to_text(self, doc, num_fewshot, lm):
         query_prompt = ""
         if num_fewshot == 0:
-            query_prompt = self.doc_to_zeroshot_prompt(doc["doc"])
+            query_prompt = self.doc_to_zeroshot_prompt(doc, lm)
         elif num_fewshot > 0:
-            query_prompt = self.doc_to_fewshot_prompt(doc["doc"], num_fewshot)
+            query_prompt = self.doc_to_fewshot_prompt(doc, num_fewshot)
 
         # The query prompt portion of the document example.
         return query_prompt
-
-    def doc_to_target(self, doc):
-        return " "+ doc["choices"][doc["gold"]]
     
-    def fewshot_examples(self, k):
-        if self._fewshot_docs is None:
-            self._fewshot_docs = list(map(self._process_doc, self.dataset['dev']))
-
-        return self._fewshot_docs[:min(k, len(self._fewshot_docs))]
-
     def fewshot_context(
-        self, doc, num_fewshot, provide_description=None, rnd=None, description=None
+        self, doc, num_fewshot, lm, provide_description=None, rnd=None, description=None
     ):
         """Returns a fewshot context string that is made up of a prepended description
         (if provided), the `num_fewshot` number of examples, and an appended prompt example.
@@ -188,4 +152,4 @@ class GeneralAGIEvalEngQA(MultipleChoiceTask):
 
         # example = self.doc_to_text(doc)
         # return description + labeled_examples + example
-        return self.doc_to_text(doc, num_fewshot)
+        return self.doc_to_text(doc, num_fewshot, lm)
