@@ -152,16 +152,4 @@ class GeneralAGIEvalEngQACoT(GeneralAGIEvalEngQA):
             )
 
         description = description + "\n\n" if description else ""
-
-        # if num_fewshot == 0:
-        #     labeled_examples = ""
-        # else:
-        #     fewshotex = self.fewshot_examples(k=num_fewshot)
-
-        #     labeled_examples = ""
-        #     for fewshot_idx, doc in enumerate(fewshotex):
-        #           "Problem {}.   ".format(fewshot_idx + 1) + self.doc_to_text(doc) + self.doc_to_target(doc) + "\n\n"
-
-        # example = self.doc_to_text(doc)
-        # return description + labeled_examples + example
         return self.doc_to_text(doc, num_fewshot, lm)

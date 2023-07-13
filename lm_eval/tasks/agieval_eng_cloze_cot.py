@@ -89,9 +89,7 @@ class AGIEvalEngClozeCoT(AGIEvalEngCloze):
         end_of_labeled_example = "\n"
 
         example = doc_to_question_input(doc, num_fewshot+1, with_explanation=False)
-        #         question_input = "Problem {}.   ".format(n_shot + 1) + passage + " " + question + "\n" \
-        #     + "Choose from the following options:    " + " ".join(options) + "\n"
-        #     # + "Explanation for Problem {}:   ".format(n_shot + 1)
+
         prompt = description + labeled_examples + end_of_labeled_example + example
         return prompt
     
@@ -140,16 +138,4 @@ class AGIEvalEngClozeCoT(AGIEvalEngCloze):
             )
 
         description = description + "\n\n" if description else ""
-
-        # if num_fewshot == 0:
-        #     labeled_examples = ""
-        # else:
-        #     fewshotex = self.fewshot_examples(k=num_fewshot)
-
-        #     labeled_examples = ""
-        #     for fewshot_idx, doc in enumerate(fewshotex):
-        #           "Problem {}.   ".format(fewshot_idx + 1) + self.doc_to_text(doc) + self.doc_to_target(doc) + "\n\n"
-
-        # example = self.doc_to_text(doc)
-        # return description + labeled_examples + example
         return self.doc_to_text(doc, num_fewshot, lm)
