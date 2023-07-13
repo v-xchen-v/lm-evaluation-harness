@@ -145,15 +145,9 @@ class GeneralAGIEvalEngQA(MultipleChoiceTask):
         else:
             fewshotex = self.fewshot_examples(k=num_fewshot)
 
-            labeled_examples = (
-                "\n\n".join(
-                    [
-                        self.doc_to_text(doc) + self.doc_to_target(doc)
-                        for doc in fewshotex
-                    ]
-                )
-                + "\n\n"
-            )
+            labeled_examples = ""
+            for fewshot_idx, doc in enumerate(fewshotex):
+                  "Problem {}.   ".format(fewshot_idx + 1) + self.doc_to_text(doc) + self.doc_to_target(doc) + "\n\n"
 
         example = self.doc_to_text(doc)
         return description + labeled_examples + example
