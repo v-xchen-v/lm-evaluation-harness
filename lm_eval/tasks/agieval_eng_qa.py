@@ -83,21 +83,58 @@ class GeneralAGIEvalEngQA(MultipleChoiceTask):
             return map(self._process_doc, self.dataset["test"])
 
     def _process_doc(self, doc):
-        prompt = ("" if doc["passage"] is None else doc["passage"]) + "Q: " + doc["question"] + " " \
-            + "Answer Choices: " + " ".join(doc["options"]) + "\n" + \
-            "A: Among A through E, the answer is"
-        choice_names = ["A", "B", "C", "D", "E"]
 
+        choice_names = ["A", "B", "C", "D", "E"]
         return {
-            "query": prompt,  # The query prompt.
+            "doc": doc,  # The doc to generate query prompt.
             "choices": choice_names,  # The list of choices.
             "gold": doc["label"],  # The integer used to index into the correct element of `"choices"`.
         }
+    
+    def doc_to_zeroshot_prompt(self, doc):
+        prompt = ("" if doc["passage"] is None else doc["passage"]) + "Q: " +   doc["question"] + " " \
+            + "Answer Choices: " + " ".join(doc["options"]) + "\n" + \
+           "A: Among A through E, the answer is"
+        return prompt
+    
+    def doc_to_fewshot_prompt(self, doc, num_fewshot):
+        description = "Here are the answers for the problems in the exam.\n"
 
-    def doc_to_text(self, doc):
+        # generate labeled examples
+        def doc_to_question_input(doc, question_idx):
+            return "Problem {}.   ".format(question_idx) +      passage + " " + doc["question"] + "\n" + "Choose from the following options:    " + " ".join(doc["options"]) + "\n" + "The anwser is"
+        
+        labeled_examples = ""
+        fewshotex = self.fewshot_examples(k=num_fewshot)
+        for fewshot_idx, fewshot_doc in enumerate(fewshotex):
+            passage = "" if fewshot_doc["doc"]["passage"] is None else fewshot_doc["doc"]["passage"]
+            question_input = doc_to_question_input(fewshot_doc["doc"], fewshot_idx+1)
+            question_output = self.doc_to_target(fewshot_doc)
+            labeled_examples += question_input + question_output + "\n"
+
+        end_of_labeled_example = "\n"
+
+        example = doc_to_question_input(doc, num_fewshot+1)
+        #         question_input = "Problem {}.   ".format(n_shot + 1) + passage + " " + question + "\n" \
+        #     + "Choose from the following options:    " + " ".join(options) + "\n"
+        #     # + "Explanation for Problem {}:   ".format(n_shot + 1)
+        prompt = description + labeled_examples + end_of_labeled_example + example
+        return prompt
+
+        
+    def doc_to_text(self, doc, num_fewshot):
+        query_prompt = ""
+        if num_fewshot == 0:
+            query_prompt = self.doc_to_zeroshot_prompt(doc["doc"])
+        elif num_fewshot > 0:
+            query_prompt = self.doc_to_fewshot_prompt(doc["doc"], num_fewshot)
+
         # The query prompt portion of the document example.
-        return doc["query"]
+        return query_prompt
 
+    def doc_to_target(self, doc):
+        return " "+ doc["choices"][doc["gold"]]
+    
     def fewshot_examples(self, k):
         if self._fewshot_docs is None:
             self._fewshot_docs = list(map(self._process_doc, self.dataset['dev']))
@@ -140,14 +177,15 @@ class GeneralAGIEvalEngQA(MultipleChoiceTask):
 
         description = description + "\n\n" if description else ""
 
-        if num_fewshot == 0:
-            labeled_examples = ""
-        else:
-            fewshotex = self.fewshot_examples(k=num_fewshot)
+        # if num_fewshot == 0:
+        #     labeled_examples = ""
+        # else:
+        #     fewshotex = self.fewshot_examples(k=num_fewshot)
 
-            labeled_examples = ""
-            for fewshot_idx, doc in enumerate(fewshotex):
-                  "Problem {}.   ".format(fewshot_idx + 1) + self.doc_to_text(doc) + self.doc_to_target(doc) + "\n\n"
+        #     labeled_examples = ""
+        #     for fewshot_idx, doc in enumerate(fewshotex):
+        #           "Problem {}.   ".format(fewshot_idx + 1) + self.doc_to_text(doc) + self.doc_to_target(doc) + "\n\n"
 
-        example = self.doc_to_text(doc)
-        return description + labeled_examples + example
+        # example = self.doc_to_text(doc)
+        # return description + labeled_examples + example
+        return self.doc_to_text(doc, num_fewshot)
