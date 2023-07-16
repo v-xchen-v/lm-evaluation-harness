@@ -23,7 +23,7 @@ _CITATION = """
 """
 
 class AGIEvalEngCloze(Task):
-    VERSION = 1
+    VERSION = 0
     DATASET_PATH = "v-xchen-v/agieval_eng_cloze"
     DATASET_NAME = None
 
@@ -76,9 +76,6 @@ class AGIEvalEngCloze(Task):
         end_of_labeled_example = "\n"
 
         example = doc_to_question_input(doc, num_fewshot+1)
-        #         question_input = "Problem {}.   ".format(n_shot + 1) + passage + " " + question + "\n" \
-        #     + "Choose from the following options:    " + " ".join(options) + "\n"
-        #     # + "Explanation for Problem {}:   ".format(n_shot + 1)
         prompt = description + labeled_examples + end_of_labeled_example + example
         return prompt
     

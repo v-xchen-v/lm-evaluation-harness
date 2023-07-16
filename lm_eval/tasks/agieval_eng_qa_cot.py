@@ -29,7 +29,7 @@ def create_task(subject):
     return AGIEvalEngQACoT
 
 class GeneralAGIEvalEngQACoT(GeneralAGIEvalEngQA):
-    VERSION = 1
+    VERSION = 0
     
     def doc_to_zeroshot_prompt(self, doc, lm, max_length=None):
         stage1_prompt = ("" if doc["passage"] is None else doc["passage"]) + "Q: " +   doc["question"] + " " \
@@ -88,6 +88,7 @@ class GeneralAGIEvalEngQACoT(GeneralAGIEvalEngQA):
 
         # generate labeled examples
         def doc_to_question_input(doc, question_idx, with_explanation=True):
+            passage = "" if doc["passage"] is None else doc["passage"]
             return "Problem {}.   ".format(question_idx) + passage + " " + doc["question"] + "\n" + "Choose from the following options:    " + " ".join(doc["options"]) + "\n" \
             + ("Explanation for Problem {}:   ".format(question_idx) + doc['explanation'] + "\n" if with_explanation else "")\
             + "The anwser is therefore"
@@ -95,7 +96,6 @@ class GeneralAGIEvalEngQACoT(GeneralAGIEvalEngQA):
         labeled_examples = ""
         fewshotex = self.fewshot_examples(k=num_fewshot)
         for fewshot_idx, fewshot_doc in enumerate(fewshotex):
-            passage = "" if fewshot_doc['doc']["passage"] is None else fewshot_doc['doc']["passage"]
             question_input = doc_to_question_input(fewshot_doc['doc'], fewshot_idx+1)
             question_output = self.doc_to_target(fewshot_doc)
             labeled_examples += question_input + question_output + "\n"
@@ -103,7 +103,6 @@ class GeneralAGIEvalEngQACoT(GeneralAGIEvalEngQA):
         end_of_labeled_example = "\n"
 
         example = doc_to_question_input(doc, num_fewshot+1, False)
-
         prompt = description + labeled_examples + end_of_labeled_example + example
         return prompt
 

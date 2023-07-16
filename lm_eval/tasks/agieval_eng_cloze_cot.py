@@ -16,7 +16,7 @@ from lm_eval.tasks.agieval_eng_cloze import AGIEvalEngCloze
 _CITATION = _CITATION
 
 class AGIEvalEngClozeCoT(AGIEvalEngCloze):
-    VERSION = 1
+    VERSION = 0
 
     def doc_to_zeroshot_prompt(self, doc, lm, max_length=None):
         stage1_prompt = ("" if doc["passage"] is None else doc["passage"]) + "Q: " +   doc["question"] + "\n" + \

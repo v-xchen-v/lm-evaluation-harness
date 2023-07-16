@@ -46,7 +46,7 @@ def create_task(subject):
     return AGIEvalEngQA
 
 class GeneralAGIEvalEngQA(MultipleChoiceTask):
-    VERSION = 1
+    VERSION = 0
     DATASET_PATH = "v-xchen-v/agieval_eng_qa"
     DATASET_NAME = None
 
