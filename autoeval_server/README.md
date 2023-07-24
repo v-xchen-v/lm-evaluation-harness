@@ -1,0 +1,4 @@
+- using gradio
+- one server node(not support for cluster for now)
+- based on lm-harness-evaluation
+- test model: https://huggingface.co/distilgpt2
