@@ -1,17 +1,26 @@
 import hashlib
+import pickle
+from pathlib import Path
 
 class ModelInfo:
-    def __init__(self) -> None:
-        self.hf_models = [
-            'huggyllama/llama-7b',
-            'huggyllama/llama-13b',
-            'huggyllama/llama-30b',
-            'meta-llama/Llama-2-7b-hf',
-            'meta-llama/Llama-2-13b-hf',
-            'meta-llama/Llama-2-7b-chat-hf',
-            'meta-llama/Llama-2-13b-chat-hf',
-            'lmsys/vicuna-7b-v1.3',
-        ]
+    def __init__(self, filename=None) -> None:
+        # self.hf_models = [
+        #     'huggyllama/llama-7b',
+        #     'huggyllama/llama-13b',
+        #     'huggyllama/llama-30b',
+        #     'meta-llama/Llama-2-7b-hf',
+        #     'meta-llama/Llama-2-13b-hf',
+        #     'meta-llama/Llama-2-7b-chat-hf',
+        #     'meta-llama/Llama-2-13b-chat-hf',
+        #     'lmsys/vicuna-7b-v1.3',
+        #     'distilgpt2',
+        # ]
+        self.filename = filename
+        if self.filename is None or not Path(self.filename).is_file():
+            self.hf_models = []
+        else:
+             with open(self.filename, 'rb') as file:
+                self.hf_models = pickle.load(file)
 
     @staticmethod
     def get_hashed_modelname(model_name: str):
@@ -25,6 +34,9 @@ class ModelInfo:
             raise Exception('model already added')
         if not model_name in set(self.hf_models):
             self.hf_models.append(model_name)
+        if self.filename is not None:
+            with open(self.filename, 'wb') as file:
+                pickle.dump(self.hf_models, file)
 
     def list_modelname_to_hash(self):
         return \
@@ -34,20 +46,36 @@ class ModelInfo:
     
     def list_hash_to_modelname(self):
         return dict((y, x) for x, y in self.list_modelname_to_hash().items())
-    
-model_info = ModelInfo()
+
+MODELNAMES_PKL= Path(__file__).parent.parent / '.modelnames.pkl'
+model_info = ModelInfo(MODELNAMES_PKL)
 if __name__ == "__main__":
     # model_info = ModelInfo()
-    print(model_info.list_modelname_to_hash())
-    print(model_info.get_hashed_modelname('huggyllama/llama-7b'))
-    print(model_info.get_modelname('fc433f70103338181ac914a44eb2749c'))
+    # print(model_info.list_modelname_to_hash())
+    print(model_info.get_hashed_modelname('msys/vicuna-13b-v1.3'))
+    # print(model_info.get_modelname('fc433f70103338181ac914a44eb2749c'))
 
-    # adds existed model
-    try:
-        model_info.add_model('huggyllama/llama-7b', exist_ok=False)
-    except Exception as e:
-        print(e)
+    # # adds existed model
+    # try:
+    #     model_info.add_model('huggyllama/llama-7b', exist_ok=False)
+    # except Exception as e:
+    #     print(e)
 
-    # adds new model
-    model_info.add_model('huggyllama/llama/llama-65b')
-    print(model_info.list_modelname_to_hash())
+
+    preset_hf_models = [
+        'huggyllama/llama-7b',
+        'huggyllama/llama-13b',
+        'huggyllama/llama-30b',
+        'meta-llama/Llama-2-7b-hf',
+        'meta-llama/Llama-2-13b-hf',
+        'meta-llama/Llama-2-7b-chat-hf',
+        'meta-llama/Llama-2-13b-chat-hf',
+        'lmsys/vicuna-7b-v1.3',
+        'lmsys/vicuna-13b-v1.3',
+        'distilgpt2',
+    ]
+
+    for m in preset_hf_models:
+        model_info.add_model(m)
+        print(model_info.list_modelname_to_hash())
+

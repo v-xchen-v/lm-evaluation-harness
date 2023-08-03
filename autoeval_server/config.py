@@ -1,7 +1,6 @@
 from leaderboard.leaderboardtasks import LeaderBoardTask
 
-results_save_root = r"C:\Users\xichen6\Documents\CodeSpace\eval_board\eval_results"
-cache_folder = r"C:\Users\xichen6\Documents\CodeSpace\eval_board\autoeval_server\.cache"
+results_save_root = "/eval_results"
 
 # set the evaluation tasks should show on leaderboard table
 leaderboard_tasks = [

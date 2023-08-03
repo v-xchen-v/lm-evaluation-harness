@@ -37,6 +37,8 @@ class TaskQueue:
                 task = self.task_queue.get()
                 self.processing_task = task
                 print(f"Processing task: '{task}'")
+                # record task status before processing
+                self.serialize_tasks()
 
                 self._process_task(task)
 
@@ -44,13 +46,15 @@ class TaskQueue:
                 self.finished_tasks.append(task)
                 self.processing_task = None
                 self.task_queue.task_done()
+                # record task status after processing
+                self.serialize_tasks()
 
     def _process_task(self, task):
-        # record task status before processing
-        self.serialize_tasks()
-
         # add your task processing logic here
-        run_eval(task)
+        try:
+            run_eval(task)
+        except EnvironmentError as e: # wrong name of huggingface model
+            print(e)
 
     def list_pending_tasks(self):
         if self.task_queue.queue is None:
@@ -96,7 +100,8 @@ class TaskQueue:
         except FileNotFoundError:
             print("no recovery file.") 
 
-task_queue = TaskQueue('.tasks.pkl')
+TASKS_PKL = Path(__file__).parent.parent /'.tasks.pkl'
+task_queue = TaskQueue(TASKS_PKL)
 
 def main():
     task_queue = TaskQueue('.tasks.pkl')

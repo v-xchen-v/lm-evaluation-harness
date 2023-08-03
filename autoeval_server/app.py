@@ -148,22 +148,27 @@ with gr.Blocks() as demo:
                     datatype=["str", "str"],  
                     max_rows=5)
             
-            # refresh_btn = gr.Button("Refresh")
-            # refresh_btn.click(
-            #     refresh_evaluation_status_tb,
-            #     inputs=[],
-            #     outputs=[
-            #         finished_eval_table,
-            #         pending_eval_table,
-            #         running_eval_table
-            #     ]    )
+            refresh_btn = gr.Button("Refresh")
+            refresh_btn.click(
+                refresh_evaluation_status_tb,
+                inputs=[],
+                outputs=[
+                    finished_eval_table,
+                    pending_eval_table,
+                    running_eval_table,
+                    leaderboard_table
+                ]
+            )
 
     # refresh the evalution status table every 1 minite.
+    REFRESH_INTERNAL = 60*1
     demo.load(fn=refresh_evaluation_status_tb, inputs=[], outputs=[
             finished_eval_table,
             pending_eval_table,
-            running_eval_table
-        ], every=10*1)
+            running_eval_table,
+            leaderboard_table
+        ], every=REFRESH_INTERNAL)
     
 if __name__ == "__main__":
-    demo.queue().launch()
+    # demo.queue().launch()
+    demo.queue().launch(share=True)

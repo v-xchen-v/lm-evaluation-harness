@@ -28,7 +28,8 @@ def list_subdirectories_by_level(directory, slevel=1):
         current_dir, level = stack.pop()
         if level == slevel-1:
             for item_path in Path(current_dir).iterdir():
-                  subdirectories.append(item_path)
+                  if Path(item_path).is_dir():
+                    subdirectories.append(item_path)
             break
         
         if level < slevel-1:
@@ -41,7 +42,7 @@ def list_models():
     """
     list tasks have results
     """
-    return [model_info.get_modelname(Path(dirname).name) for dirname in list_subdirectories_by_level(results_save_root, 1)]
+    return [model_info.get_modelname(Path(dirname).name) for dirname in list_subdirectories_by_level(results_save_root, 1) if len(Path(dirname).name) == len("1b1847529b6cccf732847cb2120f7ef0") and len(list_subdirectories_by_level(results_save_root, 1))>=1]
 
 def list_tasks(model_name):
     return [Path(dirname).name for dirname in list_subdirectories_by_level(Path(results_save_root)/model_info.get_hashed_modelname(model_name), 1)]
@@ -53,7 +54,7 @@ def list_tasks_version(model_name, tasks_name):
 
 def get_lastest_tasks_version(model_name, tasks_name):
     task_dir = Path (results_save_root)/model_info.get_hashed_modelname(model_name)/tasks_name
-    if Path(task_dir).is_dir():
+    if Path(task_dir).is_dir() and len(list_subdirectories_by_level(task_dir, 1))>=1:
         return max(map(int, [Path(dirname).name for dirname in list_subdirectories_by_level(task_dir, 1)]))
     else:
         return None

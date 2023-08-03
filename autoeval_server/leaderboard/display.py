@@ -18,7 +18,8 @@ def get_leaderboard_df_data():
             if is_result_exists(model, task.name, task.task_version, task.num_fewshot):
                 row_data_dict[task.abbr]= get_leaderboard_aggregated_metric(model, task)
             else:
-                print(f"no result for {task}")
+                # pass
+                print(f"no result for {model} {task_abbr}")
         leaderboard_df_data.append(row_data_dict)
     return leaderboard_df_data
 
@@ -26,3 +27,7 @@ def get_leaderboard_df_data():
 if __name__ == "__main__":
     df_data = get_leaderboard_df_data()
     print(df_data)
+    import pandas as pd
+    df = pd.DataFrame.from_records(get_leaderboard_df_data())
+    sortedDf = df.sort_index(axis=1)
+    print(sortedDf)

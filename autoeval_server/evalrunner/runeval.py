@@ -4,22 +4,26 @@ import argparse
 import json
 import logging
 import os
+import sys
+sys.path.insert(0, "/repos/lm-evaluation-harness")
 
 from lm_eval import tasks, evaluator, utils
 from config import results_save_root
-from autoeval_server.resultparser.getmodekinfo import model_info
+from resultparser.getmodekinfo import model_info
 from pathlib import Path
 
 def run_eval(eval_model_task: EvalModelTask):
     print(f"[INFO] starting evaluation of {eval_model_task.model} on {eval_model_task.eval_task.abbr}")
     
+    model_info.add_model(model_name=eval_model_task.model)
+    # time.sleep(5)
     call_eval(eval_model_task)
 
     print(f"[INFO] completed evaluation f {eval_model_task.model} on {eval_model_task.eval_task.abbr}")
 
 def parse_args(eval_model_task: EvalModelTask):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", required=True)
+    parser.add_argument("--model", default="hf-causal-experimental")
     parser.add_argument("--model_args", default=f"pretrained={eval_model_task.model}")
     parser.add_argument("--tasks", default=f'{",".join(eval_model_task.eval_task.subtasks)}', choices=utils.MultiChoice(tasks.ALL_TASKS))
     parser.add_argument("--provide_description", action="store_true")
@@ -29,10 +33,10 @@ def parse_args(eval_model_task: EvalModelTask):
                         help="Maximal batch size to try with --batch_size auto")
     parser.add_argument("--device", type=str, default=None)
     result_filename = "results.json"
-    output_dir = Path(results_save_root)/model_info.get_hashed_modelname(eval_model_task.model)/eval_model_task.eval_task.name/eval_model_task.eval_task.task_version/f'{eval_model_task.eval_task.num_fewshot}shot'
-    os.makedirs(output_dir, exist_ok=True)
+    output_dir = Path(results_save_root)/model_info.get_hashed_modelname(eval_model_task.model)/eval_model_task.eval_task.name/str(eval_model_task.eval_task.task_version)/f'{eval_model_task.eval_task.num_fewshot}shot'
+    # os.makedirs(output_dir, exist_ok=True)
     parser.add_argument("--output_path", default=Path(output_dir)/result_filename)
-    parser.add_argument("--limit", type=float, default=2,
+    parser.add_argument("--limit", type=float, default=None,
                         help="Limit the number of examples per task. "
                              "If <1, limit is a percentage of the total number of examples.")
     parser.add_argument("--data_sampling", type=float, default=None)
@@ -87,10 +91,9 @@ def call_eval(eval_model_task: EvalModelTask):
     dumped = json.dumps(results, indent=2)
     print(dumped)
 
-    if args.output_path:
-        os.makedirs(os.path.dirname(args.output_path), exist_ok=True)
-        with open(args.output_path, "w") as f:
-            f.write(dumped)
+    os.makedirs(os.path.dirname(args.output_path), exist_ok=True)
+    with open(args.output_path, "w") as f:
+        f.write(dumped)
 
     batch_sizes = ",".join(map(str, results["config"]["batch_sizes"]))
     print(
