@@ -1,0 +1,295 @@
+"""
+Measuring Massive Multitask Language Understanding
+https://arxiv.org/pdf/2009.03300.pdf
+
+The Hendryck's Test is a benchmark that measured a text model’s multitask accuracy.
+The test covers 57 tasks including elementary mathematics, US history, computer
+science, law, and more. To attain high accuracy on this test, models must possess
+extensive world knowledge and problem solving ability. By comprehensively evaluating
+the breadth and depth of a model’s academic and professional understanding,
+Hendryck's Test can be used to analyze models across many tasks and to identify
+important shortcomings.
+
+Homepage: https://github.com/hendrycks/test
+"""
+from lm_eval.base import MultipleCircularChoiceTask
+import numpy as np
+from lm_eval.metrics import mean
+
+_CITATION = """
+@article{hendryckstest2021,
+    title={Measuring Massive Multitask Language Understanding},
+    author={Dan Hendrycks and Collin Burns and Steven Basart and Andy Zou and Mantas Mazeika and Dawn Song and Jacob Steinhardt},
+    journal={Proceedings of the International Conference on Learning Representations (ICLR)},
+    year={2021}
+}
+"""
+
+
+SUBJECTS = [
+    "abstract_algebra",
+    "anatomy",
+    "astronomy",
+    "business_ethics",
+    "clinical_knowledge",
+    "college_biology",
+    "college_chemistry",
+    "college_computer_science",
+    "college_mathematics",
+    "college_medicine",
+    "college_physics",
+    "computer_security",
+    "conceptual_physics",
+    "econometrics",
+    "electrical_engineering",
+    "elementary_mathematics",
+    "formal_logic",
+    "global_facts",
+    "high_school_biology",
+    "high_school_chemistry",
+    "high_school_computer_science",
+    "high_school_european_history",
+    "high_school_geography",
+    "high_school_government_and_politics",
+    "high_school_macroeconomics",
+    "high_school_mathematics",
+    "high_school_microeconomics",
+    "high_school_physics",
+    "high_school_psychology",
+    "high_school_statistics",
+    "high_school_us_history",
+    "high_school_world_history",
+    "human_aging",
+    "human_sexuality",
+    "international_law",
+    "jurisprudence",
+    "logical_fallacies",
+    "machine_learning",
+    "management",
+    "marketing",
+    "medical_genetics",
+    "miscellaneous",
+    "moral_disputes",
+    "moral_scenarios",
+    "nutrition",
+    "philosophy",
+    "prehistory",
+    "professional_accounting",
+    "professional_law",
+    "professional_medicine",
+    "professional_psychology",
+    "public_relations",
+    "security_studies",
+    "sociology",
+    "us_foreign_policy",
+    "virology",
+    "world_religions",
+]
+
+
+def create_all_tasks():
+    """Creates a dictionary of tasks from a list of subjects
+    :return: {task_name: task}
+        e.g. {hendrycksTest-abstract_algebra: Task, hendrycksTest-anatomy: Task}
+    """
+    return {f"hendrycksTest-CircularChoices-{sub}": create_task(sub) for sub in SUBJECTS}
+
+
+def create_task(subject):
+    class HendrycksCircularChoicesTest(GeneralHendryckCircularChoicesTest):
+        def __init__(self):
+            super().__init__(subject)
+
+    return HendrycksCircularChoicesTest
+
+
+class GeneralHendryckCircularChoicesTest(MultipleCircularChoiceTask):
+    VERSION = 0
+    DATASET_PATH = "cais/mmlu"
+    DATASET_NAME = None
+
+    def __init__(self, subject):
+        self.DATASET_NAME = subject
+        super().__init__()
+
+    def has_training_docs(self):
+        return True
+
+    def has_validation_docs(self):
+        return True
+
+    def has_test_docs(self):
+        return True
+
+    def validation_docs(self):
+        return map(self._process_doc, self.dataset["validation"])
+
+    def test_docs(self):
+        return map(self._process_doc, self.dataset["test"])
+
+    def _format_subject(self, subject):
+        words = subject.split("_")
+        return " ".join(words)
+
+    def format_example(self, doc, keys, circular_index=0):
+        """
+        circular 0:
+        <prompt>
+        A. <choice1>
+        B. <choice2>
+        C. <choice3>
+        D. <choice4>
+        Answer:
+
+        circular 1:
+        <prompt>
+        A. <choice4>
+        B. <choice1>
+        C. <choice2>
+        D. <choice3>
+        Answer:
+        """
+
+        question = doc["question"].strip()
+        if circular_index == 0:
+            choices = "".join(
+                [f"{key}. {choice}\n" for key, choice in zip(keys, doc["choices"])]
+            )
+        else:
+            choices = ""
+            for key_index, key in enumerate(keys):
+                choices += f'{key}. {doc["choices"][(key_index-circular_index)%len(keys)]}\n'
+
+        prompt = f"{question}\n{choices}Answer:"
+        return prompt
+    
+    def _process_doc(self, doc):
+        keys = ["A", "B", "C", "D"]
+        return {
+            "doc": doc,
+            # "query": self.format_example(doc, keys),
+            "choices": keys,
+            "gold": doc["answer"],
+        }
+
+    def fewshot_examples(self, k, rnd):
+        # fewshot_examples is not just sampling from train_docs because dev is
+        # in the same distribution as val/test but auxiliary_train isn't
+        if self._fewshot_docs is None:
+            self._fewshot_docs = list(map(self._process_doc, self.dataset["dev"]))
+
+        # use the unchanged order of the dev set without sampling,
+        # just as in the original code https://github.com/hendrycks/test/blob/master/evaluate.py#L28
+        return self._fewshot_docs[:k]
+
+    def doc_to_text(self, doc, circular_index=0):
+        return self.format_example(doc["doc"], doc["choices"], circular_index)
+
+    def should_decontaminate(self):
+        return True
+
+    def doc_to_decontamination_query(self, doc):
+        return doc["query"]
+
+    def process_results(self, doc, results):
+        choice_size = len(doc["choices"])
+        gold = doc["gold"]
+
+        logits = np.array([x[0] for x in results]).reshape((len(doc["choices"]), -1))
+        max_equals = np.array([x[1] for x in results]).reshape((len(doc["choices"]), -1))
+
+        # the one with biggest probility is match the label, treat is as right
+        circular_gold = np.array([((gold+i)%choice_size) for i in range(0, choice_size)])
+        acc_choicesonly = 1.0 if np.all(np.argmax(logits, axis=-1) == circular_gold) else 0.0
+        acc_choicesonly_noncircularchoices = 1.0 if np.all(np.argmax(logits[0]) == gold) else 0.0
+
+        # the one fully match the label, treat it as right. If it has higgest probility but not exactly match treat it as not right.
+        em = 1.0 if np.all(max_equals[np.arange(0, choice_size), circular_gold]) else 0.0
+        em_noncircularchoices = 1.0 if np.all(max_equals[0, circular_gold[0]]) else 0.0
+        
+        
+        completion_len = []
+        choices_len = [float(len(i)) for i in doc["choices"]]
+        for circular_index in range(0, len(doc["choices"])):
+            completion_len += choices_len[circular_index:] + choices_len[:circular_index]
+        completion_len = np.array(completion_len).reshape((len(doc["choices"]), -1))
+        acc_norm = 1.0 if np.all(np.argmax(logits / completion_len, axis=-1) == circular_gold) else 0.0
+
+        return {
+            "acc_noncircularchoices": acc_choicesonly_noncircularchoices,
+            "acc_circularchoices": acc_choicesonly,
+            # "acc_norm": acc_norm,
+            "em_noncircularchoices": em_noncircularchoices,
+            "em_circularchoices": em
+        }
+
+    def aggregation(self):
+        return {
+            "acc_circularchoices": mean,
+            # "acc_norm": mean,
+            "em_circularchoices": mean,
+            "acc_noncircularchoices": mean,
+            "em_noncircularchoices": mean
+        }
+
+
+    def fewshot_context(
+        self, doc, num_fewshot, circular_index, provide_description=None, rnd=None, description=None
+    ):
+        """Returns a fewshot context string that is made up of a prepended description
+        (if provided), the `num_fewshot` number of examples, and an appended prompt example.
+
+        :param doc: str
+            The document as returned from training_docs, validation_docs, or test_docs.
+        :param num_fewshot: int
+            The number of fewshot examples to provide in the returned context string.
+        :param provide_description: bool
+            Not implemented, and this option is deprecated and will be removed in a future version in favor of a different description providing method
+        :param rnd: random.Random
+            The pseudo-random number generator used to randomly sample examples.
+            WARNING: This is currently a required arg although it's optionalized with a default `None`.
+        :param description: str
+            The task's description that will be prepended to the fewshot examples.
+        :returns: str
+            The fewshot context.
+        """
+        assert (
+            rnd is not None
+        ), "A `random.Random` generator argument must be provided to `rnd`"
+        assert not provide_description, (
+            "The `provide_description` arg will be removed in future versions. To prepend "
+            "a custom description to the context, supply the corresponding string via the "
+            "`description` arg."
+        )
+        if provide_description is not None:
+            # nudge people to not specify it at all
+            print(
+                "WARNING: provide_description is deprecated and will be removed in a future version in favor of description_dict"
+            )
+
+        subject = self.DATASET_NAME
+        description = f"The following are multiple choice questions (with answers) about {self._format_subject(subject)}."
+        description = description + "\n\n" if description else ""
+
+        if num_fewshot == 0:
+            labeled_examples = ""
+        else:
+            fewshotex = self.fewshot_examples(k=num_fewshot, rnd=rnd)
+
+            # labeled_examples = ""
+            # for fewshot_idx, doc in enumerate(fewshotex):
+            #       "Problem {}.   ".format(fewshot_idx + 1) + self.doc_to_text(doc, 0) + self.doc_to_target(doc) + "\n\n"
+            labeled_examples = (
+                "\n\n".join(
+                    [
+                        self.doc_to_text(doc) + self.doc_to_target(doc)
+                        for doc in fewshotex
+                    ]
+                )
+                + "\n\n"
+            )
+
+
+        example = self.doc_to_text(doc, circular_index)
+        return description + labeled_examples + example
+        # return self.doc_to_text(doc, num_fewshot)

@@ -9,6 +9,7 @@ import lm_eval.base
 from lm_eval.utils import positional_deprecated, run_task_tests
 from lm_eval.tasks.agieval_eng_qa_cot import GeneralAGIEvalEngQACoT
 from lm_eval.tasks.agieval_eng_cloze_cot import AGIEvalEngClozeCoT
+from lm_eval.base import MultipleCircularChoiceTask
 
 @positional_deprecated
 def simple_evaluate(
@@ -240,10 +241,14 @@ def evaluate(
                 ctx = task.fewshot_context(
                     doc=doc, num_fewshot=num_fewshot, lm = lm, rnd=rnd, description=description
                 )
+
+            if isinstance(task, MultipleCircularChoiceTask):
+                ctx = [task.fewshot_context(doc=doc, num_fewshot=num_fewshot, circular_index=i, rnd=rnd, description=description) for i in range(0, len(doc["choices"]))]
             else:
                 ctx = task.fewshot_context(
                     doc=doc, num_fewshot=num_fewshot, rnd=rnd, description=description
                 )
+                
             reqs = task.construct_requests(doc, ctx)
 
             if write_out:
@@ -293,12 +298,18 @@ def evaluate(
 
         print("Running", reqtype, "requests")
         resps = getattr(lm, reqtype)([req.args for req in reqs])
+        resultpersentence = resps
+
+        # dropped max_equal, from [(logit, max_equal)] to [logit]
         resps = [
             x if req.index is None else x[req.index] for x, req in zip(resps, reqs)
         ]
 
-        for resp, (i, task_name, doc, doc_id) in zip(resps, requests_origin[reqtype]):
-            process_res_queue[(task_name, doc_id)].append((i, resp))
+        for idx, (resp, (i, task_name, doc, doc_id)) in enumerate(zip(resps, requests_origin[reqtype])):
+            if task_name in ("hellaswag") or task_name.startswith("hendrycksTest-"):
+                process_res_queue[(task_name, doc_id)].append((i, resultpersentence[idx]))
+            else:
+                process_res_queue[(task_name, doc_id)].append((i, resp))
 
             if write_out:
                 write_out_info[task_name][doc_id][f"logit_{i}"] = resp

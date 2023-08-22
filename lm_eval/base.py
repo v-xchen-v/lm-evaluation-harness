@@ -263,7 +263,6 @@ class BaseLM(LM):
             loglikelihoods.append(string_nll)
 
         return loglikelihoods
-
     def _loglikelihood_tokens(self, requests, disable_tqdm=False, override_bs=None):
         # TODO: implement some kind of efficient-request-middleware that lumps together requests with the same context
         res = []
@@ -716,6 +715,8 @@ class MultipleChoiceTask(Task):
         return " " + doc["choices"][doc["gold"]]
 
     def construct_requests(self, doc, ctx):
+        # rf.loglikelihood(ctx, " {}".format(doc["choices"][0]))
+
         lls = [
             rf.loglikelihood(ctx, " {}".format(choice))[0] for choice in doc["choices"]
         ]
@@ -746,6 +747,35 @@ class MultipleChoiceTask(Task):
             "acc_norm": mean,
         }
 
+class MultipleCircularChoiceTask(MultipleChoiceTask):
+    def construct_requests(self, doc, ctx: list):
+        return self.construct_circularchoices_requests(doc, ctx)
+
+    def construct_circularchoices_requests(self, doc, ctx):
+        lls = []
+        for circular_index, item in enumerate(ctx):
+            for i in range(0, len(doc["choices"])):
+                choice = doc["choices"][i]
+                lls.append(rf.loglikelihood(item, " {}".format(choice))[0])
+            # lls += [
+            #     rf.loglikelihood(item, " {}".format(choice))[0] for choice in doc["choices"]
+            # ]
+
+        return lls
+    # def construct_requests(self, doc, ctx: list):
+    #     return self.construct_circularchoices_requests(doc, ctx)
+    
+    # def construct_circularchoices_requests(self, doc, ctx):
+    #     lls = []
+    #     for circular_index, item in enumerate(ctx):
+    #         for i in range(0, len(doc["choices"])):
+    #             choice = doc["choices"][(i+circular_index)%len(doc["choices"])]
+    #             lls.append(rf.loglikelihood(item, " {}".format(choice))[0])
+    #         # lls += [
+    #         #     rf.loglikelihood(item, " {}".format(choice))[0] for choice in doc["choices"]
+    #         # ]
+
+    #     return lls
 
 class PerplexityTask(Task, abc.ABC):
     def should_decontaminate(self):

@@ -15,7 +15,8 @@ Homepage: https://rowanzellers.com/hellaswag/
 """
 import re
 from lm_eval.base import MultipleChoiceTask
-
+import numpy as np
+from lm_eval.metrics import mean
 
 _CITATION = """
 @inproceedings{zellers2019hellaswag,
@@ -28,7 +29,7 @@ _CITATION = """
 
 
 class HellaSwag(MultipleChoiceTask):
-    VERSION = 0
+    VERSION = 1
     DATASET_PATH = "hellaswag"
     DATASET_NAME = None
 
@@ -75,3 +76,30 @@ class HellaSwag(MultipleChoiceTask):
 
     def doc_to_decontamination_query(self, doc):
         return doc["query"]
+
+    def process_results(self, doc, results):
+        gold = doc["gold"]
+
+        logits = [x[0] for x in results]
+        max_equals = [x[1] for x in results]
+
+        # the one with biggest probility is match the label, treat is as right
+        acc_choicesonly = 1.0 if np.argmax(logits) == gold else 0.0
+
+        # the one fully match the label, treat it as right. If it has higgest probility but not exactly match treat it as not right.
+        em = 1.0 if max_equals[gold] else 0.0
+        completion_len = np.array([float(len(i)) for i in doc["choices"]])
+        acc_norm = 1.0 if np.argmax(logits / completion_len) == gold else 0.0
+
+        return {
+            "acc": acc_choicesonly,
+            "acc_norm": acc_norm,
+            "em": em
+        }
+
+    def aggregation(self):
+        return {
+            "acc": mean,
+            "acc_norm": mean,
+            "em": mean
+        }

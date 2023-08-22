@@ -64,6 +64,7 @@ from . import agieval_eng_qa
 from . import agieval_eng_cloze
 from . import agieval_eng_qa_cot
 from . import agieval_eng_cloze_cot
+from . import hendrycks_circularchoices_test
 
 ########################################
 # Translation tasks
@@ -200,6 +201,8 @@ TASK_REGISTRY = {
     **agieval_eng_qa_cot.create_all_tasks(),
     # hendrycksTest (57 tasks)
     **hendrycks_test.create_all_tasks(),
+    # hendrycksCircularChoicesTtest(57 tasks),
+    **hendrycks_circularchoices_test.create_all_tasks(),
     # e.g. wmt14-fr-en
     **translation.create_tasks_from_benchmarks(gpt3_translation_benchmarks),
     # chef's selection, mostly wmt20
