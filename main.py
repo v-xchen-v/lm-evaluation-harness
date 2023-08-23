@@ -35,6 +35,9 @@ def parse_args():
 
 
 def main():
+    current_env = os.environ.copy()
+    use_data_parallel = "MASTER_PORT" in current_env
+
     args = parse_args()
 
     assert not args.provide_description  # not implemented
@@ -71,6 +74,7 @@ def main():
         check_integrity=args.check_integrity,
         write_out=args.write_out,
         output_base_path=args.output_base_path,
+        use_data_parallel_accelerate=use_data_parallel
     )
 
     dumped = json.dumps(results, indent=2)

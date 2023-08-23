@@ -13,6 +13,8 @@ from transformers import BatchEncoding
 from lm_eval import utils
 from lm_eval.base import BaseLM
 
+from accelerate import PartialState
+
 TokenSequence = Union[List[int], torch.LongTensor, torch.Tensor, BatchEncoding]
 
 _DeviceMapping = NewType("DeviceMapping", Mapping[str, Union[int, str, torch.device]])
@@ -93,6 +95,7 @@ class HuggingFaceAutoLM(BaseLM):
         gptq_use_triton: Optional[bool] = False,
         bnb_4bit_quant_type: Optional[str] = None,
         bnb_4bit_compute_dtype: Optional[Union[str, torch.dtype]] = None,
+        use_data_parallel_accelerate = False,
     ):
         """Initializes a HuggingFace `AutoModel` and `AutoTokenizer` for evaluation.
         Args:
@@ -163,7 +166,11 @@ class HuggingFaceAutoLM(BaseLM):
 
         """
         super().__init__()
-
+        if use_data_parallel_accelerate:
+            # accelerate not support data parallel combined model parallel, so that should not set device_map which means turn on model parallel when using data parallel
+            device_map_option = None
+            if self.distributed_state is None:
+                self.distributed_state = PartialState()
         assert isinstance(pretrained, str)
         assert isinstance(device, str)
         assert isinstance(batch_size, (int, str))
@@ -240,17 +247,41 @@ class HuggingFaceAutoLM(BaseLM):
         self.model.eval()
         torch.set_grad_enabled(False)
 
-        self._device = device
-        if use_accelerate and "lm_head" in self.model.hf_device_map:
+
+        # check parallel mode if use accelerate, not support using model parallel and data parallel together for now.
+        if use_data_parallel_accelerate and use_accelerate:
+            raise "please check accelerate setting, could not support use data parallel and model parallel togerther via accelerate for now."
+
+        # move the model to target device and set the self._device to the device where the input tensor should go to:
+        # - if not using accelerate, self._device = device # cpu or cuda:0
+        # - if using accelerate:
+        #  -- model parallel, model splits layers to avaiable multiple GPUs and the input tensor's device should be the same with the 'lm_head'
+        #  -- data parallel, model dupliated to avaiable multiple GPUs and the input tensor's device should be the distributed device per process.
+        if use_data_parallel_accelerate:
+            self._device = self.model.device
+        else:
+            self._device = device
+        print(f"[INFO] using device: {self._device}")
+        if use_accelerate or use_data_parallel_accelerate:
+            print(f"[INFO] hf_device_map: {self.model.hf_device_map}")
+        if use_accelerate:
+            if "lm_head" in self.model.hf_device_map:
             # `accelerate` can place `lm_head` weights on a different device than
             # the user specified one so we force `self._device` to be the same as
             # `lm_head`'s.
-            self._device = self.model.hf_device_map["lm_head"]
+                self._device = self.model.hf_device_map["lm_head"]
+            elif len(self.model.hf_device_map) == 1: # only 1 gpu available when using model parallel, so that all layers put into one GPU just as not using model parallel.
+                self._device = list(self.model.hf_device_map.values())[0]
+
         if not use_accelerate and not (load_in_4bit or load_in_8bit):
             try:
                 self.model.to(self._device)
             except:
                 print("Failed to place model onto specified device. This may be because the model is quantized via `bitsandbytes`. If the desired GPU is being used, this message is safe to ignore.")
+
+        # in data parallel, duplicate the model to the distributed device
+        if use_data_parallel_accelerate:
+            self.model.to(self.distributed_state.device)
 
     def _create_auto_model(
         self,
@@ -280,6 +311,11 @@ class HuggingFaceAutoLM(BaseLM):
                 if load_in_4bit:
                     model_kwargs["bnb_4bit_quant_type"] = bnb_4bit_quant_type
                     model_kwargs["bnb_4bit_compute_dtype"] = getattr(torch, bnb_4bit_compute_dtype)
+
+            # in data parallel, set device_map to the distributed GPU.
+            if self.distributed_state:
+                device_map = self.distributed_state.device
+            
             model = self.AUTO_MODEL_CLASS.from_pretrained(
                 pretrained,
                 revision=revision + ("/" + subfolder if subfolder is not None else ""),
