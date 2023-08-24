@@ -28,6 +28,7 @@ def simple_evaluate(
     decontamination_ngrams_path=None,
     write_out=False,
     output_base_path=None,
+    use_data_parallel_accelerate=False,
 ):
     """Instantiate and evaluate a model on a list of tasks.
 
@@ -72,7 +73,7 @@ def simple_evaluate(
         if model_args is None:
             model_args = ""
         lm = lm_eval.models.get_model(model).create_from_arg_string(
-            model_args, {"batch_size": batch_size, "max_batch_size": max_batch_size, "device": device}
+            model_args, {"batch_size": batch_size, "max_batch_size": max_batch_size, "device": device, "use_data_parallel_accelerate": use_data_parallel_accelerate}
         )
     else:
         assert isinstance(model, lm_eval.base.LM)

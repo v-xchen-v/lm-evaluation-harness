@@ -17,6 +17,8 @@ from lm_eval.metrics import mean, weighted_perplexity, weighted_mean, bits_per_b
 from lm_eval import utils
 from abc import abstractmethod
 
+from accelerate.utils import gather
+
 
 class LM(abc.ABC):
     def __init__(self):
@@ -124,6 +126,8 @@ class BaseLM(LM):
         self.batch_schedule = 1
         self.batch_sizes = {}
         self.max_batch_size = 512
+        # if run in data parallel mode, the distributed_state will have value
+        self.distributed_state = None
 
     @property
     @abstractmethod
@@ -176,16 +180,24 @@ class BaseLM(LM):
     def _detect_batch_size(self, requests=None, pos=0):
         if requests:
             _, context_enc, continuation_enc = requests[pos]
-            max_length = len((context_enc + continuation_enc)[-(self.max_length + 1) :][:-1])
+            max_length = len(
+                (context_enc + continuation_enc)[-(self.max_length + 1) :][:-1]
+            )
         else:
             max_length = self.max_length
 
         # if OOM, then halves batch_size and tries again
         @find_executable_batch_size(starting_batch_size=self.max_batch_size)
         def forward_batch(batch_size):
-            test_batch = torch.ones((batch_size, max_length), device=self.device).long()
+            if self.distributed_state:
+                test_batch = torch.ones((batch_size, max_length), device=self.distributed_state.device).long()
+            else:
+                test_batch = torch.ones((batch_size, max_length), device=self.device).long()
             for _ in range(5):
                 _ = F.log_softmax(self._model_call(test_batch), dim=-1).cpu()
+            # in the data parallel mode, assuming the GPUs have same VRAM, so that the batch_size on each GPU should be same, the actual batch_size of all GPUs is the detected_largest_batchsize on single GPU * n_gpu.
+            if self.distributed_state:
+                return batch_size * self.distributed_state.num_processes
             return batch_size
 
         batch_size = forward_batch()
@@ -212,7 +224,9 @@ class BaseLM(LM):
         for context, continuation in requests:
             if context == "":
                 # end of text as context
-                context_enc, continuation_enc = [self.eot_token_id], self.tok_encode(continuation)
+                context_enc, continuation_enc = [self.eot_token_id], self.tok_encode(
+                    continuation
+                )
             else:
                 context_enc, continuation_enc = self._encode_pair(context, continuation)
 
@@ -263,6 +277,7 @@ class BaseLM(LM):
             loglikelihoods.append(string_nll)
 
         return loglikelihoods
+
     def _loglikelihood_tokens(self, requests, disable_tqdm=False, override_bs=None):
         # TODO: implement some kind of efficient-request-middleware that lumps together requests with the same context
         res = []
@@ -289,15 +304,23 @@ class BaseLM(LM):
             sched = pos // int(n_reordered_requests / self.batch_schedule)
             if sched in self.batch_sizes:
                 return self.batch_sizes[sched]
-            print(f"Passed argument batch_size = auto:{self.batch_schedule}. Detecting largest batch size")
+            print(
+                f"Passed argument batch_size = auto:{self.batch_schedule}. Detecting largest batch size"
+            )
             self.batch_sizes[sched] = self._detect_batch_size(reordered_requests, pos)
             print(f"Determined largest batch size: {self.batch_sizes[sched]}")
             return self.batch_sizes[sched]
 
         for chunk in utils.chunks(
             tqdm(reordered_requests, disable=disable_tqdm),
-            n=self.batch_size if self.batch_size != "auto" else override_bs if override_bs is not None else 0,
-            fn=_batch_scheduler if self.batch_size == "auto" and n_reordered_requests > 0 else None,
+            n=self.batch_size
+            if self.batch_size != "auto"
+            else override_bs
+            if override_bs is not None
+            else 0,
+            fn=_batch_scheduler
+            if self.batch_size == "auto" and n_reordered_requests > 0 and not override_bs
+            else None,
         ):
             inps = []
             cont_toks_list = []
@@ -351,17 +374,28 @@ class BaseLM(LM):
                 cont_toks_list.append(cont)
                 inplens.append(inplen)
 
-            batched_inps = torch.cat(inps, dim=0)  # [batch, padding_length
-            multi_logits = F.log_softmax(
-                self._model_call(batched_inps), dim=-1
-            ).cpu()  # [batch, padding_length, vocab]
+            batched_inps = torch.cat(inps, dim=0)  # [batch, padding_length]
+            if self.distributed_state:
+                # distribute input on different GPUs
+                with self.distributed_state.split_between_processes(batched_inps) as model_inputs:
+                    multi_logits_gpu = F.log_softmax(
+                        self._model_call(model_inputs), dim=-1
+                    )  # [batch, padding_length, vocab]
 
+                    # gather result back from GPUs to the first one.
+                    gathered_multi_logits_gpu = gather(multi_logits_gpu)
+                    multi_logits= gathered_multi_logits_gpu.cpu()
+            else:
+                multi_logits = F.log_softmax(
+                        self._model_call(batched_inps), dim=-1
+                    ).cpu()  # [batch, padding_length, vocab]
             for (cache_key, _, _), logits, inp, inplen, cont_toks in zip(
                 chunk, multi_logits, inps, inplens, cont_toks_list
             ):
 
                 # Slice to original seq length
                 contlen = len(cont_toks)
+                inplen = inplen + (logits.shape[0] - padding_length) # if "virtual tokens" (from prompt tuning) are added, inplen is larger
                 logits = logits[inplen - contlen : inplen].unsqueeze(
                     0
                 )  # [1, seq, vocab]
@@ -398,18 +432,34 @@ class BaseLM(LM):
         res = []
 
         def _collate(x):
+            # the negative sign on len(toks) sorts descending - this has a few advantages:
+            # - time estimates will always be over not underestimates, which is more useful for planning
+            # - to know the size of a batch when going through the list, you know the first one is always the batch
+            #   padded context length. this is useful to simplify the batching logic and more importantly to make
+            #   automatic adaptive batches much much easier to implement
+            # - any OOMs will happen right away rather than near the end
+
             toks = self.tok_encode(x[0])
-            return len(toks), x[0]
+            return -len(toks), x[0]
 
         re_ord = utils.Reorderer(requests, _collate)
 
+        warn_stop_seq = False
         for context, request_args in tqdm(re_ord.get_reordered()):
             until = request_args["until"]
             if isinstance(until, str):
                 until = [until]
 
             if until:
-                (primary_until,) = self.tok_encode(until[0])
+                try:
+                    (primary_until,) = self.tok_encode(until[0])
+                except ValueError:
+                    if not warn_stop_seq:
+                        print(
+                            "Warning: a primary stop sequence is multi-token! Will default to EOS token for this tokenizer. Consider using `hf-causal-experimental` for multi-token stop sequence support for the time being."
+                        )
+                        warn_stop_seq = True
+                    primary_until = self.eot_token_id
             else:
                 primary_until = None
 
@@ -715,8 +765,6 @@ class MultipleChoiceTask(Task):
         return " " + doc["choices"][doc["gold"]]
 
     def construct_requests(self, doc, ctx):
-        # rf.loglikelihood(ctx, " {}".format(doc["choices"][0]))
-
         lls = [
             rf.loglikelihood(ctx, " {}".format(choice))[0] for choice in doc["choices"]
         ]
@@ -762,20 +810,6 @@ class MultipleCircularChoiceTask(MultipleChoiceTask):
             # ]
 
         return lls
-    # def construct_requests(self, doc, ctx: list):
-    #     return self.construct_circularchoices_requests(doc, ctx)
-    
-    # def construct_circularchoices_requests(self, doc, ctx):
-    #     lls = []
-    #     for circular_index, item in enumerate(ctx):
-    #         for i in range(0, len(doc["choices"])):
-    #             choice = doc["choices"][(i+circular_index)%len(doc["choices"])]
-    #             lls.append(rf.loglikelihood(item, " {}".format(choice))[0])
-    #         # lls += [
-    #         #     rf.loglikelihood(item, " {}".format(choice))[0] for choice in doc["choices"]
-    #         # ]
-
-    #     return lls
 
 class PerplexityTask(Task, abc.ABC):
     def should_decontaminate(self):
