@@ -187,20 +187,25 @@ class BaseLM(LM):
             max_length = self.max_length
 
         # if OOM, then halves batch_size and tries again
-        @find_executable_batch_size(starting_batch_size=self.max_batch_size)
-        def forward_batch(batch_size):
-            if self.distributed_state:
-                test_batch = torch.ones((batch_size, max_length), device=self.distributed_state.device).long()
-            else:
-                test_batch = torch.ones((batch_size, max_length), device=self.device).long()
-            for _ in range(5):
-                _ = F.log_softmax(self._model_call(test_batch), dim=-1).cpu()
-            # in the data parallel mode, assuming the GPUs have same VRAM, so that the batch_size on each GPU should be same, the actual batch_size of all GPUs is the detected_largest_batchsize on single GPU * n_gpu.
-            if self.distributed_state:
-                return batch_size * self.distributed_state.num_processes
-            return batch_size
+        batch_size = 1
+        while True:
+            try:
+                if self.distributed_state:
+                    test_batch = torch.ones((batch_size, max_length), device=self.distributed_state.device).long()
+                else:
+                    test_batch = torch.ones((batch_size, max_length), device=self.device).long()
+                for _ in range(5):
+                    _ = F.log_softmax(self._model_call(test_batch), dim=-1).cpu()
 
-        batch_size = forward_batch()
+            
+                batch_size *= 2
+            except RuntimeError: # OOM
+                batch_size //= 2
+                break
+
+        # in the data parallel mode, assuming the GPUs have same VRAM, so that the batch_size on each GPU should be same, the actual batch_size of all GPUs is the detected_largest_batchsize on single GPU * n_gpu.
+        if self.distributed_state:
+            return batch_size * self.distributed_state.num_processes
         utils.clear_torch_cache()
 
         return batch_size
