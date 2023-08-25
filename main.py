@@ -30,15 +30,18 @@ def parse_args():
     parser.add_argument("--check_integrity", action="store_true")
     parser.add_argument("--write_out", action="store_true", default=False)
     parser.add_argument("--output_base_path", type=str, default=None)
-
+    parser.add_argument("--use_data_parallel", action="store_true")
     return parser.parse_args()
 
 
 def main():
-    current_env = os.environ.copy()
-    use_data_parallel = "MASTER_PORT" in current_env
 
     args = parse_args()
+    use_data_parallel = args.use_data_parallel
+    current_env = os.environ.copy()
+    if use_data_parallel:
+        if not "MASTER_PORT" in current_env:
+            print("Warning: use data_parallel should launch eval script with accelerate launch ...")
 
     assert not args.provide_description  # not implemented
 
