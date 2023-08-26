@@ -391,7 +391,7 @@ def evaluate(
             ) as fp:
                 json.dump(write_out_info[task_name], fp, indent=4, ensure_ascii=False)
 
-    return {"results": dict(results), "versions": dict(versions)}
+    return {"results": dict(results), "versions": dict(versions), "distributed_process_id": None if lm.distributed_state is None else lm.distributed_state.process_index}
 
 
 def make_table(result_dict):
