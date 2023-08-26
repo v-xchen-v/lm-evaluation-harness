@@ -4,6 +4,7 @@ import logging
 import os
 
 from lm_eval import tasks, evaluator, utils
+from lm_eval.tasks.hendrycks_test import SUBJECTS as MMLU_SUBJECTS
 
 logging.getLogger("openai").setLevel(logging.WARNING)
 
@@ -41,74 +42,27 @@ class LeaderBoardTask:
 
     version: int
 
+# TODO: as config file
 leaderboard_tasks = [
     LeaderBoardTask(
         name="mmlu",
         abbr="MMLU(5 shot)",
         num_fewshot=5,
         use_cot=False,
-        subtasks=[
-            "hendrycksTest-abstract_algebra",
-            "hendrycksTest-anatomy",
-            "hendrycksTest-astronomy",
-            "hendrycksTest-business_ethics",
-            "hendrycksTest-clinical_knowledge",
-            "hendrycksTest-college_biology",
-            "hendrycksTest-college_chemistry",
-            "hendrycksTest-college_computer_science",
-            "hendrycksTest-college_mathematics",
-            "hendrycksTest-college_medicine",
-            "hendrycksTest-college_physics",
-            "hendrycksTest-computer_security",
-            "hendrycksTest-conceptual_physics",
-            "hendrycksTest-econometrics",
-            "hendrycksTest-electrical_engineering",
-            "hendrycksTest-elementary_mathematics",
-            "hendrycksTest-formal_logic",
-            "hendrycksTest-global_facts",
-            "hendrycksTest-high_school_biology",
-            "hendrycksTest-high_school_chemistry",
-            "hendrycksTest-high_school_computer_science",
-            "hendrycksTest-high_school_european_history",
-            "hendrycksTest-high_school_geography",
-            "hendrycksTest-high_school_government_and_politics",
-            "hendrycksTest-high_school_macroeconomics",
-            "hendrycksTest-high_school_mathematics",
-            "hendrycksTest-high_school_microeconomics",
-            "hendrycksTest-high_school_physics",
-            "hendrycksTest-high_school_psychology",
-            "hendrycksTest-high_school_statistics",
-            "hendrycksTest-high_school_us_history",
-            "hendrycksTest-high_school_world_history",
-            "hendrycksTest-human_aging",
-            "hendrycksTest-human_sexuality",
-            "hendrycksTest-international_law",
-            "hendrycksTest-jurisprudence",
-            "hendrycksTest-logical_fallacies",
-            "hendrycksTest-machine_learning",
-            "hendrycksTest-management",
-            "hendrycksTest-marketing",
-            "hendrycksTest-medical_genetics",
-            "hendrycksTest-miscellaneous",
-            "hendrycksTest-moral_disputes",
-            "hendrycksTest-moral_scenarios",
-            "hendrycksTest-nutrition",
-            "hendrycksTest-philosophy",
-            "hendrycksTest-prehistory",
-            "hendrycksTest-professional_accounting",
-            "hendrycksTest-professional_law",
-            "hendrycksTest-professional_medicine",
-            "hendrycksTest-professional_psychology",
-            "hendrycksTest-public_relations",
-            "hendrycksTest-security_studies",
-            "hendrycksTest-sociology",
-            "hendrycksTest-us_foreign_policy",
-            "hendrycksTest-virology",
-            "hendrycksTest-world_religions"
-        ],
+        subtasks= [f'hendrycksTest-{sub}' for sub in  MMLU_SUBJECTS],
         metric="acc",
         aggregate_op='mean',
         version=1,
+    ),
+    LeaderBoardTask(
+        name="mmlu_circular",
+        abbr="MMLU CircularChoices(5 shot)",
+        num_fewshot=5,
+        use_cot=False,
+        subtasks= [f"hendrycksTest-CircularChoices-{sub}" for sub in MMLU_SUBJECTS],
+        metric="acc_circularchoices",
+        aggregate_op='mean',
+        version=0,
     ),
     LeaderBoardTask(
         name="truthfulqa",
@@ -166,66 +120,6 @@ leaderboard_tasks = [
 LEADERBOARDTASK_REGISTRY = \
 { item.name: item for item in leaderboard_tasks }
 
-# mmlu = [ 
-#         "hendrycksTest-abstract_algebra",
-#         "hendrycksTest-anatomy",
-#         "hendrycksTest-astronomy",
-#         "hendrycksTest-business_ethics",
-#         "hendrycksTest-clinical_knowledge",
-#         "hendrycksTest-college_biology",
-#         "hendrycksTest-college_chemistry",
-#         "hendrycksTest-college_computer_science",
-#         "hendrycksTest-college_mathematics",
-#         "hendrycksTest-college_medicine",
-#         "hendrycksTest-college_physics",
-#         "hendrycksTest-computer_security",
-#         "hendrycksTest-conceptual_physics",
-#         "hendrycksTest-econometrics",
-#         "hendrycksTest-electrical_engineering",
-#         "hendrycksTest-elementary_mathematics",
-#         "hendrycksTest-formal_logic",
-#         "hendrycksTest-global_facts",
-#         "hendrycksTest-high_school_biology",
-#         "hendrycksTest-high_school_chemistry",
-#         "hendrycksTest-high_school_computer_science",
-#         "hendrycksTest-high_school_european_history",
-#         "hendrycksTest-high_school_geography",
-#         "hendrycksTest-high_school_government_and_politics",
-#         "hendrycksTest-high_school_macroeconomics",
-#         "hendrycksTest-high_school_mathematics",
-#         "hendrycksTest-high_school_microeconomics",
-#         "hendrycksTest-high_school_physics",
-#         "hendrycksTest-high_school_psychology",
-#         "hendrycksTest-high_school_statistics",
-#         "hendrycksTest-high_school_us_history",
-#         "hendrycksTest-high_school_world_history",
-#         "hendrycksTest-human_aging",
-#         "hendrycksTest-human_sexuality",
-#         "hendrycksTest-international_law",
-#         "hendrycksTest-jurisprudence",
-#         "hendrycksTest-logical_fallacies",
-#         "hendrycksTest-machine_learning",
-#         "hendrycksTest-management",
-#         "hendrycksTest-marketing",
-#         "hendrycksTest-medical_genetics",
-#         "hendrycksTest-miscellaneous",
-#         "hendrycksTest-moral_disputes",
-#         "hendrycksTest-moral_scenarios",
-#         "hendrycksTest-nutrition",
-#         "hendrycksTest-philosophy",
-#         "hendrycksTest-prehistory",
-#         "hendrycksTest-professional_accounting",
-#         "hendrycksTest-professional_law",
-#         "hendrycksTest-professional_medicine",
-#         "hendrycksTest-professional_psychology",
-#         "hendrycksTest-public_relations",
-#         "hendrycksTest-security_studies",
-#         "hendrycksTest-sociology",
-#         "hendrycksTest-us_foreign_policy",
-#         "hendrycksTest-virology",
-#         "hendrycksTest-world_religions"
-#     ]
-
 # agieval_qa = [
 #     # 9 subtasks of qa
 #     'agieval_eng_qa_lsat-ar',
@@ -252,102 +146,123 @@ LEADERBOARDTASK_REGISTRY = \
 #     # cloze cot
 #     "agieval_eng_cloze_cot",
 # ]
-models = [
-    'meta-llama/Llama-2-7b-hf',
-    'meta-llama/Llama-2-13b-hf',
-    'meta-llama/Llama-2-7b-chat-hf',
-    'meta-llama/Llama-2-13b-chat-hf',
-    'lmsys/vicuna-7b-v1.3',
-]
-TASK = LEADERBOARDTASK_REGISTRY['agieval']
-NUM_FEWSHOT = TASK.num_fewshot_
-MODEL_NAME = "lmsys/vicuna-7b-v1.3"
-print(TASK)
-OUTPUT_DIR = f'/eval_results/{hash_md5(MODEL_NAME)}/{TASK.name}/{TASK.version}/{NUM_FEWSHOT}shot'
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+# models = [
+#     'meta-llama/Llama-2-7b-hf',
+#     'meta-llama/Llama-2-13b-hf',
+#     'meta-llama/Llama-2-7b-chat-hf',
+#     'meta-llama/Llama-2-13b-chat-hf',
+#     'lmsys/vicuna-7b-v1.3',
+# ]
+# TASK = LEADERBOARDTASK_REGISTRY['mmlu_circular']
+# NUM_FEWSHOT = TASK.num_fewshot
+# MODEL_NAME = "distilgpt2"
+# print(TASK)
+# OUTPUT_DIR = f'/eval_results/{hash_md5(MODEL_NAME)}/{TASK.name}/{TASK.version}/{NUM_FEWSHOT}shot'
+# os.makedirs(OUTPUT_DIR, exist_ok=True)
+def encode_modelname(model_name):
+    # can not
+    return model_name.replace("/", ".")
+
+def decoded_modelname(encoded_model_name):
+    return encoded_model_name.replace(".", "/")
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", default='hf-causal-experimental')
-    parser.add_argument("--model_args", default=f"pretrained={MODEL_NAME}")
-    # parser.add_argument("--tasks", default='agieval_eng_qa_lsat-ar,agieval_eng_qa_lsat-lr,agieval_eng_qa_lsat-rc,agieval_eng_qa_logiqa-en,agieval_eng_qa_sat-math,agieval_eng_qa_sat-en,agieval_eng_qa_aqua-rat,agieval_eng_qa_sat-en-without-passage,agieval_eng_qa_gaokao-english', choices=utils.MultiChoice(tasks.ALL_TASKS))
-    parser.add_argument("--tasks", default=','.join(TASK.subtasks), choices=utils.MultiChoice(tasks.ALL_TASKS))
-    parser.add_argument("--provide_description", action="store_true")
-    parser.add_argument("--num_fewshot", type=int, default=NUM_FEWSHOT)
+    parser.add_argument("--leaderboard_task", required=True, choices=LEADERBOARDTASK_REGISTRY)
+    parser.add_argument("--hf_model_name", type=str, required=True)
     parser.add_argument("--batch_size", type=str, default=None)
-    parser.add_argument("--max_batch_size", type=int, default=None,
-                        help="Maximal batch size to try with --batch_size auto")
     parser.add_argument("--device", type=str, default=None)
-    parser.add_argument("--output_path", default=f"{OUTPUT_DIR}/results.json")
     parser.add_argument("--limit", type=float, default=None,
                         help="Limit the number of examples per task. "
                              "If <1, limit is a percentage of the total number of examples.")
-    parser.add_argument("--data_sampling", type=float, default=None)
-    parser.add_argument("--no_cache", action="store_true", default=
-    True)
-    parser.add_argument("--decontamination_ngrams_path", default=None)
-    parser.add_argument("--description_dict_path", default=None)
-    parser.add_argument("--check_integrity", action="store_true")
-    parser.add_argument("--write_out", action="store_true", default=True)
-    parser.add_argument("--output_base_path", type=str, default=OUTPUT_DIR)
-
+    parser.add_argument("--no_cache", action="store_true")
+    parser.add_argument("--use_data_parallel", action="store_true")
+    parser.add_argument("--use_model_parallel", action="store_true")
     return parser.parse_args()
 
+def eval_and_dump(leaderboardtask_name, hf_model_name, batch_size, device, no_cache, limit, use_data_parallel, use_model_parallel):
+    # setting leaderboard task eval settings
+    task=LEADERBOARDTASK_REGISTRY[leaderboardtask_name]
+    print(task)
+    num_fewshot=task.num_fewshot
+    output_dir=f'/eval_results/{encode_modelname(hf_model_name)}/{task.name}/{task.version}/{num_fewshot}shot'
+    os.makedirs(output_dir, exist_ok=True)
+    output_path=f"{output_dir}/results.json"
+
+    # check task names(a leader board task could have a set of tasks, e.g. MMLU)
+    task_names=utils.pattern_match(task.subtasks, tasks.ALL_TASKS)
+    print(f"Selected Tasks: {task_names}")
+    
+    model='hf-causal-experimental'
+    model_args=f"pretrained={hf_model_name}"
+    if use_model_parallel:
+        model_args+=",use_accelerate=True"
+        device="auto"
+
+    results = evaluator.simple_evaluate(
+        model=model,
+        model_args=model_args,
+        tasks=task_names,
+        num_fewshot=num_fewshot,
+        batch_size=batch_size,
+        device=device,
+        no_cache=no_cache,
+        limit=limit,
+        write_out=True,
+        output_base_path=output_dir,
+    )
+
+    dumped = json.dumps(results, indent=2)
+    print(dumped)
+
+    if output_path:
+        # if using data parallel, eval on multiple process, let the first process dump result json file to avoid writing conflict.
+        if not use_data_parallel or (use_data_parallel and results["distributed_process_id"] == 0):
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            with open(output_path, "w") as f:
+                f.write(dumped)
+
+    batch_sizes = ",".join(map(str, results["config"]["batch_sizes"]))
+    print(
+        f"{model} ({model_args}), limit: {limit}, provide_description: {None}, "
+        f"num_fewshot: {num_fewshot}, batch_size: {batch_size}{f' ({batch_sizes})' if batch_sizes else ''}"
+    )
+    print(evaluator.make_table(results))
 
 def main():
     args = parse_args()
-
-    assert not args.provide_description  # not implemented
+    
+    # check data parallel arguments
+    current_env = os.environ.copy()
+    if args.use_data_parallel:
+        if not "MASTER_PORT" in current_env:
+            raise("when using data_parallel, the eval script be should launch with accelerate launch ...")
+        
+    if "MASTER_PORT" in current_env and not args.use_data_parallel:
+        print("WARNING: --use_data_parallel should be used if you are using accelerate to eval in data parallel, otherwise, the evaluation and result dumping will not work normally")
 
     if args.limit:
         print(
             "WARNING: --limit SHOULD ONLY BE USED FOR TESTING. REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT."
         )
 
-    if args.tasks is None:
-        task_names = tasks.ALL_TASKS
-    else:
-        task_names = utils.pattern_match(args.tasks.split(","), tasks.ALL_TASKS)
-
-    print(f"Selected Tasks: {task_names}")
-
-    description_dict = {}
-    if args.description_dict_path:
-        with open(args.description_dict_path, "r") as f:
-            description_dict = json.load(f)
+    if args.use_data_parallel and args.use_model_parallel:
+        raise(
+            "not support use model parallel and data parallel together."
+        )
     
-    results = evaluator.simple_evaluate(
-        model=args.model,
-        model_args=args.model_args,
-        tasks=task_names,
-        num_fewshot=args.num_fewshot,
+    print(f"Selected Leader Board Task: {args.leaderboard_task}")
+    
+    eval_and_dump(
+        leaderboardtask_name=args.leaderboard_task,
+        hf_model_name=args.hf_model_name,
         batch_size=args.batch_size,
-        max_batch_size=args.max_batch_size,
         device=args.device,
         no_cache=args.no_cache,
         limit=args.limit,
-        description_dict=description_dict,
-        decontamination_ngrams_path=args.decontamination_ngrams_path,
-        check_integrity=args.check_integrity,
-        write_out=args.write_out,
-        output_base_path=args.output_base_path,
+        use_data_parallel=args.use_data_parallel,
+        use_model_parallel=args.use_model_parallel,
     )
-
-    dumped = json.dumps(results, indent=2)
-    print(dumped)
-
-    if args.output_path:
-        os.makedirs(os.path.dirname(args.output_path), exist_ok=True)
-        with open(args.output_path, "w") as f:
-            f.write(dumped)
-
-    batch_sizes = ",".join(map(str, results["config"]["batch_sizes"]))
-    print(
-        f"{args.model} ({args.model_args}), limit: {args.limit}, provide_description: {args.provide_description}, "
-        f"num_fewshot: {args.num_fewshot}, batch_size: {args.batch_size}{f' ({batch_sizes})' if batch_sizes else ''}"
-    )
-    print(evaluator.make_table(results))
-
 
 if __name__ == "__main__":
     main()

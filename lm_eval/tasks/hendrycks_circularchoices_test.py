@@ -213,23 +213,23 @@ class GeneralHendryckCircularChoicesTest(MultipleCircularChoiceTask):
         for circular_index in range(0, len(doc["choices"])):
             completion_len += choices_len[circular_index:] + choices_len[:circular_index]
         completion_len = np.array(completion_len).reshape((len(doc["choices"]), -1))
-        acc_norm = 1.0 if np.all(np.argmax(logits / completion_len, axis=-1) == circular_gold) else 0.0
+        # acc_norm = 1.0 if np.all(np.argmax(logits / completion_len, axis=-1) == circular_gold) else 0.0
 
         return {
-            "acc_noncircularchoices": acc_choicesonly_noncircularchoices,
-            "acc_circularchoices": acc_choicesonly,
+            "acc": acc_choicesonly_noncircularchoices,
+            "em": em_noncircularchoices,
             # "acc_norm": acc_norm,
-            "em_noncircularchoices": em_noncircularchoices,
+            "acc_circularchoices": acc_choicesonly,
             "em_circularchoices": em
         }
 
     def aggregation(self):
         return {
-            "acc_circularchoices": mean,
+            "acc": mean,
+            "em": mean,
             # "acc_norm": mean,
+            "acc_circularchoices": mean,
             "em_circularchoices": mean,
-            "acc_noncircularchoices": mean,
-            "em_noncircularchoices": mean
         }
 
 
