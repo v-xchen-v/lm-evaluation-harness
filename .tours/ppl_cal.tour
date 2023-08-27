@@ -1,0 +1,37 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "ppl_cal",
+  "steps": [
+    {
+      "file": "lm_eval/base.py",
+      "description": "[1, 74, 50246] ([1, seq, vacab]) the sentense logits of each token",
+      "line": 403
+    },
+    {
+      "file": "lm_eval/base.py",
+      "description": "take the logits of cont_toks(from label) from [1, seq, vocab] to [1, seq]",
+      "line": 409
+    },
+    {
+      "file": "lm_eval/base.py",
+      "description": "logits.sum() is close to ppl, ",
+      "line": 421
+    },
+    {
+      "file": "lm_eval/metrics.py",
+      "description": "The math.exp(-mean(logits.sum())) = ppl",
+      "line": 95
+    },
+    {
+      "file": "lm_eval/tasks/lambada.py",
+      "description": "a case of metric of ppl: part1- cal logits",
+      "line": 59
+    },
+    {
+      "file": "lm_eval/tasks/lambada.py",
+      "description": "a case of metric of ppl: part2-cal ppl",
+      "line": 69
+    }
+  ],
+  "ref": "xichen6/hellaswag_acconppl"
+}
