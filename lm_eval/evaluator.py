@@ -307,7 +307,7 @@ def evaluate(
         ]
 
         for idx, (resp, (i, task_name, doc, doc_id)) in enumerate(zip(resps, requests_origin[reqtype])):
-            if task_name in ("hellaswag") or task_name.startswith("hendrycksTest-"):
+            if task_name.startswith("hellaswag") or task_name.startswith("hendrycksTest-"):
                 process_res_queue[(task_name, doc_id)].append((i, resultpersentence[idx]))
             else:
                 process_res_queue[(task_name, doc_id)].append((i, resp))
