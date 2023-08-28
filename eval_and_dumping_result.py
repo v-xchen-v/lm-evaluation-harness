@@ -85,6 +85,16 @@ leaderboard_tasks = [
         version=0,
     ),
     LeaderBoardTask(
+        name="hellaswag_circular",
+        abbr="HellaSwag Circular Choice(10 shot)",
+        num_fewshot=10,
+        use_cot=False,
+        subtasks=["hellaswag_circular"],
+        metric="acc_circularchoices",
+        aggregate_op='mean',
+        version=0,
+    ),
+    LeaderBoardTask(
         name="arc",
         abbr="ARC(25 shot)",
         num_fewshot=25,

@@ -816,6 +816,116 @@ class MultipleCircularChoiceTask(MultipleChoiceTask):
 
         return lls
 
+    def _format_subject(self, subject):
+        words = subject.split("_")
+        return " ".join(words)
+
+    def doc_to_text(self, doc, circular_index=0):
+        return self.format_example(doc["doc"], doc["choices"], circular_index)
+
+    def process_results(self, doc, results):
+        choice_size = len(doc["choices"])
+        gold = doc["gold"]
+
+        logits = np.array([x[0] for x in results]).reshape((len(doc["choices"]), -1))
+        max_equals = np.array([x[1] for x in results]).reshape((len(doc["choices"]), -1))
+
+        # the one with biggest probility is match the label, treat is as right
+        circular_gold = np.array([((gold+i)%choice_size) for i in range(0, choice_size)])
+        acc_choicesonly = 1.0 if np.all(np.argmax(logits, axis=-1) == circular_gold) else 0.0
+        acc_choicesonly_noncircularchoices = 1.0 if np.all(np.argmax(logits[0]) == gold) else 0.0
+
+        # the one fully match the label, treat it as right. If it has higgest probility but not exactly match treat it as not right.
+        em = 1.0 if np.all(max_equals[np.arange(0, choice_size), circular_gold]) else 0.0
+        em_noncircularchoices = 1.0 if np.all(max_equals[0, circular_gold[0]]) else 0.0
+        
+        
+        completion_len = []
+        choices_len = [float(len(i)) for i in doc["choices"]]
+        for circular_index in range(0, len(doc["choices"])):
+            completion_len += choices_len[circular_index:] + choices_len[:circular_index]
+        completion_len = np.array(completion_len).reshape((len(doc["choices"]), -1))
+        # acc_norm = 1.0 if np.all(np.argmax(logits / completion_len, axis=-1) == circular_gold) else 0.0
+
+        return {
+            "acc": acc_choicesonly_noncircularchoices,
+            "em": em_noncircularchoices,
+            # "acc_norm": acc_norm,
+            "acc_circularchoices": acc_choicesonly,
+            "em_circularchoices": em
+        }
+
+    def aggregation(self):
+        return {
+            "acc": mean,
+            "em": mean,
+            # "acc_norm": mean,
+            "acc_circularchoices": mean,
+            "em_circularchoices": mean,
+        }
+        
+    def fewshot_context(
+        self, doc, num_fewshot, circular_index, provide_description=None, rnd=None, description=None
+    ):
+        """Returns a fewshot context string that is made up of a prepended description
+        (if provided), the `num_fewshot` number of examples, and an appended prompt example.
+
+        :param doc: str
+            The document as returned from training_docs, validation_docs, or test_docs.
+        :param num_fewshot: int
+            The number of fewshot examples to provide in the returned context string.
+        :param provide_description: bool
+            Not implemented, and this option is deprecated and will be removed in a future version in favor of a different description providing method
+        :param rnd: random.Random
+            The pseudo-random number generator used to randomly sample examples.
+            WARNING: This is currently a required arg although it's optionalized with a default `None`.
+        :param description: str
+            The task's description that will be prepended to the fewshot examples.
+        :returns: str
+            The fewshot context.
+        """
+        assert (
+            rnd is not None
+        ), "A `random.Random` generator argument must be provided to `rnd`"
+        assert not provide_description, (
+            "The `provide_description` arg will be removed in future versions. To prepend "
+            "a custom description to the context, supply the corresponding string via the "
+            "`description` arg."
+        )
+        if provide_description is not None:
+            # nudge people to not specify it at all
+            print(
+                "WARNING: provide_description is deprecated and will be removed in a future version in favor of description_dict"
+            )
+
+        subject = self.DATASET_NAME
+        if subject:
+            description = f"The following are multiple choice questions (with answers) about {self._format_subject(subject)}."
+        description = description + "\n\n" if description else ""
+
+        if num_fewshot == 0:
+            labeled_examples = ""
+        else:
+            fewshotex = self.fewshot_examples(k=num_fewshot, rnd=rnd)
+
+            # labeled_examples = ""
+            # for fewshot_idx, doc in enumerate(fewshotex):
+            #       "Problem {}.   ".format(fewshot_idx + 1) + self.doc_to_text(doc, 0) + self.doc_to_target(doc) + "\n\n"
+            labeled_examples = (
+                "\n\n".join(
+                    [
+                        self.doc_to_text(doc) + self.doc_to_target(doc)
+                        for doc in fewshotex
+                    ]
+                )
+                + "\n\n"
+            )
+
+
+        example = self.doc_to_text(doc, circular_index)
+        return description + labeled_examples + example
+        # return self.doc_to_text(doc, num_fewshot)
+        
 class PerplexityTask(Task, abc.ABC):
     def should_decontaminate(self):
         """Whether this task supports decontamination against model training set."""
