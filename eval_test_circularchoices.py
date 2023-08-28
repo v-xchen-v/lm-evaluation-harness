@@ -11,18 +11,19 @@ logging.getLogger("openai").setLevel(logging.WARNING)
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default='hf-causal-experimental')
-    parser.add_argument("--model_args", default="pretrained=huggyllama/llama-30b")
+    parser.add_argument("--model_args", default="pretrained=distilgpt2")
     # parser.add_argument("--model_args", default="pretrained=distilgpt2")
     # parser.add_argument("--tasks", default="hellaswag", choices=utils.MultiChoice(tasks.ALL_TASKS))
-    parser.add_argument("--tasks", default="hendrycksTest-CircularChoices-computer_security", choices=utils.MultiChoice(tasks.ALL_TASKS))
+    parser.add_argument("--tasks", default="hellaswag_gpt4choice", choices=utils.MultiChoice(tasks.ALL_TASKS))
+    # parser.add_argument("--tasks", default="hendrycksTest-world_religions-gpt4choice", choices=utils.MultiChoice(tasks.ALL_TASKS))
     parser.add_argument("--provide_description", action="store_true")
     parser.add_argument("--num_fewshot", type=int, default=5)
     parser.add_argument("--batch_size", type=str, default=None)
     parser.add_argument("--max_batch_size", type=int, default=None,
                         help="Maximal batch size to try with --batch_size auto")
     parser.add_argument("--device", type=str, default=None)
-    parser.add_argument("--output_path", default=None)
-    parser.add_argument("--limit", type=float, default=None,
+    parser.add_argument("--output_path", default="/lm-evaluation-harness/output/results.json")
+    parser.add_argument("--limit", type=float, default=2,
                         help="Limit the number of examples per task. "
                              "If <1, limit is a percentage of the total number of examples.")
     parser.add_argument("--data_sampling", type=float, default=None)
@@ -31,7 +32,7 @@ def parse_args():
     parser.add_argument("--description_dict_path", default=None)
     parser.add_argument("--check_integrity", action="store_true")
     parser.add_argument("--write_out", action="store_true", default=True)
-    parser.add_argument("--output_base_path", type=str, default="/repos/lm-evaluation-harness/output")
+    parser.add_argument("--output_base_path", type=str, default="/lm-evaluation-harness/output")
 
     return parser.parse_args()
 
