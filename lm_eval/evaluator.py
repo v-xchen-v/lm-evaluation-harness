@@ -334,7 +334,10 @@ def evaluate(
         task = task_dict[task_name]
         doc = docs[(task_name, doc_id)]
 
-        metrics = task.process_results(doc, requests)
+        if isinstance(task, lm_eval.base.LLMAsJudgeMultipleChoiceTask):
+            metrics = task.process_results(doc, requests, write_out_info[task_name][doc_id])
+        else:
+            metrics = task.process_results(doc, requests)
         for metric, value in metrics.items():
             vals[(task_name, metric)].append(value)
 

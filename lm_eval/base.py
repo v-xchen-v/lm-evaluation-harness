@@ -419,7 +419,7 @@ class BaseLM(LM):
                 )  # [1, seq]
 
                 # Answer: (log prob, is-exact-match)
-                answer = (float(logits.sum()), bool(max_equal))
+                answer = (float(logits.sum()), bool(max_equal), self.tok_decode(greedy_tokens))
 
                 # partial caching
                 if cache_key is not None:
@@ -764,7 +764,6 @@ class Task(abc.ABC):
         example = self.doc_to_text(doc)
         return description + labeled_examples + example
 
-
 class MultipleChoiceTask(Task):
     def doc_to_target(self, doc):
         return " " + doc["choices"][doc["gold"]]
@@ -798,6 +797,59 @@ class MultipleChoiceTask(Task):
         return {
             "acc": mean,
             "acc_norm": mean,
+        }
+
+class LLMAsJudgeMultipleChoiceTask(Task):
+    def doc_to_target(self, doc):
+        return " " + doc["choices"][doc["gold"]]
+    
+    def construct_requests(self, doc, ctx):
+        lls = [
+            rf.greedy_until(ctx, {"until": [], "max_length": None})
+        ]
+
+        return lls
+    
+    def process_results(self, doc, results, llm_judge_write_out_info):
+        gold = doc["gold"]
+
+        # acc = 1.0 if np.argmax(results) == gold else 0.0
+        # completion_len = np.array([float(len(i)) for i in doc["choices"]])
+        # acc_norm = 1.0 if np.argmax(results / completion_len) == gold else 0.0
+
+        # list only have single element
+        greedy_gen = results[0]
+        # res = gpt_4_completion("prompt.txt", question="What is the meaning of life?", answer="42", choices="A. 42\nB. 43\nC. 44\nD. 45")
+        from lm_eval.llmjudge.gpt4 import gpt_4_completion
+        ret = gpt_4_completion(
+            "prompt.txt", question=doc["query"], answer=greedy_gen, choices=doc["choices"]
+        )
+        
+        # write llm judgement info to info json file
+        llm_judge_write_out_info["llm_judge"] = {
+            "question": doc["query"],
+            "answer": greedy_gen,
+            "choices": doc["choices"],
+            "response": ret['response']}
+        
+        ret_ans = ret['response'].strip('"').strip('(').strip(')')
+        if ret_ans == 'None' or ret_ans == 'There seems to be some confusion in your input. It appears there are two sets of questions and answers, but the second set is not correctly formatted. Could you please provide the correct format so I can assist you accurately?':
+            acc = 0
+        else:
+            acc = (ord(ret_ans)-ord('A')==gold)
+        
+        return {
+            "acc": acc,
+        }
+
+    def higher_is_better(self):
+        return {
+            "acc": True,
+        }
+
+    def aggregation(self):
+        return {
+            "acc": mean,
         }
 
 class MultipleCircularChoiceTask(MultipleChoiceTask):

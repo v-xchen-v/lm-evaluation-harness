@@ -76,7 +76,7 @@ def gpt_4_completion(template_file_path, temperature=0.7, max_tokens=800, top_p=
     for key in text_to_format:
         if key not in kwargs:
             raise ValueError(f"Missing keyword argument: {key}")
-        template = template.replace("{" + key + "}", kwargs[key])
+        template = template.replace("{" + key + "}", '\n'.join(kwargs[key]) if type(kwargs[key]) is list else kwargs[key])
 
     prompt = _prompt_to_chatml(str.join('', template))
 
@@ -99,5 +99,13 @@ def gpt_4_completion(template_file_path, temperature=0.7, max_tokens=800, top_p=
     return {"response": response.choices[0].message.content, "total_tokens": response.usage.total_tokens}
 
 if __name__ == '__main__':
-    res = gpt_4_completion("prompt.txt", question="What is the meaning of life?", answer="42", choices="A. 42\nB. 43\nC. 44\nD. 45")
+    # res = gpt_4_completion("prompt.txt", question="What is the meaning of life?", answer="42", choices="A. 42\nB. 43\nC. 44\nD. 45")
+    res = gpt_4_completion("prompt.txt", question="What is the meaning of life?", answer="42", choices=["A. 42","B. 43","C. 44","D. 45"])
     print(res)
+    
+    query_1 = 'Personal Care and Style: How to increase breast size with a bra. Check your bra size. Wearing a bra that is too big will not make your breasts look larger. That is why it is important to wear the right size bra for you.'
+    choices_1 = ['You can visit a lingerie shop and have them measure you to help you fit a bra to your size, or measure yourself before you shop for a new bra to ensure that you get a good fit. Use a flexible tape measure, like one found in a sewing kit.', 'This is why it is important to keep your breasts under protection when in the shower and only wear bras that are larger than your breast size. If you are not wearing a bra, try wearing something that is a little bigger.', 'For a girl, a bra with a support strap will be easier for her, because most women are unable to pull through bra straps and bras that are too small will not be able to support breasts from side-to-side. Many bras have even been created that cover the breast side, and can be sent to other women in the world to make them look bigger.', 'Choose a color that is flattering to your breast type and specific event, in addition to those that make you uncomfortable. Look for sports bras made from natural material, such as spandex or lycra, as this is a more breathable bra.']
+    answer_1 = '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+    gold_1=0 # A
+    res = gpt_4_completion("prompt.txt", question=query_1, answer=answer_1, choices=choices_1)
+    print(res) # A, reansonable?

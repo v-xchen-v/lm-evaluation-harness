@@ -65,6 +65,8 @@ from . import agieval_eng_cloze
 from . import agieval_eng_qa_cot
 from . import agieval_eng_cloze_cot
 from . import hendrycks_circularchoices_test
+from . import hellaswag_gpt4choice
+from . import hendrycks_gpt4choice
 
 ########################################
 # Translation tasks
@@ -144,6 +146,7 @@ TASK_REGISTRY = {
     # "quac": quac.QuAC, # not implemented yet
     "logiqa": logiqa.LogiQA,
     "hellaswag": hellaswag.HellaSwag,
+    "hellaswag_gpt4choice": hellaswag_gpt4choice.HellaSwagGpt4Choice,
     "swag": swag.SWAG,
     "openbookqa": openbookqa.OpenBookQA,
     "squad2": squad.SQuAD2,
@@ -203,6 +206,8 @@ TASK_REGISTRY = {
     **hendrycks_test.create_all_tasks(),
     # hendrycksCircularChoicesTtest(57 tasks),
     **hendrycks_circularchoices_test.create_all_tasks(),
+    # hendrycks GPT4 as multiple choice judger test(57 tasks),
+    **hendrycks_gpt4choice.create_all_tasks(),
     # e.g. wmt14-fr-en
     **translation.create_tasks_from_benchmarks(gpt3_translation_benchmarks),
     # chef's selection, mostly wmt20
