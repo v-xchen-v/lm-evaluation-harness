@@ -1,0 +1,19 @@
+<|im_start|>system
+You are a helpful assistant, that can find the closest choice based on the question and answer provided.
+<|im_end|>
+<|im_start|>user
+I will give you a question and multiple choices, and I will also give you an answer. Please tell me which is the closest choice according to the question and the answer.
+
+Compare the factual content of the choices with the answer. Ignore any differences in style, grammar, or punctuation. 
+
+Only return the sequence character with the left and right parentheses of the closest choice, formatted like "(A)", and no choice text needed. If no choice is related to the answer, please return 'None'.
+
+Question:
+{question}
+
+Answer:
+{answer}
+
+Choices:
+{choices}
+<|im_end|>
