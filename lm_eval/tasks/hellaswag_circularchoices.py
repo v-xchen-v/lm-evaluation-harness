@@ -51,7 +51,7 @@ class HellaSwagCircularChoice(MultipleCircularChoiceTask):
 
     def format_example(self, doc, keys, circular_index=0):
         ctx = doc["ctx_a"] + " " + doc["ctx_b"].capitalize()
-        prompt = self.preprocess(doc["activity_label"] + ": " + ctx),
+        prompt = self.preprocess(doc["activity_label"] + ": " + ctx)
         return prompt
     
     def _process_doc(self, doc):
