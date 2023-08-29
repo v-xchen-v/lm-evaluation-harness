@@ -197,8 +197,8 @@ class BaseLM(LM):
                 for _ in range(5):
                     _ = F.log_softmax(self._model_call(test_batch), dim=-1).cpu()
 
-            
                 batch_size *= 2
+                utils.clear_torch_cache()
             except RuntimeError: # OOM
                 batch_size //= 2
                 break
@@ -206,7 +206,6 @@ class BaseLM(LM):
         # in the data parallel mode, assuming the GPUs have same VRAM, so that the batch_size on each GPU should be same, the actual batch_size of all GPUs is the detected_largest_batchsize on single GPU * n_gpu.
         if self.distributed_state:
             return batch_size * self.distributed_state.num_processes
-        utils.clear_torch_cache()
 
         return batch_size
 
