@@ -185,16 +185,21 @@ def parse_args():
     parser.add_argument("--limit", type=float, default=None,
                         help="Limit the number of examples per task. "
                              "If <1, limit is a percentage of the total number of examples.")
+    parser.add_argument("--num_fewshot", type=int, default=None)
     parser.add_argument("--no_cache", action="store_true")
     parser.add_argument("--use_data_parallel", action="store_true")
     parser.add_argument("--use_model_parallel", action="store_true")
     return parser.parse_args()
 
-def eval_and_dump(leaderboardtask_name, hf_model_name, batch_size, device, no_cache, limit, use_data_parallel, use_model_parallel):
+def eval_and_dump(leaderboardtask_name, hf_model_name, batch_size, device, no_cache, limit, use_data_parallel, use_model_parallel, num_fewshot):
     # setting leaderboard task eval settings
     task=LEADERBOARDTASK_REGISTRY[leaderboardtask_name]
     print(task)
-    num_fewshot=task.num_fewshot
+    if num_fewshot is not None:
+        print(f'WARNING: OVERWRITING NUM_FEWSHOT BY COMMAND ARGUMENT "--num_fewshot {num_fewshot}" INSTEAD of TASK DEFAULT NUM_FEWSHOT {task.num_fewshot}')
+    else:
+        num_fewshot=task.num_fewshot
+
     output_dir=f'/eval_results/{encode_modelname(hf_model_name)}/{task.name}/{task.version}/{num_fewshot}shot'
     os.makedirs(output_dir, exist_ok=True)
     output_path=f"{output_dir}/results.json"
@@ -209,6 +214,7 @@ def eval_and_dump(leaderboardtask_name, hf_model_name, batch_size, device, no_ca
         model_args+=",use_accelerate=True"
         device="auto"
 
+    print(f"[INFO] num_fewshot: {num_fewshot}")
     results = evaluator.simple_evaluate(
         model=model,
         model_args=model_args,
@@ -272,6 +278,7 @@ def main():
         limit=args.limit,
         use_data_parallel=args.use_data_parallel,
         use_model_parallel=args.use_model_parallel,
+        num_fewshot=args.num_fewshot
     )
 
 if __name__ == "__main__":
