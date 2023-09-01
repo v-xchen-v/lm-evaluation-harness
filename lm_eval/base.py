@@ -832,11 +832,15 @@ class LLMAsJudgeMultipleChoiceTask(Task):
             "choices": doc["choices"],
             "response": ret['response']}
         
-        ret_ans = ret['response'].strip('"').strip('(').strip(')')
-        if ret_ans == 'None' or ret_ans == 'There seems to be some confusion in your input. It appears there are two sets of questions and answers, but the second set is not correctly formatted. Could you please provide the correct format so I can assist you accurately?':
+        ret_ans = ret['response'].strip('"').strip('"').strip('(').strip(')')
+        if len(ret_ans)==1 and ret_ans in ('A', 'B', 'C', 'D', 'E', 'F'):
+            acc = (ord(ret_ans)-ord('A')==gold)
+        elif ret_ans == 'None' or ret_ans == 'There seems to be some confusion in your input. It appears there are two sets of questions and answers, but the second set is not correctly formatted. Could you please provide the correct format so I can assist you accurately?' or ret_ans.startswith('The response was filtered due to the prompt triggering Azure OpenAI’s content management policy. Please modify your prompt and retry.'):
             acc = 0
         else:
-            acc = (ord(ret_ans)-ord('A')==gold)
+            print(f"WARNING: UNEXPECTED GPT4 RESPONSE: {ret_ans}")
+            acc = 0
+            
         
         return {
             "acc": acc,

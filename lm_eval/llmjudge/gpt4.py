@@ -94,7 +94,12 @@ def gpt_4_completion(template_file_path, temperature=0.7, max_tokens=800, top_p=
             break
         except openai.error.OpenAIError as e:
             logging.warning(f"OpenAIError: {e}.")
-            time.sleep(2)
+            
+            # dead loop when trigger 'The response was filtered due to the prompt triggering Azure OpenAI’s content management policy. Please modify your prompt and retry. To learn more about our content filtering policies please read our documentation: https://go.microsoft.com/fwlink/?linkid=2198766.'
+            if str(e).startswith("The response was filtered due to the prompt triggering Azure OpenAI’s content management policy. Please modify your prompt and retry."):
+                return {"response": str(e)}
+            else:
+                time.sleep(2)
   
     return {"response": response.choices[0].message.content, "total_tokens": response.usage.total_tokens}
 
