@@ -191,11 +191,21 @@ class BaseLM(LM):
         while True:
             try:
                 if self.distributed_state:
-                    test_batch = torch.ones((batch_size, max_length), device=self.distributed_state.device).long()
+                    test_batch = torch.ones((batch_size * self.distributed_state.num_processes, max_length), device=self.distributed_state.device).long()
+                    
+                    for _ in range(5):
+                        # distribute input on different GPUs
+                        with self.distributed_state.split_between_processes(test_batch) as model_inputs:
+                            multi_logits_gpu = F.log_softmax(
+                                self._model_call(model_inputs), dim=-1
+                            )  # [batch, padding_length, vocab]
+
+                            # gather result back from GPUs to the first one.
+                            _ = gather(multi_logits_gpu).cpu()
                 else:
                     test_batch = torch.ones((batch_size, max_length), device=self.device).long()
-                for _ in range(5):
-                    _ = F.log_softmax(self._model_call(test_batch), dim=-1).cpu()
+                    for _ in range(5):
+                        _ = F.log_softmax(self._model_call(test_batch), dim=-1).cpu()
 
                 batch_size *= 2
                 utils.clear_torch_cache()
@@ -387,8 +397,9 @@ class BaseLM(LM):
                     )  # [batch, padding_length, vocab]
 
                     # gather result back from GPUs to the first one.
-                    gathered_multi_logits_gpu = gather(multi_logits_gpu)
-                    multi_logits= gathered_multi_logits_gpu.cpu()
+                    gathered_multi_logits_gpu = gather(multi_logits_gpu).detach().cpu()
+                    multi_logits= gathered_multi_logits_gpu
+                    
             else:
                 multi_logits = F.log_softmax(
                         self._model_call(batched_inps), dim=-1
