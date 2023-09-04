@@ -12,7 +12,7 @@ important shortcomings.
 
 Homepage: https://github.com/hendrycks/test
 """
-from lm_eval.base import MultipleCircularChoiceTask
+from lm_eval.base import OptionKeyMultipleCircularChoiceTask
 import numpy as np
 from lm_eval.metrics import mean
 
@@ -103,7 +103,7 @@ def create_task(subject):
     return HendrycksCircularChoicesTest
 
 
-class GeneralHendryckCircularChoicesTest(MultipleCircularChoiceTask):
+class GeneralHendryckCircularChoicesTest(OptionKeyMultipleCircularChoiceTask):
     VERSION = 0
     DATASET_PATH = "cais/mmlu"
     DATASET_NAME = None

@@ -9,7 +9,7 @@ import lm_eval.base
 from lm_eval.utils import positional_deprecated, run_task_tests
 from lm_eval.tasks.agieval_eng_qa_cot import GeneralAGIEvalEngQACoT
 from lm_eval.tasks.agieval_eng_cloze_cot import AGIEvalEngClozeCoT
-from lm_eval.base import MultipleCircularChoiceTask
+from lm_eval.base import OptionKeyMultipleCircularChoiceTask
 
 @positional_deprecated
 def simple_evaluate(
@@ -243,7 +243,7 @@ def evaluate(
                     doc=doc, num_fewshot=num_fewshot, lm = lm, rnd=rnd, description=description
                 )
 
-            if isinstance(task, MultipleCircularChoiceTask):
+            if isinstance(task, OptionKeyMultipleCircularChoiceTask):
                 ctx = [task.fewshot_context(doc=doc, num_fewshot=num_fewshot, circular_index=i, rnd=rnd, description=description) for i in range(0, len(doc["choices"]))]
             else:
                 ctx = task.fewshot_context(
@@ -307,7 +307,9 @@ def evaluate(
         ]
 
         for idx, (resp, (i, task_name, doc, doc_id)) in enumerate(zip(resps, requests_origin[reqtype])):
-            if task_name.startswith("hellaswag") or task_name.startswith("hendrycksTest-"):
+            if isinstance(task, lm_eval.base.OptionContentMultipleChoiceTask):
+                process_res_queue[(task_name, doc_id)].append((i, resp))
+            elif task_name.startswith("hellaswag") or task_name.startswith("hendrycksTest-"):
                 process_res_queue[(task_name, doc_id)].append((i, resultpersentence[idx]))
             else:
                 process_res_queue[(task_name, doc_id)].append((i, resp))

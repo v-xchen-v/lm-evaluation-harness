@@ -894,7 +894,7 @@ class LLMAsJudgeMultipleChoiceTask(Task):
             "acc": mean,
         }
 
-class MultipleCircularChoiceTask(MultipleChoiceTask):
+class OptionKeyMultipleCircularChoiceTask(MultipleChoiceTask):
     def construct_requests(self, doc, ctx: list):
         return self.construct_circularchoices_requests(doc, ctx)
 
@@ -1019,7 +1019,27 @@ class MultipleCircularChoiceTask(MultipleChoiceTask):
         example = self.doc_to_text(doc, circular_index)
         return description + labeled_examples + example
         # return self.doc_to_text(doc, num_fewshot)
-        
+
+class OptionContentMultipleChoiceTask(MultipleChoiceTask):
+    def process_results(self, doc, results):
+        gold = doc["gold"]
+
+        # ppls = results
+        acc = 1.0 if np.argmax(results) == gold else 0.0
+        return {
+            "ppl_argmax_acc": acc,
+        }
+
+    def higher_is_better(self):
+        return {
+            "ppl_argmax_acc": True,
+        }
+
+    def aggregation(self):
+        return {
+            "ppl_argmax_acc": mean,
+        }
+    
 class PerplexityTask(Task, abc.ABC):
     def should_decontaminate(self):
         """Whether this task supports decontamination against model training set."""
