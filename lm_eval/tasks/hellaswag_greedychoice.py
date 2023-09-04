@@ -14,21 +14,13 @@ state-of-the-art models.
 Homepage: https://rowanzellers.com/hellaswag/
 """
 import re
-from lm_eval.base import LLMAsJudgeMultipleChoiceTask
-import numpy as np
-from lm_eval.metrics import mean
+from lm_eval.base import GreedyMultipleChoiceTask
+from lm_eval.tasks import hellaswag
+from lm_eval.tasks.hellaswag import HellaSwag
 
-_CITATION = """
-@inproceedings{zellers2019hellaswag,
-    title={HellaSwag: Can a Machine Really Finish Your Sentence?},
-    author={Zellers, Rowan and Holtzman, Ari and Bisk, Yonatan and Farhadi, Ali and Choi, Yejin},
-    booktitle ={Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics},
-    year={2019}
-}
-"""
+_CITATION = hellaswag._CITATION
 
-
-class HellaSwagGpt4Choice(LLMAsJudgeMultipleChoiceTask):
+class GreedyMultipleChoiceHellaSwag(GreedyMultipleChoiceTask):
     VERSION = 0
     DATASET_PATH = "hellaswag"
     DATASET_NAME = None
@@ -61,12 +53,7 @@ class HellaSwagGpt4Choice(LLMAsJudgeMultipleChoiceTask):
 
     @classmethod
     def preprocess(cls, text):
-        text = text.strip()
-        # NOTE: Brackets are artifacts of the WikiHow dataset portion of HellaSwag.
-        text = text.replace(" [title]", ". ")
-        text = re.sub("\\[.*?\\]", "", text)
-        text = text.replace("  ", " ")
-        return text
+        return HellaSwag.preprocess(text)
 
     def doc_to_text(self, doc):
         return doc["query"]

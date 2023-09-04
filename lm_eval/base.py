@@ -12,6 +12,7 @@ from tqdm import tqdm
 import torch
 import torch.nn.functional as F
 from accelerate import find_executable_batch_size
+from accelerate.utils import gather
 
 from lm_eval.metrics import mean, weighted_perplexity, weighted_mean, bits_per_byte
 from lm_eval import utils
@@ -179,6 +180,10 @@ class BaseLM(LM):
 
     def _detect_batch_size(self, requests=None, pos=0):
         if requests:
+            # if pos is None:
+            #     sorted_requests = sorted(requests, key=lambda request: (len(request[1])+len(request[2])))
+            #     _, context_enc, continuation_enc = sorted_requests[-1]
+            # else:
             _, context_enc, continuation_enc = requests[pos]
             max_length = len(
                 (context_enc + continuation_enc)[-(self.max_length + 1) :][:-1]
@@ -186,24 +191,41 @@ class BaseLM(LM):
         else:
             max_length = self.max_length
 
+        # # if OOM, then halves batch_size and tries again
+        # batch_size = 1
+        # while True:
+        #     try:
+        #         if self.distributed_state:
+        #             test_batch = torch.ones((batch_size, max_length), device=self.distributed_state.device).long()
+        #         else:
+        #             test_batch = torch.ones((batch_size, max_length), device=self.device).long()
+        #         for _ in range(5):
+        #             _ = F.log_softmax(self._model_call(test_batch), dim=-1).cpu()
+
+        #         batch_size *= 2
+        #         print(f"detected batch_size: {batch_size} on {self.distributed_state.device}")
+        #         utils.clear_torch_cache()
+        #     except RuntimeError: # OOM
+        #         batch_size //= 2
+        #         break
+
         # if OOM, then halves batch_size and tries again
-        batch_size = 1
-        while True:
-            try:
-                test_batch = torch.ones((batch_size, max_length), device=self.device).long()
-                for _ in range(5):
-                    _ = F.log_softmax(self._model_call(test_batch), dim=-1).cpu()
+        @find_executable_batch_size(starting_batch_size=self.max_batch_size)
+        def forward_batch(batch_size):
+            test_batch = torch.ones((batch_size, max_length), device=self.device).long()
+            for _ in range(5):
+                _ = F.log_softmax(self._model_call(test_batch), dim=-1).cpu()
+            return batch_size
 
-                batch_size *= 2
-                utils.clear_torch_cache()
-            except RuntimeError: # OOM
-                batch_size //= 2
-                break
-
+        batch_size = forward_batch()
+        utils.clear_torch_cache()
+        
         # in the data parallel mode, assuming the GPUs have same VRAM, so that the batch_size on each GPU should be same, the actual batch_size of all GPUs is the detected_largest_batchsize on single GPU * n_gpu.
         if self.distributed_state:
             return batch_size * self.distributed_state.num_processes
 
+        if batch_size == 0:
+            raise Exception("OOM with minimal batch_size:1")
         return batch_size
 
     # subclass must implement properties vocab_size, eot_token_id, max_gen_toks, batch_size, device, max_length.
@@ -308,7 +330,16 @@ class BaseLM(LM):
             print(
                 f"Passed argument batch_size = auto:{self.batch_schedule}. Detecting largest batch size"
             )
-            self.batch_sizes[sched] = self._detect_batch_size(reordered_requests, pos)
+            if not self.distributed_state or self.distributed_state and self.distributed_state.is_main_process:
+                self.batch_sizes[sched] = self._detect_batch_size(reordered_requests, pos)
+            else:
+                # distrbuted non main process
+                self.batch_sizes[sched] = -1
+            if self.distributed_state:
+                # self.distributed_state.wait_for_everyone()
+                batch_size = torch.tensor(self.batch_sizes[sched], device=self.distributed_state.device)
+                gathered_batch_sizes = gather(batch_size).cpu()
+                self.batch_sizes[sched]=int(gathered_batch_sizes[gathered_batch_sizes>0][0])
             print(f"Determined largest batch size: {self.batch_sizes[sched]}")
             return self.batch_sizes[sched]
 
@@ -455,7 +486,7 @@ class BaseLM(LM):
                     gathered_res=[]
                     for(gathered_log_prob, gathered_is_exact_match, gathered_greedy_token) in zip(gathered_log_probs, gathered_is_exact_matchs, gathered_greedy_tokens):
                         gathered_greedy_seq = self.tok_decode([gathered_greedy_token[gathered_greedy_token!=self.eot_token_id]])
-                        answer = (gathered_log_prob, gathered_is_exact_match, gathered_greedy_seq)
+                        answer = (float(gathered_log_prob), bool(gathered_is_exact_match), gathered_greedy_seq)
                         gathered_res.append(answer)
                         
                     res += gathered_res                   
@@ -841,7 +872,8 @@ class MultipleChoiceTask(Task):
             "acc_norm": mean,
         }
 
-class LLMAsJudgeMultipleChoiceTask(Task):
+class GreedyMultipleChoiceTask(Task):
+    """answer with greedy until generated continuous and compare the result of choices """
     def doc_to_target(self, doc):
         return " " + doc["choices"][doc["gold"]]
     
@@ -854,44 +886,50 @@ class LLMAsJudgeMultipleChoiceTask(Task):
     
     def process_results(self, doc, results, llm_judge_write_out_info):
         gold = doc["gold"]
-
+        choices = doc["choices"]
+        gold_choice = choices[gold]
         # acc = 1.0 if np.argmax(results) == gold else 0.0
         # completion_len = np.array([float(len(i)) for i in doc["choices"]])
         # acc_norm = 1.0 if np.argmax(results / completion_len) == gold else 0.0
 
         # list only have single element
         greedy_gen = results[0]
-        # res = gpt_4_completion("prompt.txt", question="What is the meaning of life?", answer="42", choices="A. 42\nB. 43\nC. 44\nD. 45")
-        from lm_eval.llmjudge.gpt4 import gpt_4_completion
-        ret = gpt_4_completion(
-            "prompt.txt", question=doc["query"], answer=greedy_gen, choices=doc["choices"]
-        )
+        greedy_is_exact_match = (greedy_gen == gold_choice)
         
-        # write llm judgement info to info json file
-        llm_judge_write_out_info["llm_judge"] = {
-            "question": doc["query"],
-            "answer": greedy_gen,
-            "choices": doc["choices"],
-            "response": ret['response']}
+        # # res = gpt_4_completion("prompt.txt", question="What is the meaning of life?", answer="42", choices="A. 42\nB. 43\nC. 44\nD. 45")
+        # from lm_eval.llmjudge.gpt4 import gpt_4_completion
+        # ret = gpt_4_completion(
+        #     "prompt.txt", question=doc["query"], answer=greedy_gen, choices=doc["choices"]
+        # )
         
-        ret_ans = ret['response'].strip('"').strip('(').strip(')')
-        if ret_ans == 'None' or ret_ans == 'There seems to be some confusion in your input. It appears there are two sets of questions and answers, but the second set is not correctly formatted. Could you please provide the correct format so I can assist you accurately?':
-            acc = 0
-        else:
-            acc = (ord(ret_ans)-ord('A')==gold)
+        # # write llm judgement info to info json file
+        # llm_judge_write_out_info["llm_judge"] = {
+        #     "question": doc["query"],
+        #     "answer": greedy_gen,
+        #     "choices": doc["choices"],
+        #     "response": ret['response']}
+        
+        # ret_ans = ret['response'].strip('"').strip('(').strip(')')
+        # if ret_ans == 'None' or ret_ans == 'There seems to be some confusion in your input. It appears there are two sets of questions and answers, but the second set is not correctly formatted. Could you please provide the correct format so I can assist you accurately?':
+        #     greedy_is_gpt4_match = 0
+        # else:
+        #     greedy_is_gpt4_match = (ord(ret_ans)-ord('A')==gold)
         
         return {
-            "acc": acc,
+            "greedy_is_exact_match_acc": greedy_is_exact_match,
+            # "greedy_is_gpt4_match_acc": greedy_is_gpt4_match,
         }
 
     def higher_is_better(self):
         return {
-            "acc": True,
+            "greedy_is_exact_match_acc": True,
+            # "greedy_is_gpt4_match_acc": True,
         }
 
     def aggregation(self):
         return {
-            "acc": mean,
+            "greedy_is_exact_match_acc": mean,
+            # "greedy_is_gpt4_match_acc": mean,
         }
 
 class OptionKeyMultipleCircularChoiceTask(MultipleChoiceTask):
