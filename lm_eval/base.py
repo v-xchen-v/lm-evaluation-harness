@@ -17,8 +17,8 @@ from lm_eval.metrics import mean, weighted_perplexity, weighted_mean, bits_per_b
 from lm_eval import utils
 from abc import abstractmethod
 
-from accelerate.utils import gather
-
+from accelerate.utils import gather, pad_across_processes
+import math
 
 class LM(abc.ABC):
     def __init__(self):
@@ -190,22 +190,9 @@ class BaseLM(LM):
         batch_size = 1
         while True:
             try:
-                if self.distributed_state:
-                    test_batch = torch.ones((batch_size * self.distributed_state.num_processes, max_length), device=self.distributed_state.device).long()
-                    
-                    for _ in range(5):
-                        # distribute input on different GPUs
-                        with self.distributed_state.split_between_processes(test_batch) as model_inputs:
-                            multi_logits_gpu = F.log_softmax(
-                                self._model_call(model_inputs), dim=-1
-                            )  # [batch, padding_length, vocab]
-
-                            # gather result back from GPUs to the first one.
-                            _ = gather(multi_logits_gpu).cpu()
-                else:
-                    test_batch = torch.ones((batch_size, max_length), device=self.device).long()
-                    for _ in range(5):
-                        _ = F.log_softmax(self._model_call(test_batch), dim=-1).cpu()
+                test_batch = torch.ones((batch_size, max_length), device=self.device).long()
+                for _ in range(5):
+                    _ = F.log_softmax(self._model_call(test_batch), dim=-1).cpu()
 
                 batch_size *= 2
                 utils.clear_torch_cache()
@@ -389,25 +376,9 @@ class BaseLM(LM):
                 inplens.append(inplen)
 
             batched_inps = torch.cat(inps, dim=0)  # [batch, padding_length]
-            if self.distributed_state:
-                # distribute input on different GPUs
-                with self.distributed_state.split_between_processes(batched_inps) as model_inputs:
-                    multi_logits_gpu = F.log_softmax(
-                        self._model_call(model_inputs), dim=-1
-                    )  # [batch, padding_length, vocab]
-
-                    # gather result back from GPUs to the first one.
-                    gathered_multi_logits_gpu = gather(multi_logits_gpu).detach().cpu()
-                    multi_logits= gathered_multi_logits_gpu
-                    
-            else:
-                multi_logits = F.log_softmax(
-                        self._model_call(batched_inps), dim=-1
-                    ).cpu()  # [batch, padding_length, vocab]
-            for (cache_key, _, _), logits, inp, inplen, cont_toks in zip(
-                chunk, multi_logits, inps, inplens, cont_toks_list
-            ):
-
+            
+            # common answer computing logic of distributed evaluation and no parallel evaluation
+            def get_likelihood_ans(cache_key, logits, inp, inplen, cont_toks):
                 # Slice to original seq length
                 contlen = len(cont_toks)
                 inplen = inplen + (logits.shape[0] - padding_length) # if "virtual tokens" (from prompt tuning) are added, inplen is larger
@@ -420,6 +391,10 @@ class BaseLM(LM):
                 cont_toks = torch.tensor(cont_toks, dtype=torch.long).unsqueeze(
                     0
                 )  # [1, seq]
+                
+                # move tensor to gpu for data parallel
+                if self.distributed_state:
+                    cont_toks = cont_toks.to(self.distributed_state.device)
                 max_equal = (greedy_tokens == cont_toks).all()
 
                 # Obtain log-probs at the corresponding continuation token indices
@@ -430,12 +405,69 @@ class BaseLM(LM):
 
                 # Answer: (log prob, is-exact-match)
                 answer = (float(logits.sum()), bool(max_equal), self.tok_decode(greedy_tokens))
+                # answer = (float(logits.sum()), bool(max_equal), greedy_tokens)
 
                 # partial caching
                 if cache_key is not None:
-                    self.cache_hook.add_partial("loglikelihood", cache_key, answer)
+                    # if using data parallel, only one process should do the cache, otherwise it brings dulication and conflict
+                    if self.distributed_state is None or self.distributed_state.is_main_process:
+                        self.cache_hook.add_partial("loglikelihood", cache_key, answer)
+                return answer
+            
+            if self.distributed_state:
+                
+                distributed_res = []
+                # distribute input to different GPUs
+                with self.distributed_state.split_between_processes(batched_inps) as distributed_batched_inps: # [batch_size/num_process, padding_length]
+                    distributed_multi_logits = F.log_softmax(
+                        self._model_call(distributed_batched_inps), dim=-1
+                    )  # [batch_size/num_process, padding_length, vocab]
 
-                res.append(answer)
+                    # gather result back from GPUs to the first one(takes too much memory, abandoned).
+                    # gathered_multi_logits_gpu = gather(multi_logits_gpu).detach().cpu()
+                    
+                    # distributed splits, figure out distributes splits on each GPU
+                    length = len(batched_inps) # batch
+                    num_samples_per_process =  math.ceil(length/self.distributed_state.num_processes)
+                    start_index = self.distributed_state.process_index * num_samples_per_process
+                    end_index = start_index + num_samples_per_process
+                    if (len(batched_inps) % self.distributed_state.num_processes != 0) and (self.distributed_state.process_index == self.distributed_state.num_processes - 1):
+                        end_index = length
+                    distributed_chunk = chunk[start_index:end_index]
+                    distributed_inplens = inplens[start_index:end_index]
+                    disrtibuted_cont_toks_list = cont_toks_list[start_index:end_index]
+                    
+                    # calcuated answer
+                    for (cache_key, _, _), distributed_logits, distrbuted_inp, distributed_inplen, distributed_cont_toks in zip(distributed_chunk, distributed_multi_logits, distributed_batched_inps, distributed_inplens, disrtibuted_cont_toks_list):
+
+                        answer = get_likelihood_ans(cache_key, distributed_logits, distrbuted_inp, distributed_inplen,distributed_cont_toks)
+                        distributed_res.append(answer)
+                        
+                    # dispatch answer to distributed gpus and gather back to get full answer
+                    distributed_log_probs = torch.tensor([item[0] for item in distributed_res], device=self.distributed_state.device)
+                    distributed_is_exact_match=torch.tensor([item[1] for item in distributed_res], device=self.distributed_state.device)
+                    distributed_greedy_token= pad_across_processes(self.tok_encode_batch([item[2][0] for item in distributed_res])['input_ids'].to(self.distributed_state.device), dim=1, pad_index=self.eot_token_id, pad_first=True) # [splits, cross_processes_padded_greedy_seq] on distributed gpu
+                    
+                    # gather will do on each GPU, later may limit it to main process to save unnecessary computation
+                    gathered_log_probs = gather(distributed_log_probs).cpu()
+                    gathered_is_exact_matchs = gather(distributed_is_exact_match).cpu()
+                    gathered_greedy_tokens = gather(distributed_greedy_token).cpu()
+                    gathered_res=[]
+                    for(gathered_log_prob, gathered_is_exact_match, gathered_greedy_token) in zip(gathered_log_probs, gathered_is_exact_matchs, gathered_greedy_tokens):
+                        gathered_greedy_seq = self.tok_decode([gathered_greedy_token[gathered_greedy_token!=self.eot_token_id]])
+                        answer = (gathered_log_prob, gathered_is_exact_match, gathered_greedy_seq)
+                        gathered_res.append(answer)
+                        
+                    res += gathered_res                   
+            else:
+                multi_logits = F.log_softmax(
+                        self._model_call(batched_inps), dim=-1
+                    ).cpu()  # [batch, padding_length, vocab]
+                for (cache_key, _, _), logits, inp, inplen, cont_toks in zip(
+                    chunk, multi_logits, inps, inplens, cont_toks_list
+                ):
+                    answer = get_likelihood_ans(cache_key, logits, inp, inplen, cont_toks)
+                    res.append(answer)
 
         return re_ord.get_original(res)
 
