@@ -926,12 +926,12 @@ class OptionKeyMultipleCircularChoiceTask(MultipleChoiceTask):
 
         # the one with biggest probility is match the label, treat is as right
         circular_gold = np.array([((gold+i)%choice_size) for i in range(0, choice_size)])
-        acc_choicesonly = 1.0 if np.all(np.argmax(logits, axis=-1) == circular_gold) else 0.0
-        acc_choicesonly_noncircularchoices = 1.0 if np.all(np.argmax(logits[0]) == gold) else 0.0
+        next_token_argmax_choice_circular_acc = 1.0 if np.all(np.argmax(logits, axis=-1) == circular_gold) else 0.0
+        next_token_argmax_choice_acc = 1.0 if np.all(np.argmax(logits[0]) == gold) else 0.0
 
         # the one fully match the label, treat it as right. If it has higgest probility but not exactly match treat it as not right.
-        em = 1.0 if np.all(max_equals[np.arange(0, choice_size), circular_gold]) else 0.0
-        em_noncircularchoices = 1.0 if np.all(max_equals[0, circular_gold[0]]) else 0.0
+        next_token_argmax_choice_all_acc = 1.0 if np.all(max_equals[np.arange(0, choice_size), circular_gold]) else 0.0
+        next_token_argmax_all_acc = 1.0 if np.all(max_equals[0, circular_gold[0]]) else 0.0
         
         
         completion_len = []
@@ -939,23 +939,20 @@ class OptionKeyMultipleCircularChoiceTask(MultipleChoiceTask):
         for circular_index in range(0, len(doc["choices"])):
             completion_len += choices_len[circular_index:] + choices_len[:circular_index]
         completion_len = np.array(completion_len).reshape((len(doc["choices"]), -1))
-        # acc_norm = 1.0 if np.all(np.argmax(logits / completion_len, axis=-1) == circular_gold) else 0.0
 
         return {
-            "acc": acc_choicesonly_noncircularchoices,
-            "em": em_noncircularchoices,
-            # "acc_norm": acc_norm,
-            "acc_circularchoices": acc_choicesonly,
-            "em_circularchoices": em
+            "next_token_argmax_choice_acc": next_token_argmax_choice_acc,
+            "next_token_argmax_all_acc": next_token_argmax_all_acc,
+            "next_token_argmax_choice_circular_acc": next_token_argmax_choice_circular_acc,
+            "next_token_argmax_choice_all_acc": next_token_argmax_choice_all_acc
         }
 
     def aggregation(self):
         return {
-            "acc": mean,
-            "em": mean,
-            # "acc_norm": mean,
-            "acc_circularchoices": mean,
-            "em_circularchoices": mean,
+            "next_token_argmax_choice_acc": mean,
+            "next_token_argmax_all_acc": mean,
+            "next_token_argmax_choice_circular_acc": mean,
+            "next_token_argmax_choice_all_acc": mean,
         }
         
     def fewshot_context(
