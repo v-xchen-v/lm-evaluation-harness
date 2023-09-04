@@ -15,7 +15,7 @@ from . import wsc273
 from . import winogrande
 from . import quac
 from . import hellaswag
-from . import hellaswag_circularchoices
+from . import hellaswag_optionkeycircularchoices
 from . import swag
 from . import openbookqa
 from . import squad
@@ -39,7 +39,7 @@ from . import drop
 from . import unscramble
 from . import logiqa
 from . import hendrycks_test
-from . import hendrycks_optioncontentlogitsmultiplechoice
+from . import hendrycks_test_optioncotentchoice
 from . import hendrycks_math
 from . import cbt
 from . import lambada_cloze
@@ -66,10 +66,10 @@ from . import agieval_eng_qa
 from . import agieval_eng_cloze
 from . import agieval_eng_qa_cot
 from . import agieval_eng_cloze_cot
-from . import hendrycks_circularchoices_test
+from . import hendrycks_test_optionkeycircularchoice
 from . import hellaswag_gpt4choice
 from . import hendrycks_gpt4choice
-from . import hellaswag_optioncontentlogitsmultiplechoice
+from . import hellaswag_optioncontentchoice
 
 ########################################
 # Translation tasks
@@ -150,8 +150,8 @@ TASK_REGISTRY = {
     "logiqa": logiqa.LogiQA,
     "hellaswag": hellaswag.HellaSwag,
     "hellaswag_gpt4choice": hellaswag_gpt4choice.HellaSwagGpt4Choice,
-    "hellaswag_circular": hellaswag_circularchoices.HellaSwagCircularChoice,
-    "hellaswag_optioncontentchoice": hellaswag_optioncontentlogitsmultiplechoice.OptionContentLogitsMultipleChoiceHellaSwag, 
+    "hellaswag_optionkeycircularchoice": hellaswag_optionkeycircularchoices.OptionKeyMultipleCircularChoiceHellaSwag,
+    "hellaswag_optioncontentchoice": hellaswag_optioncontentchoice.OptionContentLogitsMultipleChoiceHellaSwag, 
     "swag": swag.SWAG,
     "openbookqa": openbookqa.OpenBookQA,
     "squad2": squad.SQuAD2,
@@ -210,11 +210,11 @@ TASK_REGISTRY = {
     # hendrycksTest (57 tasks)
     **hendrycks_test.create_all_tasks(),
     # hendrycksCircularChoicesTtest(57 tasks),
-    **hendrycks_circularchoices_test.create_all_tasks(),
+    **hendrycks_test_optionkeycircularchoice.create_all_tasks(),
+    # hendrycks option content logits ppl argmax multiple choice tasks(57 tasks)
+    **hendrycks_test_optioncotentchoice.create_all_tasks(),
     # hendrycks GPT4 as multiple choice judger test(57 tasks),
     **hendrycks_gpt4choice.create_all_tasks(),
-    # hendrycks option content logits ppl argmax multiple choice tasks(57 tasks)
-    **hendrycks_optioncontentlogitsmultiplechoice.create_all_tasks(),
     # e.g. wmt14-fr-en
     **translation.create_tasks_from_benchmarks(gpt3_translation_benchmarks),
     # chef's selection, mostly wmt20

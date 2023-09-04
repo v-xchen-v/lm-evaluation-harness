@@ -24,9 +24,9 @@ SUBJECTS = hendrycks_test.SUBJECTS
 def create_all_tasks():
     """Creates a dictionary of tasks from a list of subjects
     :return: {task_name: task}
-        e.g. {hendrycksTest-optioncontentchoice-abstract_algebra: Task, hendrycksTest-anatomy: Task}
+        e.g. {hendrycksTest-abstract_algebra_optioncontentchoice: Task, hendrycksTest-anatomy: Task}
     """
-    return {f"hendrycksTest-optioncontentchoice-{sub}": create_task(sub) for sub in SUBJECTS}
+    return {f"hendrycksTest-{sub}_optioncontentchoice": create_task(sub) for sub in SUBJECTS}
 
 
 def create_task(subject):

@@ -13,97 +13,29 @@ important shortcomings.
 Homepage: https://github.com/hendrycks/test
 """
 from lm_eval.base import OptionKeyMultipleCircularChoiceTask
-import numpy as np
-from lm_eval.metrics import mean
+from lm_eval.tasks import hendrycks_test
 
-_CITATION = """
-@article{hendryckstest2021,
-    title={Measuring Massive Multitask Language Understanding},
-    author={Dan Hendrycks and Collin Burns and Steven Basart and Andy Zou and Mantas Mazeika and Dawn Song and Jacob Steinhardt},
-    journal={Proceedings of the International Conference on Learning Representations (ICLR)},
-    year={2021}
-}
-"""
+_CITATION = hendrycks_test._CITATION
 
-
-SUBJECTS = [
-    "abstract_algebra",
-    "anatomy",
-    "astronomy",
-    "business_ethics",
-    "clinical_knowledge",
-    "college_biology",
-    "college_chemistry",
-    "college_computer_science",
-    "college_mathematics",
-    "college_medicine",
-    "college_physics",
-    "computer_security",
-    "conceptual_physics",
-    "econometrics",
-    "electrical_engineering",
-    "elementary_mathematics",
-    "formal_logic",
-    "global_facts",
-    "high_school_biology",
-    "high_school_chemistry",
-    "high_school_computer_science",
-    "high_school_european_history",
-    "high_school_geography",
-    "high_school_government_and_politics",
-    "high_school_macroeconomics",
-    "high_school_mathematics",
-    "high_school_microeconomics",
-    "high_school_physics",
-    "high_school_psychology",
-    "high_school_statistics",
-    "high_school_us_history",
-    "high_school_world_history",
-    "human_aging",
-    "human_sexuality",
-    "international_law",
-    "jurisprudence",
-    "logical_fallacies",
-    "machine_learning",
-    "management",
-    "marketing",
-    "medical_genetics",
-    "miscellaneous",
-    "moral_disputes",
-    "moral_scenarios",
-    "nutrition",
-    "philosophy",
-    "prehistory",
-    "professional_accounting",
-    "professional_law",
-    "professional_medicine",
-    "professional_psychology",
-    "public_relations",
-    "security_studies",
-    "sociology",
-    "us_foreign_policy",
-    "virology",
-    "world_religions",
-]
-
+SUBJECTS = hendrycks_test.SUBJECTS
 
 def create_all_tasks():
     """Creates a dictionary of tasks from a list of subjects
     :return: {task_name: task}
-        e.g. {hendrycksTest-abstract_algebra: Task, hendrycksTest-anatomy: Task}
+        e.g. {hendrycksTest-abstract_algebra_optionkeycircularchoice: Task, hendrycksTest-anatomy: Task}
     """
-    return {f"hendrycksTest-CircularChoices-{sub}": create_task(sub) for sub in SUBJECTS}
+    return {f"hendrycksTest-{sub}_optionkeycircularchoice": create_task(sub) for sub in SUBJECTS}
 
 
 def create_task(subject):
-    class HendrycksCircularChoicesTest(GeneralHendryckCircularChoicesTest):
+    class OptionKeyCircularChoiceHendrycksTest(OptionKeyCircularChoiceGeneralHendrycksTest):
         def __init__(self):
             super().__init__(subject)
 
-    return HendrycksCircularChoicesTest
+    return OptionKeyCircularChoiceHendrycksTest
 
 
-class GeneralHendryckCircularChoicesTest(OptionKeyMultipleCircularChoiceTask):
+class OptionKeyCircularChoiceGeneralHendrycksTest(OptionKeyMultipleCircularChoiceTask):
     VERSION = 0
     DATASET_PATH = "cais/mmlu"
     DATASET_NAME = None
