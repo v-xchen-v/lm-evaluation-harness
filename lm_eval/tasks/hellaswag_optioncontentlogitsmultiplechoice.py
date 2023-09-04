@@ -14,9 +14,8 @@ state-of-the-art models.
 Homepage: https://rowanzellers.com/hellaswag/
 """
 import re
-from lm_eval.base import OptionKeyMultipleCircularChoiceTask
-import numpy as np
-from lm_eval.metrics import mean
+from lm_eval.base import OptionContentMultipleChoiceTask
+from lm_eval.tasks.hellaswag import HellaSwag
 
 _CITATION = """
 @inproceedings{zellers2019hellaswag,
@@ -27,7 +26,8 @@ _CITATION = """
 }
 """
 
-class HellaSwagCircularChoice(OptionKeyMultipleCircularChoiceTask):
+
+class OptionContentLogitsMultipleChoiceHellaSwag(OptionContentMultipleChoiceTask):
     VERSION = 0
     DATASET_PATH = "hellaswag"
     DATASET_NAME = None
@@ -49,58 +49,21 @@ class HellaSwagCircularChoice(OptionKeyMultipleCircularChoiceTask):
     def validation_docs(self):
         return map(self._process_doc, self.dataset["validation"])
 
-    def format_example(self, doc, keys, circular_index=0):
-        """
-        circular 0:
-        <prompt>
-        A. <choice1>
-        B. <choice2>
-        C. <choice3>
-        D. <choice4>
-        Answer:
-
-        circular 1:
-        <prompt>
-        A. <choice4>
-        B. <choice1>
-        C. <choice2>
-        D. <choice3>
-        Answer:
-        """
-        
-        question = doc["ctx_a"] + " " + doc["ctx_b"].capitalize()
-        choices = [self.preprocess(ending) for ending in doc["endings"]]
-        if circular_index == 0:
-            options = "".join(
-                [f"{key}. {choice}\n" for key, choice in zip(keys, choices)]
-            )
-        else:
-            options = ""
-            for key_index, key in enumerate(keys):
-                options += f'{key}. {choices[(key_index-circular_index)%len(keys)]}\n'
-        ctx = f"{question}\n{options}Answer:"
-        prompt = self.preprocess(doc["activity_label"] + ": " + ctx)
-        return prompt
-    
     def _process_doc(self, doc):
-        # ctx = doc["ctx_a"] + " " + doc["ctx_b"].capitalize()
-        keys = ["A", "B", "C", "D"]
+        ctx = doc["ctx_a"] + " " + doc["ctx_b"].capitalize()
         out_doc = {
-            # "query": self.preprocess(doc["activity_label"] + ": " + ctx),
-            "doc": doc,
-            "choices": keys,
+            "query": self.preprocess(doc["activity_label"] + ": " + ctx),
+            "choices": [self.preprocess(ending) for ending in doc["endings"]],
             "gold": int(doc["label"]),
         }
         return out_doc
 
     @classmethod
     def preprocess(cls, text):
-        text = text.strip()
-        # NOTE: Brackets are artifacts of the WikiHow dataset portion of HellaSwag.
-        text = text.replace(" [title]", ". ")
-        text = re.sub("\\[.*?\\]", "", text)
-        text = text.replace("  ", " ")
-        return text
+        return HellaSwag.preprocess(text)
+
+    def doc_to_text(self, doc):
+        return doc["query"]
 
     def should_decontaminate(self):
         return True
