@@ -55,12 +55,32 @@ leaderboard_tasks = [
         version=1,
     ),
     LeaderBoardTask(
-        name="mmlu_circular",
-        abbr="MMLU CircularChoices(5 shot)",
-        num_fewshot=5,
+        name="mmlu_optionkeycircularchoice",
+        abbr="MMLU Key Circular Choices(0 shot)",
+        num_fewshot=0,
         use_cot=False,
-        subtasks= [f"hendrycksTest-CircularChoices-{sub}" for sub in MMLU_SUBJECTS],
-        metric="acc_circularchoices",
+        subtasks= [f"hendrycksTest-{sub}_optionkeycircularchoice" for sub in MMLU_SUBJECTS],
+        metric="next_token_argmax_choice_circular_acc",
+        aggregate_op='mean',
+        version=0,
+    ),
+    LeaderBoardTask(
+        name="mmlu_optioncontentchoice",
+        abbr="MMLU Content Choices(0 shot)",
+        num_fewshot=0,
+        use_cot=False,
+        subtasks= [f"hendrycksTest-{sub}_optioncontentchoice" for sub in MMLU_SUBJECTS],
+        metric="ppl_argmax_acc",
+        aggregate_op='mean',
+        version=0,
+    ),
+    LeaderBoardTask(
+        name="mmlu_greedychoice",
+        abbr="MMLU Greedy Choices(0 shot)",
+        num_fewshot=0,
+        use_cot=False,
+        subtasks= [f"hendrycksTest-{sub}_greedychoice" for sub in MMLU_SUBJECTS],
+        metric="greedy_is_exact_match_acc",
         aggregate_op='mean',
         version=0,
     ),
@@ -85,12 +105,32 @@ leaderboard_tasks = [
         version=0,
     ),
     LeaderBoardTask(
-        name="hellaswag_circular",
-        abbr="HellaSwag Circular Choice(10 shot)",
-        num_fewshot=10,
+        name="hellaswag_optionkeycircularchoice",
+        abbr="HellaSwag Key Circular Choice(0 shot)",
+        num_fewshot=0,
         use_cot=False,
-        subtasks=["hellaswag_circular"],
-        metric="acc_circularchoices",
+        subtasks=["hellaswag_optionkeycircularchoice"],
+        metric="next_token_argmax_choice_circular_acc",
+        aggregate_op='mean',
+        version=0,
+    ),
+    LeaderBoardTask(
+        name="hellaswag_optioncontentchoice",
+        abbr="HellaSwag Content Choice(0 shot)",
+        num_fewshot=0,
+        use_cot=False,
+        subtasks=["hellaswag_optioncontentchoice"],
+        metric="ppl_argmax_acc",
+        aggregate_op='mean',
+        version=0,
+    ),
+    LeaderBoardTask(
+        name="hellaswag_greedychoice",
+        abbr="HellaSwag Greedy Choice(0 shot)",
+        num_fewshot=0,
+        use_cot=False,
+        subtasks=["hellaswag_greedychoice"],
+        metric="greedy_is_exact_match_acc",
         aggregate_op='mean',
         version=0,
     ),
@@ -226,24 +266,26 @@ def eval_and_dump(leaderboardtask_name, hf_model_name, batch_size, device, no_ca
         limit=limit,
         write_out=True,
         output_base_path=output_dir,
+        use_data_parallel_accelerate=use_data_parallel,
     )
 
-    dumped = json.dumps(results, indent=2)
-    print(dumped)
-
-    if output_path:
-        # if using data parallel, eval on multiple process, let the first process dump result json file to avoid writing conflict.
-        if not use_data_parallel or (use_data_parallel and results["distributed_process_id"] == 0):
+    # if using data parallel, eval on multiple process, let the first process dump result json file to avoid writing conflict.
+    if not use_data_parallel or (use_data_parallel and results["is_main_process"]):
+        dumped = json.dumps(results, indent=2)
+        print(dumped)
+        
+        if output_path:
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             with open(output_path, "w") as f:
+                print(f"[INFO] writed result to {output_path}")
                 f.write(dumped)
 
-    batch_sizes = ",".join(map(str, results["config"]["batch_sizes"]))
-    print(
-        f"{model} ({model_args}), limit: {limit}, provide_description: {None}, "
-        f"num_fewshot: {num_fewshot}, batch_size: {batch_size}{f' ({batch_sizes})' if batch_sizes else ''}"
-    )
-    print(evaluator.make_table(results))
+        batch_sizes = ",".join(map(str, results["config"]["batch_sizes"]))
+        print(
+            f"{model} ({model_args}), limit: {limit}, provide_description: {None}, "
+            f"num_fewshot: {num_fewshot}, batch_size: {batch_size}{f' ({batch_sizes})' if batch_sizes else ''}"
+        )
+        print(evaluator.make_table(results))
 
 def main():
     args = parse_args()

@@ -122,7 +122,6 @@ def simple_evaluate(
 
     return results
 
-
 decontaminate_suffix = "_decontaminate"
 
 
@@ -336,7 +335,7 @@ def evaluate(
         task = task_dict[task_name]
         doc = docs[(task_name, doc_id)]
 
-        if isinstance(task, lm_eval.base.LLMAsJudgeMultipleChoiceTask):
+        if isinstance(task, lm_eval.base.GreedyMultipleChoiceTask):
             metrics = task.process_results(doc, requests, write_out_info[task_name][doc_id])
         else:
             metrics = task.process_results(doc, requests)
@@ -396,7 +395,7 @@ def evaluate(
             ) as fp:
                 json.dump(write_out_info[task_name], fp, indent=4, ensure_ascii=False)
 
-    return {"results": dict(results), "versions": dict(versions), "distributed_process_id": None if lm.distributed_state is None else lm.distributed_state.process_index}
+    return {"results": dict(results), "versions": dict(versions), "is_main_process": None if lm.distributed_state is None else lm.distributed_state.is_main_process}
 
 
 def make_table(result_dict):
