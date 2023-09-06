@@ -242,7 +242,7 @@ class BaseLM(LM):
         continuation_enc = whole_enc[context_enc_len:]
         return context_enc, continuation_enc
 
-    def loglikelihood(self, requests):
+    def loglikelihood(self, requests, disable_same_ctx_requests_grouping=True):
         new_reqs = []
         for context, continuation in requests:
             if context == "":
@@ -255,7 +255,7 @@ class BaseLM(LM):
 
             new_reqs.append(((context, continuation), context_enc, continuation_enc))
 
-        return self._loglikelihood_tokens(new_reqs)
+        return self._loglikelihood_tokens(new_reqs, disable_same_ctx_requests_grouping=disable_same_ctx_requests_grouping)
 
     def loglikelihood_rolling(self, requests):
         # TODO: Implement caching once we've confirmed the perplexity implementation
@@ -301,7 +301,9 @@ class BaseLM(LM):
 
         return loglikelihoods
 
-    def _loglikelihood_tokens(self, requests, disable_tqdm=False, override_bs=None):
+    def _loglikelihood_tokens(self, requests, disable_same_ctx_requests_grouping, disable_tqdm=False, override_bs=None):
+        if not disable_same_ctx_requests_grouping:
+            print("[INFO] grouping requests with the same context and single continous token for efficiency")
         # TODO: implement some kind of efficient-request-middleware that lumps together requests with the same context
         res = []
 
@@ -313,10 +315,46 @@ class BaseLM(LM):
             #   automatic adaptive batches much much easier to implement
             # - any OOMs will happen right away rather than near the end
 
-            toks = x[1] + x[2]
+            
+            if  isinstance(x[2][0], list):
+                toks = x[1] + x[2][0]
+            else:
+                toks = x[1] + x[2]
             return -len(toks), tuple(toks)
 
-        re_ord = utils.Reorderer(requests, _collate)
+        # To avoid repeat logits calculation: zip the same model_call input request, ...Answer: A(B, C, D) to ...Answer: [A, B, C, D] and unzip conts later in answer calcution and caching step
+        def group_conts_with_same_ctx(reqs):
+            grouped_reqs = []
+            dicpos = {} # {ctx: grouped_request_list_idx}
+            for req in reqs:
+                ctx_cnt_pos, ctx_toks_pos, cnt_toks_pos = 0, 1, 2
+                ctx, cnt = req[ctx_cnt_pos] # (ctx, cnt)
+                # ctx_toks = req[ctx_toks_pos] # []
+                cnt_toks = req[cnt_toks_pos] # []
+                if len(cnt_toks) != 1:
+                    raise Exception("The continous token length should be 1 when using grouping same context requests for efficiency")
+                if ctx in dicpos:
+                    grouped_req_idx = dicpos[ctx]
+                    if isinstance(grouped_reqs[grouped_req_idx][cnt_toks_pos][0], list):
+                        grouped_reqs[grouped_req_idx] = list(grouped_reqs[grouped_req_idx])
+                        grouped_reqs[grouped_req_idx][ctx_cnt_pos][1].append(cnt)
+                        grouped_reqs[grouped_req_idx][cnt_toks_pos].append(cnt_toks)
+                        grouped_reqs[grouped_req_idx] = tuple(grouped_reqs[grouped_req_idx])
+                    else:
+                        grouped_reqs[grouped_req_idx] = list(grouped_reqs[grouped_req_idx])
+                        grouped_reqs[grouped_req_idx][ctx_cnt_pos] = (ctx, [grouped_reqs[grouped_req_idx][ctx_cnt_pos][1], cnt]) 
+                        grouped_reqs[grouped_req_idx][cnt_toks_pos] = [grouped_reqs[grouped_req_idx][cnt_toks_pos], cnt_toks]
+                        grouped_reqs[grouped_req_idx] = tuple(grouped_reqs[grouped_req_idx])
+                else:
+                    grouped_reqs.append(req)
+                    dicpos[ctx] = len(grouped_reqs)-1
+            return grouped_reqs
+        
+        if disable_same_ctx_requests_grouping:
+            re_ord = utils.Reorderer(requests, _collate)
+        else:
+            grouped_requests = group_conts_with_same_ctx(requests)
+            re_ord = utils.Reorderer(grouped_requests, _collate)
 
         reordered_requests = re_ord.get_reordered()
         n_reordered_requests = len(reordered_requests)
@@ -378,13 +416,18 @@ class BaseLM(LM):
                 # cont_toks      4 5 6 7 8 9      [:, -len(continuation_enc):, :self.vocab_size] slice
 
                 # when too long to fit in context, truncate from the left
+                cont = continuation_enc
+                
+                # if using grouped requests, use the first one in one group
+                if not disable_same_ctx_requests_grouping: # same to isinstance(continuation_enc[0], list):
+                    continuation_enc = continuation_enc[0] # the first one will be the same as others in one grouped requests after doing[:-1] later
+                    
                 inp = torch.tensor(
                     (context_enc + continuation_enc)[-(self.max_length + 1) :][:-1],
                     dtype=torch.long,
                 ).to(self.device)
                 (inplen,) = inp.shape
 
-                cont = continuation_enc
 
                 # since in _collate we make sure length is descending, the longest is always the first one.
                 padding_length = (
@@ -470,9 +513,14 @@ class BaseLM(LM):
                     
                     # calcuated answer
                     for (cache_key, _, _), distributed_logits, distrbuted_inp, distributed_inplen, distributed_cont_toks in zip(distributed_chunk, distributed_multi_logits, distributed_batched_inps, distributed_inplens, disrtibuted_cont_toks_list):
-
-                        answer = get_likelihood_ans(cache_key, distributed_logits, distrbuted_inp, distributed_inplen,distributed_cont_toks)
-                        distributed_res.append(answer)
+                        if not disable_same_ctx_requests_grouping: # the same as if isinstance(distributed_cont_toks[0], list)
+                            for idx, unzipped_distributed_cont_tokens in enumerate(distributed_cont_toks):
+                                ctx, cnt = (cache_key[0], cache_key[1][idx])
+                                answer = get_likelihood_ans((ctx, cnt), distributed_logits, distrbuted_inp, distributed_inplen,unzipped_distributed_cont_tokens)
+                                distributed_res.append(answer)
+                        else:
+                            answer = get_likelihood_ans(cache_key, distributed_logits, distrbuted_inp, distributed_inplen,distributed_cont_toks)
+                            distributed_res.append(answer)
                         
                     # dispatch answer to distributed gpus and gather back to get full answer
                     distributed_log_probs = torch.tensor([item[0] for item in distributed_res], device=self.distributed_state.device)
@@ -489,17 +537,28 @@ class BaseLM(LM):
                         answer = (float(gathered_log_prob), bool(gathered_is_exact_match), gathered_greedy_seq)
                         gathered_res.append(answer)
                         
-                    res += gathered_res                   
+                    res += gathered_res
             else:
                 multi_logits = F.log_softmax(
                         self._model_call(batched_inps), dim=-1
                     ).cpu()  # [batch, padding_length, vocab]
+                
                 for (cache_key, _, _), logits, inp, inplen, cont_toks in zip(
                     chunk, multi_logits, inps, inplens, cont_toks_list
                 ):
-                    answer = get_likelihood_ans(cache_key, logits, inp, inplen, cont_toks)
-                    res.append(answer)
+                    if not disable_same_ctx_requests_grouping: # the same as if isinstance(cont_toks[0], list):
+                        for idx, _ in enumerate(cont_toks):
+                            ctx, cnt = (cache_key[0], cache_key[1][idx])
+                            answer = get_likelihood_ans((ctx, cnt), logits, inp, inplen, _)
+                            res.append(answer)
+                    else:
+                        answer = get_likelihood_ans(cache_key, logits, inp, inplen, cont_toks)
+                        res.append(answer)
 
+        if not disable_same_ctx_requests_grouping:
+            num_answer_elements = len(res[0])
+            res = np.array(res).reshape(len(grouped_requests), -1, num_answer_elements)
+            return list(np.array(re_ord.get_original(res)).reshape(-1, num_answer_elements))
         return re_ord.get_original(res)
 
     def greedy_until(self, requests):

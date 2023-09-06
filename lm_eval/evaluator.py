@@ -297,7 +297,10 @@ def evaluate(
         #       they should end up next to each other.
 
         print("Running", reqtype, "requests")
-        resps = getattr(lm, reqtype)([req.args for req in reqs])
+        if isinstance(task, lm_eval.base.OptionKeyMultipleCircularChoiceTask):
+            resps = getattr(lm, reqtype)([req.args for req in reqs], False) # # turn on same context requests grouping for efficiency
+        else:
+            resps = getattr(lm, reqtype)([req.args for req in reqs], True) # disable same comtext requests grouping 
         resultpersentence = resps
 
         # dropped max_equal, from [(logit, max_equal)] to [logit]
