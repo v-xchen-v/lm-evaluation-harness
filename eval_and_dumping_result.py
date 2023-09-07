@@ -41,6 +41,21 @@ class LeaderBoardTask:
     aggregate_op: str
 
     version: int
+    
+custom_eval_tasks=[ \
+    "likelihoodoptioncontent",
+    "likelihoodoptionkeycircular", 
+    "greedyoptionkey", 
+    "greedyanswer"
+]
+
+# TODO：supports multiple metrics insteads of single metric now.
+custom_eval_metrics=[ \
+    "ppl_argmax_acc", 
+    "next_token_argmax_choices_circular_acc", 
+    "greedy_is_exact_match_acc", 
+    "greedy_is_gpt4_match_acc"
+]
 
 # TODO: as config file
 leaderboard_tasks = [
@@ -55,32 +70,42 @@ leaderboard_tasks = [
         version=1,
     ),
     LeaderBoardTask(
-        name="mmlu_optionkeycircularchoice",
-        abbr="MMLU Key Circular Choices(0 shot)",
+        name=f"mmlu_{custom_eval_tasks[0]}",
+        abbr="MMLU Option Content(0 shot)",
         num_fewshot=0,
         use_cot=False,
-        subtasks= [f"hendrycksTest-{sub}_optionkeycircularchoice" for sub in MMLU_SUBJECTS],
-        metric="next_token_argmax_choice_circular_acc",
+        subtasks= [f"hendrycksTest-{sub}_{custom_eval_tasks[0]}" for sub in MMLU_SUBJECTS][:1],
+        metric=custom_eval_metrics[0],
         aggregate_op='mean',
         version=0,
     ),
     LeaderBoardTask(
-        name="mmlu_optioncontentchoice",
-        abbr="MMLU Content Choices(0 shot)",
+        name=f"mmlu_{custom_eval_tasks[1]}",
+        abbr="MMLU Option Key Circular(0 shot)",
         num_fewshot=0,
         use_cot=False,
-        subtasks= [f"hendrycksTest-{sub}_optioncontentchoice" for sub in MMLU_SUBJECTS],
-        metric="ppl_argmax_acc",
+        subtasks= [f"hendrycksTest-{sub}_{custom_eval_tasks[1]}" for sub in MMLU_SUBJECTS][:1],
+        metric=custom_eval_metrics[1],
         aggregate_op='mean',
         version=0,
     ),
     LeaderBoardTask(
-        name="mmlu_greedychoice",
-        abbr="MMLU Greedy Choices(0 shot)",
+        name=f"mmlu_{custom_eval_tasks[2]}",
+        abbr="MMLU Greedy Option Key(0 shot)",
         num_fewshot=0,
         use_cot=False,
-        subtasks= [f"hendrycksTest-{sub}_greedychoice" for sub in MMLU_SUBJECTS],
-        metric="greedy_is_exact_match_acc",
+        subtasks= [f"hendrycksTest-{sub}_{custom_eval_tasks[2]}" for sub in MMLU_SUBJECTS][:1],
+        metric=custom_eval_metrics[2],
+        aggregate_op='mean',
+        version=0,
+    ),
+    LeaderBoardTask(
+        name=f"mmlu_{custom_eval_tasks[3]}",
+        abbr="MMLU Greedy Answer(0 shot)",
+        num_fewshot=0,
+        use_cot=False,
+        subtasks= [f"hendrycksTest-{sub}_{custom_eval_tasks[3]}" for sub in MMLU_SUBJECTS][:1],
+        metric=custom_eval_metrics[3],
         aggregate_op='mean',
         version=0,
     ),
@@ -105,32 +130,42 @@ leaderboard_tasks = [
         version=0,
     ),
     LeaderBoardTask(
-        name="hellaswag_optionkeycircularchoice",
-        abbr="HellaSwag Key Circular Choice(0 shot)",
+        name=f"hellaswag_{custom_eval_tasks[0]}",
+        abbr="HellaSwag Option Content(0 shot)",
         num_fewshot=0,
         use_cot=False,
-        subtasks=["hellaswag_optionkeycircularchoice"],
-        metric="next_token_argmax_choice_circular_acc",
+        subtasks=[f"hellaswag_{custom_eval_tasks[0]}"],
+        metric=custom_eval_metrics[0],
         aggregate_op='mean',
         version=0,
     ),
     LeaderBoardTask(
-        name="hellaswag_optioncontentchoice",
-        abbr="HellaSwag Content Choice(0 shot)",
+        name=f"hellaswag_{custom_eval_tasks[1]}",
+        abbr="HellaSwag Option Key Circular(0 shot)",
         num_fewshot=0,
         use_cot=False,
-        subtasks=["hellaswag_optioncontentchoice"],
-        metric="ppl_argmax_acc",
+        subtasks=[f"hellaswag_{custom_eval_tasks[1]}"],
+        metric=custom_eval_metrics[1],
         aggregate_op='mean',
         version=0,
     ),
     LeaderBoardTask(
-        name="hellaswag_greedychoice",
-        abbr="HellaSwag Greedy Choice(0 shot)",
+        name=f"hellaswag_{custom_eval_tasks[2]}",
+        abbr="HellaSwag Greedy Option Key(0 shot)",
         num_fewshot=0,
         use_cot=False,
-        subtasks=["hellaswag_greedychoice"],
-        metric="greedy_is_exact_match_acc",
+        subtasks=[f"hellaswag_{custom_eval_tasks[2]}"],
+        metric=custom_eval_metrics[2],
+        aggregate_op='mean',
+        version=0,
+    ),
+    LeaderBoardTask(
+        name=f"hellaswag_{custom_eval_tasks[3]}",
+        abbr="HellaSwag Answer(0 shot)",
+        num_fewshot=0,
+        use_cot=False,
+        subtasks=[f"hellaswag_{custom_eval_tasks[3]}"],
+        metric=custom_eval_metrics[3],
         aggregate_op='mean',
         version=0,
     ),
@@ -229,9 +264,10 @@ def parse_args():
     parser.add_argument("--no_cache", action="store_true")
     parser.add_argument("--use_data_parallel", action="store_true")
     parser.add_argument("--use_model_parallel", action="store_true")
+    parser.add_argument("--output_base_path", type=str, default="/eval_results")
     return parser.parse_args()
 
-def eval_and_dump(leaderboardtask_name, hf_model_name, batch_size, device, no_cache, limit, use_data_parallel, use_model_parallel, num_fewshot):
+def eval_and_dump(leaderboardtask_name, hf_model_name, batch_size, device, no_cache, limit, use_data_parallel, use_model_parallel, num_fewshot, output_base_path):
     # setting leaderboard task eval settings
     task=LEADERBOARDTASK_REGISTRY[leaderboardtask_name]
     print(task)
@@ -240,7 +276,7 @@ def eval_and_dump(leaderboardtask_name, hf_model_name, batch_size, device, no_ca
     else:
         num_fewshot=task.num_fewshot
 
-    output_dir=f'/eval_results/{encode_modelname(hf_model_name)}/{task.name}/{task.version}/{num_fewshot}shot'
+    output_dir=f'{output_base_path}/{encode_modelname(hf_model_name)}/{task.name}/{task.version}/{num_fewshot}shot'
     os.makedirs(output_dir, exist_ok=True)
     output_path=f"{output_dir}/results.json"
 
@@ -320,7 +356,8 @@ def main():
         limit=args.limit,
         use_data_parallel=args.use_data_parallel,
         use_model_parallel=args.use_model_parallel,
-        num_fewshot=args.num_fewshot
+        num_fewshot=args.num_fewshot,
+        output_base_path=args.output_base_path,
     )
 
 if __name__ == "__main__":
