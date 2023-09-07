@@ -12,7 +12,7 @@ important shortcomings.
 
 Homepage: https://github.com/hendrycks/test
 """
-from lm_eval.base import GreedyMultipleChoiceTask
+from lm_eval.base import GreedyGenerateOptionKeyTask
 from lm_eval.tasks import hendrycks_test
 
 _CITATION = hendrycks_test._CITATION
@@ -22,20 +22,20 @@ SUBJECTS = hendrycks_test.SUBJECTS
 def create_all_tasks():
     """Creates a dictionary of tasks from a list of subjects
     :return: {task_name: task}
-        e.g. {hendrycksTest-abstract_algebra_greedychoice: Task, hendrycksTest-anatomy: Task}
+        e.g. {hendrycksTest-abstract_algebra_optionkeycircularchoice: Task, hendrycksTest-anatomy: Task}
     """
-    return {f"hendrycksTest-{sub}_greedychoice": create_task(sub) for sub in SUBJECTS}
+    return {f"hendrycksTest-{sub}_greedyoptionkey": create_task(sub) for sub in SUBJECTS}
 
 
 def create_task(subject):
-    class GreedyMultipleChoiceHendrycksTest(GreedyMultipleChoiceGeneralHendrycksTest):
+    class GreedyGenerateOptionKeyHendrycksTest(GreedyGenerateOptionKeyGeneralHendrycksTest):
         def __init__(self):
             super().__init__(subject)
 
-    return GreedyMultipleChoiceHendrycksTest
+    return GreedyGenerateOptionKeyHendrycksTest
 
 
-class GreedyMultipleChoiceGeneralHendrycksTest(GreedyMultipleChoiceTask):
+class GreedyGenerateOptionKeyGeneralHendrycksTest(GreedyGenerateOptionKeyTask):
     VERSION = 0
     DATASET_PATH = "cais/mmlu"
     DATASET_NAME = None
@@ -59,37 +59,43 @@ class GreedyMultipleChoiceGeneralHendrycksTest(GreedyMultipleChoiceTask):
     def test_docs(self):
         return map(self._process_doc, self.dataset["test"])
 
-    def _format_subject(self, subject):
-        words = subject.split("_")
-        return " ".join(words)
+    def format_example(self, doc, keys, circular_index=0):
+        """
+        circular 0:
+        <prompt>
+        A. <choice1>
+        B. <choice2>
+        C. <choice3>
+        D. <choice4>
+        Answer:
 
-    def fewshot_context(self, doc, num_fewshot, **kwargs):
-        subject = self.DATASET_NAME
-        description = f"The following are multiple choice questions (with answers) about {self._format_subject(subject)}."
-        kwargs["description"] = description
-        return super().fewshot_context(doc=doc, num_fewshot=num_fewshot, **kwargs)
+        circular 1:
+        <prompt>
+        A. <choice4>
+        B. <choice1>
+        C. <choice2>
+        D. <choice3>
+        Answer:
+        """
 
-    def _process_doc(self, doc):
-        def format_example(doc, keys):
-            """
-            <prompt>
-            A. <choice1>
-            B. <choice2>
-            C. <choice3>
-            D. <choice4>
-            Answer:
-            """
-
-            question = doc["question"].strip()
+        question = doc["question"].strip()
+        if circular_index == 0:
             choices = "".join(
                 [f"{key}. {choice}\n" for key, choice in zip(keys, doc["choices"])]
             )
-            prompt = f"{question}\n{choices}Answer:"
-            return prompt
+        else:
+            choices = ""
+            for key_index, key in enumerate(keys):
+                choices += f'{key}. {doc["choices"][(key_index-circular_index)%len(keys)]}\n'
 
+        prompt = f"{question}\n{choices}Answer:"
+        return prompt
+    
+    def _process_doc(self, doc):
         keys = ["A", "B", "C", "D"]
         return {
-            "query": format_example(doc, keys),
+            "doc": doc,
+            # "query": self.format_example(doc, keys),
             "choices": keys,
             "gold": doc["answer"],
         }
@@ -104,11 +110,11 @@ class GreedyMultipleChoiceGeneralHendrycksTest(GreedyMultipleChoiceTask):
         # just as in the original code https://github.com/hendrycks/test/blob/master/evaluate.py#L28
         return self._fewshot_docs[:k]
 
-    def doc_to_text(self, doc):
-        return doc["query"]
-
     def should_decontaminate(self):
         return True
 
     def doc_to_decontamination_query(self, doc):
         return doc["query"]
+
+
+    

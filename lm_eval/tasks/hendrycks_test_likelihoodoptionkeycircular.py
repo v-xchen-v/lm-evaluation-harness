@@ -12,7 +12,7 @@ important shortcomings.
 
 Homepage: https://github.com/hendrycks/test
 """
-from lm_eval.base import OptionKeyMultipleCircularChoiceTask
+from lm_eval.base import LikelihoodOptionKeyMultipleCircularChoiceTask
 from lm_eval.tasks import hendrycks_test
 
 _CITATION = hendrycks_test._CITATION
@@ -24,18 +24,18 @@ def create_all_tasks():
     :return: {task_name: task}
         e.g. {hendrycksTest-abstract_algebra_optionkeycircularchoice: Task, hendrycksTest-anatomy: Task}
     """
-    return {f"hendrycksTest-{sub}_optionkeycircularchoice": create_task(sub) for sub in SUBJECTS}
+    return {f"hendrycksTest-{sub}_likelihoodoptionkeycircular": create_task(sub) for sub in SUBJECTS}
 
 
 def create_task(subject):
-    class OptionKeyCircularChoiceHendrycksTest(OptionKeyCircularChoiceGeneralHendrycksTest):
+    class LikelihoodOptionKeyMultipleCircularChoiceHendrycksTest(LikelihoodOptionKeyMultipleCircularChoiceGeneralHendrycksTest):
         def __init__(self):
             super().__init__(subject)
 
-    return OptionKeyCircularChoiceHendrycksTest
+    return LikelihoodOptionKeyMultipleCircularChoiceHendrycksTest
 
 
-class OptionKeyCircularChoiceGeneralHendrycksTest(OptionKeyMultipleCircularChoiceTask):
+class LikelihoodOptionKeyMultipleCircularChoiceGeneralHendrycksTest(LikelihoodOptionKeyMultipleCircularChoiceTask):
     VERSION = 0
     DATASET_PATH = "cais/mmlu"
     DATASET_NAME = None

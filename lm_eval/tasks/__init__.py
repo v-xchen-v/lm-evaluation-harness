@@ -15,7 +15,10 @@ from . import wsc273
 from . import winogrande
 from . import quac
 from . import hellaswag
-from . import hellaswag_optionkeycircularchoices
+from . import hellaswag_likelihoodoptionkeycircular
+from . import hellaswag_likelihoodoptioncontent
+from . import hellaswag_greedygenerateoptionkey
+from . import hellaswag_greedygenerateanswer
 from . import swag
 from . import openbookqa
 from . import squad
@@ -39,7 +42,10 @@ from . import drop
 from . import unscramble
 from . import logiqa
 from . import hendrycks_test
-from . import hendrycks_test_optioncotentchoice
+from . import hendrycks_test_likelihoodoptioncotent
+from . import hendrycks_test_likelihoodoptionkeycircular
+from . import hendrycks_test_greedygenerateanswer
+from . import hendrycks_test_greedygenerateoptionkey
 from . import hendrycks_math
 from . import cbt
 from . import lambada_cloze
@@ -66,10 +72,6 @@ from . import agieval_eng_qa
 from . import agieval_eng_cloze
 from . import agieval_eng_qa_cot
 from . import agieval_eng_cloze_cot
-from . import hendrycks_test_optionkeycircularchoice
-from . import hellaswag_greedychoice
-from . import hendrycks_test_greedychoice
-from . import hellaswag_optioncontentchoice
 
 ########################################
 # Translation tasks
@@ -149,9 +151,10 @@ TASK_REGISTRY = {
     # "quac": quac.QuAC, # not implemented yet
     "logiqa": logiqa.LogiQA,
     "hellaswag": hellaswag.HellaSwag,
-    "hellaswag_greedychoice": hellaswag_greedychoice.GreedyMultipleChoiceHellaSwag,
-    "hellaswag_optionkeycircularchoice": hellaswag_optionkeycircularchoices.OptionKeyMultipleCircularChoiceHellaSwag,
-    "hellaswag_optioncontentchoice": hellaswag_optioncontentchoice.OptionContentLogitsMultipleChoiceHellaSwag, 
+    "hellaswag_greedyanswer": hellaswag_greedygenerateanswer.GreedyGenerateAnswerHellaswag,
+    "hellaswag_likelihoodoptionkeycircular": hellaswag_likelihoodoptionkeycircular.LikelihoodOptionKeyMultipleCircularChoiceHellaSwag,
+    "hellaswag_likelihoodoptioncontent": hellaswag_likelihoodoptioncontent.LikelihoodOptionContentMultipleChoiceHellaswag, 
+    "hellaswag_greedyoptionkey": hellaswag_greedygenerateoptionkey.GreedyGenerateOptionKeyHellaswag,
     "swag": swag.SWAG,
     "openbookqa": openbookqa.OpenBookQA,
     "squad2": squad.SQuAD2,
@@ -210,11 +213,13 @@ TASK_REGISTRY = {
     # hendrycksTest (57 tasks)
     **hendrycks_test.create_all_tasks(),
     # hendrycksCircularChoicesTtest(57 tasks),
-    **hendrycks_test_optionkeycircularchoice.create_all_tasks(),
+    **hendrycks_test_likelihoodoptionkeycircular.create_all_tasks(),
     # hendrycks option content logits ppl argmax multiple choice tasks(57 tasks)
-    **hendrycks_test_optioncotentchoice.create_all_tasks(),
+    **hendrycks_test_likelihoodoptioncotent.create_all_tasks(),
     # hendrycks GPT4 as multiple choice judger test(57 tasks),
-    **hendrycks_test_greedychoice.create_all_tasks(),
+    **hendrycks_test_greedygenerateanswer.create_all_tasks(),
+    # hendrycks generate option key(57 tasks),
+    **hendrycks_test_greedygenerateoptionkey.create_all_tasks(),
     # e.g. wmt14-fr-en
     **translation.create_tasks_from_benchmarks(gpt3_translation_benchmarks),
     # chef's selection, mostly wmt20

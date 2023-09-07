@@ -12,7 +12,7 @@ important shortcomings.
 
 Homepage: https://github.com/hendrycks/test
 """
-from lm_eval.base import OptionContentMultipleChoiceTask
+from lm_eval.base import LikelihoodOptionContentMultipleChoiceTask
 import numpy as np
 from lm_eval.metrics import mean
 from lm_eval.tasks import hendrycks_test
@@ -26,18 +26,18 @@ def create_all_tasks():
     :return: {task_name: task}
         e.g. {hendrycksTest-abstract_algebra_optioncontentchoice: Task, hendrycksTest-anatomy: Task}
     """
-    return {f"hendrycksTest-{sub}_optioncontentchoice": create_task(sub) for sub in SUBJECTS}
+    return {f"hendrycksTest-{sub}_likelihoodoptioncontent": create_task(sub) for sub in SUBJECTS}
 
 
 def create_task(subject):
-    class OptionContentChoiceHendrycksTest(OptionContentChoiceGeneralHendrycksTest):
+    class LikelihoodOptionContentMultipleChoiceHendrycksTest(LikelihoodOptionContentMultipleChoiceGeneralHendrycksTest):
         def __init__(self):
             super().__init__(subject)
 
-    return OptionContentChoiceHendrycksTest
+    return LikelihoodOptionContentMultipleChoiceHendrycksTest
 
 
-class OptionContentChoiceGeneralHendrycksTest(OptionContentMultipleChoiceTask):
+class LikelihoodOptionContentMultipleChoiceGeneralHendrycksTest(LikelihoodOptionContentMultipleChoiceTask):
     VERSION = 0
     DATASET_PATH = "cais/mmlu"
     DATASET_NAME = None
