@@ -12,7 +12,9 @@ important shortcomings.
 
 Homepage: https://github.com/hendrycks/test
 """
-from lm_eval.base import GreedyMultipleChoiceTask
+from lm_eval.base import LikelihoodOptionContentMultipleChoiceTask
+import numpy as np
+from lm_eval.metrics import mean
 from lm_eval.tasks import hendrycks_test
 
 _CITATION = hendrycks_test._CITATION
@@ -22,20 +24,20 @@ SUBJECTS = hendrycks_test.SUBJECTS
 def create_all_tasks():
     """Creates a dictionary of tasks from a list of subjects
     :return: {task_name: task}
-        e.g. {hendrycksTest-abstract_algebra_greedychoice: Task, hendrycksTest-anatomy: Task}
+        e.g. {hendrycksTest-abstract_algebra_optioncontentchoice: Task, hendrycksTest-anatomy: Task}
     """
-    return {f"hendrycksTest-{sub}_greedychoice": create_task(sub) for sub in SUBJECTS}
+    return {f"hendrycksTest-{sub}_likelihoodoptioncontent": create_task(sub) for sub in SUBJECTS}
 
 
 def create_task(subject):
-    class GreedyMultipleChoiceHendrycksTest(GreedyMultipleChoiceGeneralHendrycksTest):
+    class LikelihoodOptionContentMultipleChoiceHendrycksTest(LikelihoodOptionContentMultipleChoiceGeneralHendrycksTest):
         def __init__(self):
             super().__init__(subject)
 
-    return GreedyMultipleChoiceHendrycksTest
+    return LikelihoodOptionContentMultipleChoiceHendrycksTest
 
 
-class GreedyMultipleChoiceGeneralHendrycksTest(GreedyMultipleChoiceTask):
+class LikelihoodOptionContentMultipleChoiceGeneralHendrycksTest(LikelihoodOptionContentMultipleChoiceTask):
     VERSION = 0
     DATASET_PATH = "cais/mmlu"
     DATASET_NAME = None
@@ -65,7 +67,7 @@ class GreedyMultipleChoiceGeneralHendrycksTest(GreedyMultipleChoiceTask):
 
     def fewshot_context(self, doc, num_fewshot, **kwargs):
         subject = self.DATASET_NAME
-        description = f"The following are multiple choice questions (with answers) about {self._format_subject(subject)}."
+        description = f"The following are statements about {self._format_subject(subject)}."
         kwargs["description"] = description
         return super().fewshot_context(doc=doc, num_fewshot=num_fewshot, **kwargs)
 
@@ -73,24 +75,18 @@ class GreedyMultipleChoiceGeneralHendrycksTest(GreedyMultipleChoiceTask):
         def format_example(doc, keys):
             """
             <prompt>
-            A. <choice1>
-            B. <choice2>
-            C. <choice3>
-            D. <choice4>
-            Answer:
+            question
+            choice
             """
 
             question = doc["question"].strip()
-            choices = "".join(
-                [f"{key}. {choice}\n" for key, choice in zip(keys, doc["choices"])]
-            )
-            prompt = f"{question}\n{choices}Answer:"
+            prompt = f"{question}\n"
             return prompt
 
         keys = ["A", "B", "C", "D"]
         return {
             "query": format_example(doc, keys),
-            "choices": keys,
+            "choices": doc["choices"],
             "gold": doc["answer"],
         }
 

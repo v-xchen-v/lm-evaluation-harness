@@ -14,13 +14,13 @@ state-of-the-art models.
 Homepage: https://rowanzellers.com/hellaswag/
 """
 import re
-from lm_eval.base import OptionKeyMultipleCircularChoiceTask
+from lm_eval.base import LikelihoodOptionKeyMultipleCircularChoiceTask
 from lm_eval.tasks import hellaswag
 from lm_eval.tasks.hellaswag import HellaSwag
 
 _CITATION = hellaswag._CITATION
 
-class OptionKeyMultipleCircularChoiceHellaSwag(OptionKeyMultipleCircularChoiceTask):
+class LikelihoodOptionKeyMultipleCircularChoiceHellaSwag(LikelihoodOptionKeyMultipleCircularChoiceTask):
     VERSION = 0
     DATASET_PATH = "hellaswag"
     DATASET_NAME = None
@@ -41,6 +41,11 @@ class OptionKeyMultipleCircularChoiceHellaSwag(OptionKeyMultipleCircularChoiceTa
 
     def validation_docs(self):
         return map(self._process_doc, self.dataset["validation"])
+
+    def fewshot_context(self, doc, num_fewshot, **kwargs):
+        description = f'The following are multiple choice questions (with answers) about {doc["doc"]["activity_label"].lower()}.'
+        kwargs["description"] = description
+        return super().fewshot_context(doc=doc, num_fewshot=num_fewshot, **kwargs)
 
     def format_example(self, doc, keys, circular_index=0):
         """

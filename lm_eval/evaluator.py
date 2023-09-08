@@ -9,7 +9,6 @@ import lm_eval.base
 from lm_eval.utils import positional_deprecated, run_task_tests
 from lm_eval.tasks.agieval_eng_qa_cot import GeneralAGIEvalEngQACoT
 from lm_eval.tasks.agieval_eng_cloze_cot import AGIEvalEngClozeCoT
-from lm_eval.base import OptionKeyMultipleCircularChoiceTask
 
 @positional_deprecated
 def simple_evaluate(
@@ -242,12 +241,14 @@ def evaluate(
                     doc=doc, num_fewshot=num_fewshot, lm = lm, rnd=rnd, description=description
                 )
 
-            if isinstance(task, OptionKeyMultipleCircularChoiceTask):
+            if isinstance(task, lm_eval.base.LikelihoodOptionKeyMultipleCircularChoiceTask):
                 ctx = [task.fewshot_context(doc=doc, num_fewshot=num_fewshot, circular_index=i, rnd=rnd, description=description) for i in range(0, len(doc["choices"]))]
             else:
                 ctx = task.fewshot_context(
                     doc=doc, num_fewshot=num_fewshot, rnd=rnd, description=description
                 )
+            if isinstance(task, lm_eval.base.GreedyGenerateAnswerTask):
+                doc["ctx"] = ctx
                 
             reqs = task.construct_requests(doc, ctx)
 
@@ -297,19 +298,19 @@ def evaluate(
         #       they should end up next to each other.
 
         print("Running", reqtype, "requests")
-        if isinstance(task, lm_eval.base.OptionKeyMultipleCircularChoiceTask):
-            resps = getattr(lm, reqtype)([req.args for req in reqs], False) # # turn on same context requests grouping for efficiency
+        if isinstance(task, lm_eval.base.LikelihoodOptionKeyMultipleCircularChoiceTask):
+            resps = getattr(lm, reqtype)([req.args for req in reqs], False) # turn on same context requests grouping for efficiency
         else:
-            resps = getattr(lm, reqtype)([req.args for req in reqs], True) # disable same comtext requests grouping 
-        resultpersentence = resps
+            resps = getattr(lm, reqtype)([req.args for req in reqs])
 
+        resultpersentence = resps
         # dropped max_equal, from [(logit, max_equal)] to [logit]
         resps = [
             x if req.index is None else x[req.index] for x, req in zip(resps, reqs)
         ]
 
         for idx, (resp, (i, task_name, doc, doc_id)) in enumerate(zip(resps, requests_origin[reqtype])):
-            if isinstance(task, lm_eval.base.OptionContentMultipleChoiceTask):
+            if isinstance(task, lm_eval.base.LikelihoodOptionContentMultipleChoiceTask):
                 process_res_queue[(task_name, doc_id)].append((i, resp))
             elif task_name.startswith("hellaswag") or task_name.startswith("hendrycksTest-"):
                 process_res_queue[(task_name, doc_id)].append((i, resultpersentence[idx]))
@@ -338,7 +339,7 @@ def evaluate(
         task = task_dict[task_name]
         doc = docs[(task_name, doc_id)]
 
-        if isinstance(task, lm_eval.base.GreedyMultipleChoiceTask):
+        if isinstance(task, lm_eval.base.GreedyGenerateAnswerTask):
             metrics = task.process_results(doc, requests, write_out_info[task_name][doc_id])
         else:
             metrics = task.process_results(doc, requests)

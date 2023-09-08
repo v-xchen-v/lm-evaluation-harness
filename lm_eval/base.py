@@ -931,7 +931,57 @@ class MultipleChoiceTask(Task):
             "acc_norm": mean,
         }
 
-class GreedyMultipleChoiceTask(Task):
+class GreedyGenerateOptionKeyTask(Task):
+    """given the description, question and multiple options with format as below:
+    -----------
+    <prompt>
+    A. <choice1>
+    B. <choice2>
+    C. <choice3>
+    D. <choice4>
+    Answer:
+    -----------
+    use greedy search decoding method to generate answer and expect right choice inside option keys."""
+    def doc_to_target(self, doc):
+        return " " + doc["choices"][doc["gold"]]
+    
+    def construct_requests(self, doc, ctx):
+        lls = [
+            rf.greedy_until(ctx, {"until": [], "max_length": None})
+        ]
+
+        return lls
+    
+    def doc_to_text(self, doc, circular_index=0):
+        return self.format_example(doc["doc"], doc["choices"], circular_index)
+    
+    def process_results(self, doc, results):
+        gold = doc["gold"]
+        choices = doc["choices"]
+        gold_choice = choices[gold]
+
+        # list only have single element
+        greedy_gen = results[0]
+        pattern = r'[^a-zA-Z]'
+        charactersonly_greedy_gen = re.sub(pattern, '', greedy_gen)
+        greedy_is_exact_match = (charactersonly_greedy_gen.upper() == gold_choice.upper())
+        
+        
+        return {
+            "greedy_is_exact_match_acc": greedy_is_exact_match,
+        }
+
+    def higher_is_better(self):
+        return {
+            "greedy_is_exact_match_acc": True,
+        }
+
+    def aggregation(self):
+        return {
+            "greedy_is_exact_match_acc": mean,
+        }
+
+class GreedyGenerateAnswerTask(Task):
     """answer with greedy until generated continuous and compare the result of choices """
     def doc_to_target(self, doc):
         return " " + doc["choices"][doc["gold"]]
@@ -953,45 +1003,46 @@ class GreedyMultipleChoiceTask(Task):
 
         # list only have single element
         greedy_gen = results[0]
-        greedy_is_exact_match = (greedy_gen == gold_choice)
         
-        # # res = gpt_4_completion("prompt.txt", question="What is the meaning of life?", answer="42", choices="A. 42\nB. 43\nC. 44\nD. 45")
-        # from lm_eval.llmjudge.gpt4 import gpt_4_completion
-        # ret = gpt_4_completion(
-        #     "prompt.txt", question=doc["query"], answer=greedy_gen, choices=doc["choices"]
-        # )
+        # greedy_is_exact_match = (greedy_gen == gold_choice)
         
-        # # write llm judgement info to info json file
-        # llm_judge_write_out_info["llm_judge"] = {
-        #     "question": doc["query"],
-        #     "answer": greedy_gen,
-        #     "choices": doc["choices"],
-        #     "response": ret['response']}
+        # res = gpt_4_completion("prompt.txt", question="What is the meaning of life?", answer="42", choices="A. 42\nB. 43\nC. 44\nD. 45")
+        from lm_eval.llmjudge.gpt4 import gpt_4_completion
+        ret = gpt_4_completion(
+            "prompt.txt", question=doc["query"], answer=greedy_gen, choices=doc["choices"]
+        )
         
-        # ret_ans = ret['response'].strip('"').strip('(').strip(')')
-        # if ret_ans == 'None' or ret_ans == 'There seems to be some confusion in your input. It appears there are two sets of questions and answers, but the second set is not correctly formatted. Could you please provide the correct format so I can assist you accurately?':
-        #     greedy_is_gpt4_match = 0
-        # else:
-        #     greedy_is_gpt4_match = (ord(ret_ans)-ord('A')==gold)
+        # write llm judgement info to info json file
+        llm_judge_write_out_info["llm_judge"] = {
+            "question": doc["ctx"],
+            "answer": greedy_gen,
+            "choices": doc["choices"],
+            "response": ret['response']}
+        
+        ret_ans = ret['response'].strip('"').strip('(').strip(')')
+        if ret_ans == 'None' or ret_ans == 'There seems to be some confusion in your input. It appears there are two sets of questions and answers, but the second set is not correctly formatted. Could you please provide the correct format so I can assist you accurately?':
+            greedy_is_gpt4_match = 0
+        else:
+            greedy_is_gpt4_match = (ord(ret_ans)-ord('A')==gold)
         
         return {
-            "greedy_is_exact_match_acc": greedy_is_exact_match,
-            # "greedy_is_gpt4_match_acc": greedy_is_gpt4_match,
+            # "greedy_is_exact_match_acc": greedy_is_exact_match,
+            "greedy_is_gpt4_match_acc": greedy_is_gpt4_match,
         }
 
     def higher_is_better(self):
         return {
-            "greedy_is_exact_match_acc": True,
-            # "greedy_is_gpt4_match_acc": True,
+            # "greedy_is_exact_match_acc": True,
+            "greedy_is_gpt4_match_acc": True,
         }
 
     def aggregation(self):
         return {
-            "greedy_is_exact_match_acc": mean,
-            # "greedy_is_gpt4_match_acc": mean,
+            # "greedy_is_exact_match_acc": mean,
+            "greedy_is_gpt4_match_acc": mean,
         }
 
-class OptionKeyMultipleCircularChoiceTask(MultipleChoiceTask):
+class LikelihoodOptionKeyMultipleCircularChoiceTask(MultipleChoiceTask):
     def construct_requests(self, doc, ctx: list):
         return self.construct_circularchoices_requests(doc, ctx)
 
@@ -1023,11 +1074,11 @@ class OptionKeyMultipleCircularChoiceTask(MultipleChoiceTask):
 
         # the one with biggest probility is match the label, treat is as right
         circular_gold = np.array([((gold+i)%choice_size) for i in range(0, choice_size)])
-        next_token_argmax_choice_circular_acc = 1.0 if np.all(np.argmax(logits, axis=-1) == circular_gold) else 0.0
-        next_token_argmax_choice_acc = 1.0 if np.all(np.argmax(logits[0]) == gold) else 0.0
+        next_token_argmax_choices_circular_acc = 1.0 if np.all(np.argmax(logits, axis=-1) == circular_gold) else 0.0
+        next_token_argmax_choices_acc = 1.0 if np.all(np.argmax(logits[0]) == gold) else 0.0
 
         # the one fully match the label, treat it as right. If it has higgest probility but not exactly match treat it as not right.
-        next_token_argmax_choice_all_acc = 1.0 if np.all(max_equals[np.arange(0, choice_size), circular_gold]) else 0.0
+        next_token_argmax_all_circular_acc = 1.0 if np.all(max_equals[np.arange(0, choice_size), circular_gold]) else 0.0
         next_token_argmax_all_acc = 1.0 if np.all(max_equals[0, circular_gold[0]]) else 0.0
         
         
@@ -1038,18 +1089,18 @@ class OptionKeyMultipleCircularChoiceTask(MultipleChoiceTask):
         completion_len = np.array(completion_len).reshape((len(doc["choices"]), -1))
 
         return {
-            "next_token_argmax_choice_acc": next_token_argmax_choice_acc,
+            "next_token_argmax_choices_acc": next_token_argmax_choices_acc,
             "next_token_argmax_all_acc": next_token_argmax_all_acc,
-            "next_token_argmax_choice_circular_acc": next_token_argmax_choice_circular_acc,
-            "next_token_argmax_choice_all_acc": next_token_argmax_choice_all_acc
+            "next_token_argmax_choices_circular_acc": next_token_argmax_choices_circular_acc,
+            "next_token_argmax_all_circular_acc": next_token_argmax_all_circular_acc
         }
 
     def aggregation(self):
         return {
-            "next_token_argmax_choice_acc": mean,
+            "next_token_argmax_choices_acc": mean,
             "next_token_argmax_all_acc": mean,
-            "next_token_argmax_choice_circular_acc": mean,
-            "next_token_argmax_choice_all_acc": mean,
+            "next_token_argmax_choices_circular_acc": mean,
+            "next_token_argmax_all_circular_acc": mean,
         }
         
     def fewshot_context(
@@ -1114,7 +1165,7 @@ class OptionKeyMultipleCircularChoiceTask(MultipleChoiceTask):
         return description + labeled_examples + example
         # return self.doc_to_text(doc, num_fewshot)
 
-class OptionContentMultipleChoiceTask(MultipleChoiceTask):
+class LikelihoodOptionContentMultipleChoiceTask(MultipleChoiceTask):
     def process_results(self, doc, results):
         gold = doc["gold"]
 
