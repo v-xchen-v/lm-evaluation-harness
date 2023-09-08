@@ -6,14 +6,17 @@ I will give you a question and multiple choices, and I will also give you an ans
 
 Compare the factual content of the choices with the answer. Ignore any differences in style, grammar, or punctuation. 
 
-Only return the sequence character with the left and right parentheses of the closest choice, formatted like "(A)", and no choice text needed. If no choice is related to the answer, please return 'None'.
+Only return one single capital character to represent the sequence number of the choice. If no choice is related to the answer, please return 'None'.
 
-Question:
+[The Start of Question]
 {question}
+[The End of Question]
 
-Answer:
+[The Start of Provided Answer]
 {answer}
+[The End of Provided Answer]
 
-Choices:
+[The Start of Choices]
 {choices}
+[The End of Choices]
 <|im_end|>

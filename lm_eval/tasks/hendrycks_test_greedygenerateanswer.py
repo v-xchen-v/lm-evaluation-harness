@@ -65,7 +65,7 @@ class GreedyGenerateAnwserGeneralHendrycksTest(GreedyGenerateAnswerTask):
 
     def fewshot_context(self, doc, num_fewshot, **kwargs):
         subject = self.DATASET_NAME
-        description = f"The following are multiple choice questions (with answers) about {self._format_subject(subject)}."
+        description = f"The following are statements about {self._format_subject(subject)}."
         kwargs["description"] = description
         return super().fewshot_context(doc=doc, num_fewshot=num_fewshot, **kwargs)
 
@@ -73,24 +73,18 @@ class GreedyGenerateAnwserGeneralHendrycksTest(GreedyGenerateAnswerTask):
         def format_example(doc, keys):
             """
             <prompt>
-            A. <choice1>
-            B. <choice2>
-            C. <choice3>
-            D. <choice4>
-            Answer:
+            question
+            choice
             """
 
             question = doc["question"].strip()
-            choices = "".join(
-                [f"{key}. {choice}\n" for key, choice in zip(keys, doc["choices"])]
-            )
-            prompt = f"{question}\n{choices}Answer:"
+            prompt = f"{question}\n"
             return prompt
 
         keys = ["A", "B", "C", "D"]
         return {
             "query": format_example(doc, keys),
-            "choices": keys,
+            "choices": doc["choices"],
             "gold": doc["answer"],
         }
 

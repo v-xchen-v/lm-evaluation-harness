@@ -247,6 +247,8 @@ def evaluate(
                 ctx = task.fewshot_context(
                     doc=doc, num_fewshot=num_fewshot, rnd=rnd, description=description
                 )
+            if isinstance(task, lm_eval.base.GreedyGenerateAnswerTask):
+                doc["ctx"] = ctx
                 
             reqs = task.construct_requests(doc, ctx)
 

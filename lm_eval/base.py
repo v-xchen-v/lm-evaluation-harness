@@ -1003,42 +1003,43 @@ class GreedyGenerateAnswerTask(Task):
 
         # list only have single element
         greedy_gen = results[0]
-        greedy_is_exact_match = (greedy_gen == gold_choice)
         
-        # # res = gpt_4_completion("prompt.txt", question="What is the meaning of life?", answer="42", choices="A. 42\nB. 43\nC. 44\nD. 45")
-        # from lm_eval.llmjudge.gpt4 import gpt_4_completion
-        # ret = gpt_4_completion(
-        #     "prompt.txt", question=doc["query"], answer=greedy_gen, choices=doc["choices"]
-        # )
+        # greedy_is_exact_match = (greedy_gen == gold_choice)
         
-        # # write llm judgement info to info json file
-        # llm_judge_write_out_info["llm_judge"] = {
-        #     "question": doc["query"],
-        #     "answer": greedy_gen,
-        #     "choices": doc["choices"],
-        #     "response": ret['response']}
+        # res = gpt_4_completion("prompt.txt", question="What is the meaning of life?", answer="42", choices="A. 42\nB. 43\nC. 44\nD. 45")
+        from lm_eval.llmjudge.gpt4 import gpt_4_completion
+        ret = gpt_4_completion(
+            "prompt.txt", question=doc["query"], answer=greedy_gen, choices=doc["choices"]
+        )
         
-        # ret_ans = ret['response'].strip('"').strip('(').strip(')')
-        # if ret_ans == 'None' or ret_ans == 'There seems to be some confusion in your input. It appears there are two sets of questions and answers, but the second set is not correctly formatted. Could you please provide the correct format so I can assist you accurately?':
-        #     greedy_is_gpt4_match = 0
-        # else:
-        #     greedy_is_gpt4_match = (ord(ret_ans)-ord('A')==gold)
+        # write llm judgement info to info json file
+        llm_judge_write_out_info["llm_judge"] = {
+            "question": doc["ctx"],
+            "answer": greedy_gen,
+            "choices": doc["choices"],
+            "response": ret['response']}
+        
+        ret_ans = ret['response'].strip('"').strip('(').strip(')')
+        if ret_ans == 'None' or ret_ans == 'There seems to be some confusion in your input. It appears there are two sets of questions and answers, but the second set is not correctly formatted. Could you please provide the correct format so I can assist you accurately?':
+            greedy_is_gpt4_match = 0
+        else:
+            greedy_is_gpt4_match = (ord(ret_ans)-ord('A')==gold)
         
         return {
-            "greedy_is_exact_match_acc": greedy_is_exact_match,
-            # "greedy_is_gpt4_match_acc": greedy_is_gpt4_match,
+            # "greedy_is_exact_match_acc": greedy_is_exact_match,
+            "greedy_is_gpt4_match_acc": greedy_is_gpt4_match,
         }
 
     def higher_is_better(self):
         return {
-            "greedy_is_exact_match_acc": True,
-            # "greedy_is_gpt4_match_acc": True,
+            # "greedy_is_exact_match_acc": True,
+            "greedy_is_gpt4_match_acc": True,
         }
 
     def aggregation(self):
         return {
-            "greedy_is_exact_match_acc": mean,
-            # "greedy_is_gpt4_match_acc": mean,
+            # "greedy_is_exact_match_acc": mean,
+            "greedy_is_gpt4_match_acc": mean,
         }
 
 class LikelihoodOptionKeyMultipleCircularChoiceTask(MultipleChoiceTask):
