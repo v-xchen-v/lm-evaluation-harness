@@ -478,8 +478,7 @@ class BaseLM(LM):
                 )  # [1, seq]
 
                 # Answer: (log prob, is-exact-match)
-                answer = (float(logits.sum()), bool(max_equal), self.tok_decode(greedy_tokens))
-                # answer = (float(logits.sum()), bool(max_equal), greedy_tokens)
+                answer = (float(logits.sum()), bool(max_equal))
 
                 # partial caching
                 if cache_key is not None:
@@ -525,16 +524,13 @@ class BaseLM(LM):
                     # dispatch answer to distributed gpus and gather back to get full answer
                     distributed_log_probs = torch.tensor([item[0] for item in distributed_res], device=self.distributed_state.device)
                     distributed_is_exact_match=torch.tensor([item[1] for item in distributed_res], device=self.distributed_state.device)
-                    distributed_greedy_token= pad_across_processes(self.tok_encode_batch([item[2][0] for item in distributed_res])['input_ids'].to(self.distributed_state.device), dim=1, pad_index=self.eot_token_id, pad_first=True) # [splits, cross_processes_padded_greedy_seq] on distributed gpu
                     
                     # gather will do on each GPU, later may limit it to main process to save unnecessary computation
                     gathered_log_probs = gather(distributed_log_probs).cpu()
                     gathered_is_exact_matchs = gather(distributed_is_exact_match).cpu()
-                    gathered_greedy_tokens = gather(distributed_greedy_token).cpu()
                     gathered_res=[]
-                    for(gathered_log_prob, gathered_is_exact_match, gathered_greedy_token) in zip(gathered_log_probs, gathered_is_exact_matchs, gathered_greedy_tokens):
-                        gathered_greedy_seq = self.tok_decode([gathered_greedy_token[gathered_greedy_token!=self.eot_token_id]])
-                        answer = (float(gathered_log_prob), bool(gathered_is_exact_match), gathered_greedy_seq)
+                    for(gathered_log_prob, gathered_is_exact_match) in zip(gathered_log_probs, gathered_is_exact_matchs):
+                        answer = (float(gathered_log_prob), bool(gathered_is_exact_match))
                         gathered_res.append(answer)
                         
                     res += gathered_res
@@ -557,6 +553,7 @@ class BaseLM(LM):
 
         if not disable_same_ctx_requests_grouping:
             num_answer_elements = len(res[0])
+            # len(set([len(x[2]) for x in grouped_requests])>1, means it exist repeat rows in dataset.
             num_options = sorted(set([len(x[2]) for x in grouped_requests]))[0] # sort and pick the smaller number to avoid repeated dataset rows influence the options counting.
             res = np.array(res).reshape(-1, num_options, num_answer_elements)
             return list(np.array(re_ord.get_original(res)).reshape(-1, num_answer_elements))
