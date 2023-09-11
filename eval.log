@@ -1,0 +1,724 @@
+nohup: ignoring input
+Selected Leader Board Task: mmlu_likelihoodoptioncontent
+LeaderBoardTask(name='mmlu_likelihoodoptioncontent', abbr='MMLU Option Content(0 shot)', num_fewshot=0, use_cot=False, subtasks=['hendrycksTest-abstract_algebra_likelihoodoptioncontent', 'hendrycksTest-anatomy_likelihoodoptioncontent', 'hendrycksTest-astronomy_likelihoodoptioncontent', 'hendrycksTest-business_ethics_likelihoodoptioncontent', 'hendrycksTest-clinical_knowledge_likelihoodoptioncontent', 'hendrycksTest-college_biology_likelihoodoptioncontent', 'hendrycksTest-college_chemistry_likelihoodoptioncontent', 'hendrycksTest-college_computer_science_likelihoodoptioncontent', 'hendrycksTest-college_mathematics_likelihoodoptioncontent', 'hendrycksTest-college_medicine_likelihoodoptioncontent', 'hendrycksTest-college_physics_likelihoodoptioncontent', 'hendrycksTest-computer_security_likelihoodoptioncontent', 'hendrycksTest-conceptual_physics_likelihoodoptioncontent', 'hendrycksTest-econometrics_likelihoodoptioncontent', 'hendrycksTest-electrical_engineering_likelihoodoptioncontent', 'hendrycksTest-elementary_mathematics_likelihoodoptioncontent', 'hendrycksTest-formal_logic_likelihoodoptioncontent', 'hendrycksTest-global_facts_likelihoodoptioncontent', 'hendrycksTest-high_school_biology_likelihoodoptioncontent', 'hendrycksTest-high_school_chemistry_likelihoodoptioncontent', 'hendrycksTest-high_school_computer_science_likelihoodoptioncontent', 'hendrycksTest-high_school_european_history_likelihoodoptioncontent', 'hendrycksTest-high_school_geography_likelihoodoptioncontent', 'hendrycksTest-high_school_government_and_politics_likelihoodoptioncontent', 'hendrycksTest-high_school_macroeconomics_likelihoodoptioncontent', 'hendrycksTest-high_school_mathematics_likelihoodoptioncontent', 'hendrycksTest-high_school_microeconomics_likelihoodoptioncontent', 'hendrycksTest-high_school_physics_likelihoodoptioncontent', 'hendrycksTest-high_school_psychology_likelihoodoptioncontent', 'hendrycksTest-high_school_statistics_likelihoodoptioncontent', 'hendrycksTest-high_school_us_history_likelihoodoptioncontent', 'hendrycksTest-high_school_world_history_likelihoodoptioncontent', 'hendrycksTest-human_aging_likelihoodoptioncontent', 'hendrycksTest-human_sexuality_likelihoodoptioncontent', 'hendrycksTest-international_law_likelihoodoptioncontent', 'hendrycksTest-jurisprudence_likelihoodoptioncontent', 'hendrycksTest-logical_fallacies_likelihoodoptioncontent', 'hendrycksTest-machine_learning_likelihoodoptioncontent', 'hendrycksTest-management_likelihoodoptioncontent', 'hendrycksTest-marketing_likelihoodoptioncontent', 'hendrycksTest-medical_genetics_likelihoodoptioncontent', 'hendrycksTest-miscellaneous_likelihoodoptioncontent', 'hendrycksTest-moral_disputes_likelihoodoptioncontent', 'hendrycksTest-moral_scenarios_likelihoodoptioncontent', 'hendrycksTest-nutrition_likelihoodoptioncontent', 'hendrycksTest-philosophy_likelihoodoptioncontent', 'hendrycksTest-prehistory_likelihoodoptioncontent', 'hendrycksTest-professional_accounting_likelihoodoptioncontent', 'hendrycksTest-professional_law_likelihoodoptioncontent', 'hendrycksTest-professional_medicine_likelihoodoptioncontent', 'hendrycksTest-professional_psychology_likelihoodoptioncontent', 'hendrycksTest-public_relations_likelihoodoptioncontent', 'hendrycksTest-security_studies_likelihoodoptioncontent', 'hendrycksTest-sociology_likelihoodoptioncontent', 'hendrycksTest-us_foreign_policy_likelihoodoptioncontent', 'hendrycksTest-virology_likelihoodoptioncontent', 'hendrycksTest-world_religions_likelihoodoptioncontent'], metric='ppl_argmax_acc', aggregate_op='mean', version=0)
+Selected Tasks: ['hendrycksTest-abstract_algebra_likelihoodoptioncontent', 'hendrycksTest-anatomy_likelihoodoptioncontent', 'hendrycksTest-astronomy_likelihoodoptioncontent', 'hendrycksTest-business_ethics_likelihoodoptioncontent', 'hendrycksTest-clinical_knowledge_likelihoodoptioncontent', 'hendrycksTest-college_biology_likelihoodoptioncontent', 'hendrycksTest-college_chemistry_likelihoodoptioncontent', 'hendrycksTest-college_computer_science_likelihoodoptioncontent', 'hendrycksTest-college_mathematics_likelihoodoptioncontent', 'hendrycksTest-college_medicine_likelihoodoptioncontent', 'hendrycksTest-college_physics_likelihoodoptioncontent', 'hendrycksTest-computer_security_likelihoodoptioncontent', 'hendrycksTest-conceptual_physics_likelihoodoptioncontent', 'hendrycksTest-econometrics_likelihoodoptioncontent', 'hendrycksTest-electrical_engineering_likelihoodoptioncontent', 'hendrycksTest-elementary_mathematics_likelihoodoptioncontent', 'hendrycksTest-formal_logic_likelihoodoptioncontent', 'hendrycksTest-global_facts_likelihoodoptioncontent', 'hendrycksTest-high_school_biology_likelihoodoptioncontent', 'hendrycksTest-high_school_chemistry_likelihoodoptioncontent', 'hendrycksTest-high_school_computer_science_likelihoodoptioncontent', 'hendrycksTest-high_school_european_history_likelihoodoptioncontent', 'hendrycksTest-high_school_geography_likelihoodoptioncontent', 'hendrycksTest-high_school_government_and_politics_likelihoodoptioncontent', 'hendrycksTest-high_school_macroeconomics_likelihoodoptioncontent', 'hendrycksTest-high_school_mathematics_likelihoodoptioncontent', 'hendrycksTest-high_school_microeconomics_likelihoodoptioncontent', 'hendrycksTest-high_school_physics_likelihoodoptioncontent', 'hendrycksTest-high_school_psychology_likelihoodoptioncontent', 'hendrycksTest-high_school_statistics_likelihoodoptioncontent', 'hendrycksTest-high_school_us_history_likelihoodoptioncontent', 'hendrycksTest-high_school_world_history_likelihoodoptioncontent', 'hendrycksTest-human_aging_likelihoodoptioncontent', 'hendrycksTest-human_sexuality_likelihoodoptioncontent', 'hendrycksTest-international_law_likelihoodoptioncontent', 'hendrycksTest-jurisprudence_likelihoodoptioncontent', 'hendrycksTest-logical_fallacies_likelihoodoptioncontent', 'hendrycksTest-machine_learning_likelihoodoptioncontent', 'hendrycksTest-management_likelihoodoptioncontent', 'hendrycksTest-marketing_likelihoodoptioncontent', 'hendrycksTest-medical_genetics_likelihoodoptioncontent', 'hendrycksTest-miscellaneous_likelihoodoptioncontent', 'hendrycksTest-moral_disputes_likelihoodoptioncontent', 'hendrycksTest-moral_scenarios_likelihoodoptioncontent', 'hendrycksTest-nutrition_likelihoodoptioncontent', 'hendrycksTest-philosophy_likelihoodoptioncontent', 'hendrycksTest-prehistory_likelihoodoptioncontent', 'hendrycksTest-professional_accounting_likelihoodoptioncontent', 'hendrycksTest-professional_law_likelihoodoptioncontent', 'hendrycksTest-professional_medicine_likelihoodoptioncontent', 'hendrycksTest-professional_psychology_likelihoodoptioncontent', 'hendrycksTest-public_relations_likelihoodoptioncontent', 'hendrycksTest-security_studies_likelihoodoptioncontent', 'hendrycksTest-sociology_likelihoodoptioncontent', 'hendrycksTest-us_foreign_policy_likelihoodoptioncontent', 'hendrycksTest-virology_likelihoodoptioncontent', 'hendrycksTest-world_religions_likelihoodoptioncontent']
+[INFO] num_fewshot: 0
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.41it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.16it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.00it/s]
+[INFO] using device: cuda
+Failed to place model onto specified device. This may be because the model is quantized via `bitsandbytes`. If the desired GPU is being used, this message is safe to ignore.
+Task: hendrycksTest-abstract_algebra_likelihoodoptioncontent; number of docs: 100
+Task: hendrycksTest-abstract_algebra_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about abstract algebra.
+
+Statement 1 | Some abelian group of order 45 has a subgroup of order 10. Statement 2 | A subgroup H of a group G is a normal subgroup if and only if thenumber of left cosets of H is equal to the number of right cosets of H.
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about abstract algebra.\n\nStatement 1 | Some abelian group of order 45 has a subgroup of order 10. Statement 2 | A subgroup H of a group G is a normal subgroup if and only if thenumber of left cosets of H is equal to the number of right cosets of H.\n', ' True, True')[0]
+, Req_loglikelihood('The following are statements about abstract algebra.\n\nStatement 1 | Some abelian group of order 45 has a subgroup of order 10. Statement 2 | A subgroup H of a group G is a normal subgroup if and only if thenumber of left cosets of H is equal to the number of right cosets of H.\n', ' False, False')[0]
+, Req_loglikelihood('The following are statements about abstract algebra.\n\nStatement 1 | Some abelian group of order 45 has a subgroup of order 10. Statement 2 | A subgroup H of a group G is a normal subgroup if and only if thenumber of left cosets of H is equal to the number of right cosets of H.\n', ' True, False')[0]
+, Req_loglikelihood('The following are statements about abstract algebra.\n\nStatement 1 | Some abelian group of order 45 has a subgroup of order 10. Statement 2 | A subgroup H of a group G is a normal subgroup if and only if thenumber of left cosets of H is equal to the number of right cosets of H.\n', ' False, True')[0]
+]
+Task: hendrycksTest-anatomy_likelihoodoptioncontent; number of docs: 135
+Task: hendrycksTest-anatomy_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about anatomy.
+
+Gastrulation is the process of
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about anatomy.\n\nGastrulation is the process of\n', ' mesoderm formation and occurs after neurulation.')[0]
+, Req_loglikelihood('The following are statements about anatomy.\n\nGastrulation is the process of\n', ' ectomesenchyme formation and occurs before neurulation.')[0]
+, Req_loglikelihood('The following are statements about anatomy.\n\nGastrulation is the process of\n', ' mesoderm formation and occurs before neurulation.')[0]
+, Req_loglikelihood('The following are statements about anatomy.\n\nGastrulation is the process of\n', ' ectomesenchyme formation and occurs after neurulation.')[0]
+]
+Task: hendrycksTest-astronomy_likelihoodoptioncontent; number of docs: 152
+Task: hendrycksTest-astronomy_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about astronomy.
+
+Jupiter's orbital distance is roughly 5 AU. How many times brighter would the Sun have to be for Europa to receive the same solar flux that we currently receive on Earth (1380W/m2)?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood("The following are statements about astronomy.\n\nJupiter's orbital distance is roughly 5 AU. How many times brighter would the Sun have to be for Europa to receive the same solar flux that we currently receive on Earth (1380W/m2)?\n", ' 100 times brighter')[0]
+, Req_loglikelihood("The following are statements about astronomy.\n\nJupiter's orbital distance is roughly 5 AU. How many times brighter would the Sun have to be for Europa to receive the same solar flux that we currently receive on Earth (1380W/m2)?\n", ' 25 times brighter')[0]
+, Req_loglikelihood("The following are statements about astronomy.\n\nJupiter's orbital distance is roughly 5 AU. How many times brighter would the Sun have to be for Europa to receive the same solar flux that we currently receive on Earth (1380W/m2)?\n", ' 2 times brighter')[0]
+, Req_loglikelihood("The following are statements about astronomy.\n\nJupiter's orbital distance is roughly 5 AU. How many times brighter would the Sun have to be for Europa to receive the same solar flux that we currently receive on Earth (1380W/m2)?\n", ' 50 times brighter')[0]
+]
+Task: hendrycksTest-business_ethics_likelihoodoptioncontent; number of docs: 100
+Task: hendrycksTest-business_ethics_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about business ethics.
+
+The extent to which an individual is able to creatively consider the consequences of, resolutions to, and issues associated with moral decision making is known as _________.
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about business ethics.\n\nThe extent to which an individual is able to creatively consider the consequences of, resolutions to, and issues associated with moral decision making is known as _________.\n', ' Moral imagination')[0]
+, Req_loglikelihood('The following are statements about business ethics.\n\nThe extent to which an individual is able to creatively consider the consequences of, resolutions to, and issues associated with moral decision making is known as _________.\n', ' Ethical reflexivity')[0]
+, Req_loglikelihood('The following are statements about business ethics.\n\nThe extent to which an individual is able to creatively consider the consequences of, resolutions to, and issues associated with moral decision making is known as _________.\n', ' Moral originality')[0]
+, Req_loglikelihood('The following are statements about business ethics.\n\nThe extent to which an individual is able to creatively consider the consequences of, resolutions to, and issues associated with moral decision making is known as _________.\n', ' Moral reflexivity')[0]
+]
+Task: hendrycksTest-clinical_knowledge_likelihoodoptioncontent; number of docs: 265
+Task: hendrycksTest-clinical_knowledge_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about clinical knowledge.
+
+Why should shampoo not be used for washing the skin when showering or bathing?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about clinical knowledge.\n\nWhy should shampoo not be used for washing the skin when showering or bathing?\n', ' It is more slippery than soap or emollients.')[0]
+, Req_loglikelihood('The following are statements about clinical knowledge.\n\nWhy should shampoo not be used for washing the skin when showering or bathing?\n', ' It will not produce sufficient lather.')[0]
+, Req_loglikelihood('The following are statements about clinical knowledge.\n\nWhy should shampoo not be used for washing the skin when showering or bathing?\n', ' It is not cost-effective.')[0]
+, Req_loglikelihood('The following are statements about clinical knowledge.\n\nWhy should shampoo not be used for washing the skin when showering or bathing?\n', ' It can cause dryness of the skin.')[0]
+]
+Task: hendrycksTest-college_biology_likelihoodoptioncontent; number of docs: 144
+Task: hendrycksTest-college_biology_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about college biology.
+
+The following pairs were placed in solution together. Which two could be separated by performing low-speed centrifugation?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about college biology.\n\nThe following pairs were placed in solution together. Which two could be separated by performing low-speed centrifugation?\n', ' DNA and mRNA')[0]
+, Req_loglikelihood('The following are statements about college biology.\n\nThe following pairs were placed in solution together. Which two could be separated by performing low-speed centrifugation?\n', ' Nuclei and secretory vesicles')[0]
+, Req_loglikelihood('The following are statements about college biology.\n\nThe following pairs were placed in solution together. Which two could be separated by performing low-speed centrifugation?\n', ' Golgi apparatus and endoplasmic reticulum')[0]
+, Req_loglikelihood('The following are statements about college biology.\n\nThe following pairs were placed in solution together. Which two could be separated by performing low-speed centrifugation?\n', ' Lysosomes and endosomes')[0]
+]
+Task: hendrycksTest-college_chemistry_likelihoodoptioncontent; number of docs: 100
+Task: hendrycksTest-college_chemistry_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about college chemistry.
+
+The strongest base in liquid ammonia is
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about college chemistry.\n\nThe strongest base in liquid ammonia is\n', ' NH3')[0]
+, Req_loglikelihood('The following are statements about college chemistry.\n\nThe strongest base in liquid ammonia is\n', ' NH2−')[0]
+, Req_loglikelihood('The following are statements about college chemistry.\n\nThe strongest base in liquid ammonia is\n', ' NH4+')[0]
+, Req_loglikelihood('The following are statements about college chemistry.\n\nThe strongest base in liquid ammonia is\n', ' N2H4')[0]
+]
+Task: hendrycksTest-college_computer_science_likelihoodoptioncontent; number of docs: 100
+Task: hendrycksTest-college_computer_science_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about college computer science.
+
+Which of the following conditions can be expressed by a Boolean formula in the Boolean variables p_1, p_2, p_3, p_4 and the connectives ∧,∨ (without ¬)?
+I. At least three of p_1, p_2, p_3, p_4 are true.
+II. Exactly three of p_1, p_2, p_3, p_4 are true.
+III. An even number of p_1, p_2, p_3, p_4 are true.
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about college computer science.\n\nWhich of the following conditions can be expressed by a Boolean formula in the Boolean variables p_1, p_2, p_3, p_4 and the connectives ∧,∨ (without ¬)?\nI. At least three of p_1, p_2, p_3, p_4 are true.\nII. Exactly three of p_1, p_2, p_3, p_4 are true.\nIII. An even number of p_1, p_2, p_3, p_4 are true.\n', ' I only')[0]
+, Req_loglikelihood('The following are statements about college computer science.\n\nWhich of the following conditions can be expressed by a Boolean formula in the Boolean variables p_1, p_2, p_3, p_4 and the connectives ∧,∨ (without ¬)?\nI. At least three of p_1, p_2, p_3, p_4 are true.\nII. Exactly three of p_1, p_2, p_3, p_4 are true.\nIII. An even number of p_1, p_2, p_3, p_4 are true.\n', ' II only')[0]
+, Req_loglikelihood('The following are statements about college computer science.\n\nWhich of the following conditions can be expressed by a Boolean formula in the Boolean variables p_1, p_2, p_3, p_4 and the connectives ∧,∨ (without ¬)?\nI. At least three of p_1, p_2, p_3, p_4 are true.\nII. Exactly three of p_1, p_2, p_3, p_4 are true.\nIII. An even number of p_1, p_2, p_3, p_4 are true.\n', ' III only')[0]
+, Req_loglikelihood('The following are statements about college computer science.\n\nWhich of the following conditions can be expressed by a Boolean formula in the Boolean variables p_1, p_2, p_3, p_4 and the connectives ∧,∨ (without ¬)?\nI. At least three of p_1, p_2, p_3, p_4 are true.\nII. Exactly three of p_1, p_2, p_3, p_4 are true.\nIII. An even number of p_1, p_2, p_3, p_4 are true.\n', ' I and III')[0]
+]
+Task: hendrycksTest-college_mathematics_likelihoodoptioncontent; number of docs: 100
+Task: hendrycksTest-college_mathematics_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about college mathematics.
+
+If f is a continuously differentiable real-valued function defined on the open interval (-1, 4) such that f(3) = 5 and f'(x) ≥ -1 for all x, what is the greatest possible value of f(0)?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood("The following are statements about college mathematics.\n\nIf f is a continuously differentiable real-valued function defined on the open interval (-1, 4) such that f(3) = 5 and f'(x) ≥ -1 for all x, what is the greatest possible value of f(0)?\n", ' 3')[0]
+, Req_loglikelihood("The following are statements about college mathematics.\n\nIf f is a continuously differentiable real-valued function defined on the open interval (-1, 4) such that f(3) = 5 and f'(x) ≥ -1 for all x, what is the greatest possible value of f(0)?\n", ' 4')[0]
+, Req_loglikelihood("The following are statements about college mathematics.\n\nIf f is a continuously differentiable real-valued function defined on the open interval (-1, 4) such that f(3) = 5 and f'(x) ≥ -1 for all x, what is the greatest possible value of f(0)?\n", ' 5')[0]
+, Req_loglikelihood("The following are statements about college mathematics.\n\nIf f is a continuously differentiable real-valued function defined on the open interval (-1, 4) such that f(3) = 5 and f'(x) ≥ -1 for all x, what is the greatest possible value of f(0)?\n", ' 8')[0]
+]
+Task: hendrycksTest-college_medicine_likelihoodoptioncontent; number of docs: 173
+Task: hendrycksTest-college_medicine_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about college medicine.
+
+When preparing for the MCAT exam, a student begins studying electrochemical cells. He learns the basic information needed by actively relating it to previous information he has learned about redox reactions. He then builds from that knowledge to learn the advanced concepts needed. The student’s process is best characterized as:
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about college medicine.\n\nWhen preparing for the MCAT exam, a student begins studying electrochemical cells. He learns the basic information needed by actively relating it to previous information he has learned about redox reactions. He then builds from that knowledge to learn the advanced concepts needed. The student’s process is best characterized as:\n', ' Chunking')[0]
+, Req_loglikelihood('The following are statements about college medicine.\n\nWhen preparing for the MCAT exam, a student begins studying electrochemical cells. He learns the basic information needed by actively relating it to previous information he has learned about redox reactions. He then builds from that knowledge to learn the advanced concepts needed. The student’s process is best characterized as:\n', ' A network model')[0]
+, Req_loglikelihood('The following are statements about college medicine.\n\nWhen preparing for the MCAT exam, a student begins studying electrochemical cells. He learns the basic information needed by actively relating it to previous information he has learned about redox reactions. He then builds from that knowledge to learn the advanced concepts needed. The student’s process is best characterized as:\n', ' Maintenance rehearsal')[0]
+, Req_loglikelihood('The following are statements about college medicine.\n\nWhen preparing for the MCAT exam, a student begins studying electrochemical cells. He learns the basic information needed by actively relating it to previous information he has learned about redox reactions. He then builds from that knowledge to learn the advanced concepts needed. The student’s process is best characterized as:\n', ' Elaborative rehearsal')[0]
+]
+Task: hendrycksTest-college_physics_likelihoodoptioncontent; number of docs: 102
+Task: hendrycksTest-college_physics_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about college physics.
+
+A gas cell with an optical path length of 10 cm is placed in one arm of a Michelson interferometer. If the light source for the interferometer is a laser with wavelength 632.2 nm, then 100 fringes are counted as the gas cell is evacuated. What is the index of refraction of the original gas?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about college physics.\n\nA gas cell with an optical path length of 10 cm is placed in one arm of a Michelson interferometer. If the light source for the interferometer is a laser with wavelength 632.2 nm, then 100 fringes are counted as the gas cell is evacuated. What is the index of refraction of the original gas?\n', ' 1.00063')[0]
+, Req_loglikelihood('The following are statements about college physics.\n\nA gas cell with an optical path length of 10 cm is placed in one arm of a Michelson interferometer. If the light source for the interferometer is a laser with wavelength 632.2 nm, then 100 fringes are counted as the gas cell is evacuated. What is the index of refraction of the original gas?\n', ' 1.00032')[0]
+, Req_loglikelihood('The following are statements about college physics.\n\nA gas cell with an optical path length of 10 cm is placed in one arm of a Michelson interferometer. If the light source for the interferometer is a laser with wavelength 632.2 nm, then 100 fringes are counted as the gas cell is evacuated. What is the index of refraction of the original gas?\n', ' 1.00016')[0]
+, Req_loglikelihood('The following are statements about college physics.\n\nA gas cell with an optical path length of 10 cm is placed in one arm of a Michelson interferometer. If the light source for the interferometer is a laser with wavelength 632.2 nm, then 100 fringes are counted as the gas cell is evacuated. What is the index of refraction of the original gas?\n', ' 0.99968')[0]
+]
+Task: hendrycksTest-computer_security_likelihoodoptioncontent; number of docs: 100
+Task: hendrycksTest-computer_security_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about computer security.
+
+Message authentication is a service beyond
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about computer security.\n\nMessage authentication is a service beyond\n', ' Message Condentiality')[0]
+, Req_loglikelihood('The following are statements about computer security.\n\nMessage authentication is a service beyond\n', ' Message Integrity')[0]
+, Req_loglikelihood('The following are statements about computer security.\n\nMessage authentication is a service beyond\n', ' Message Splashing')[0]
+, Req_loglikelihood('The following are statements about computer security.\n\nMessage authentication is a service beyond\n', ' Message Sending')[0]
+]
+Task: hendrycksTest-conceptual_physics_likelihoodoptioncontent; number of docs: 235
+Task: hendrycksTest-conceptual_physics_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about conceptual physics.
+
+The complementary color of blue is
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about conceptual physics.\n\nThe complementary color of blue is\n', ' magenta')[0]
+, Req_loglikelihood('The following are statements about conceptual physics.\n\nThe complementary color of blue is\n', ' yellow')[0]
+, Req_loglikelihood('The following are statements about conceptual physics.\n\nThe complementary color of blue is\n', ' cyan')[0]
+, Req_loglikelihood('The following are statements about conceptual physics.\n\nThe complementary color of blue is\n', ' white')[0]
+]
+Task: hendrycksTest-econometrics_likelihoodoptioncontent; number of docs: 114
+Task: hendrycksTest-econometrics_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about econometrics.
+
+A white noise process will have
+
+(i) A zero mean
+
+(ii) A constant variance
+
+(iii) Autocovariances that are constant
+
+(iv) Autocovariances that are zero except at lag zero
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about econometrics.\n\nA white noise process will have\n\n(i) A zero mean\n\n(ii) A constant variance\n\n(iii) Autocovariances that are constant\n\n(iv) Autocovariances that are zero except at lag zero\n', ' (ii) and (iv) only')[0]
+, Req_loglikelihood('The following are statements about econometrics.\n\nA white noise process will have\n\n(i) A zero mean\n\n(ii) A constant variance\n\n(iii) Autocovariances that are constant\n\n(iv) Autocovariances that are zero except at lag zero\n', ' (i) and (iii) only')[0]
+, Req_loglikelihood('The following are statements about econometrics.\n\nA white noise process will have\n\n(i) A zero mean\n\n(ii) A constant variance\n\n(iii) Autocovariances that are constant\n\n(iv) Autocovariances that are zero except at lag zero\n', ' (i), (ii), and (iii) only')[0]
+, Req_loglikelihood('The following are statements about econometrics.\n\nA white noise process will have\n\n(i) A zero mean\n\n(ii) A constant variance\n\n(iii) Autocovariances that are constant\n\n(iv) Autocovariances that are zero except at lag zero\n', ' (i), (ii), (iii), and (iv)')[0]
+]
+Task: hendrycksTest-electrical_engineering_likelihoodoptioncontent; number of docs: 145
+Task: hendrycksTest-electrical_engineering_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about electrical engineering.
+
+The number of output pins in 8085 microprocessors are
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about electrical engineering.\n\nThe number of output pins in 8085 microprocessors are\n', ' 27.')[0]
+, Req_loglikelihood('The following are statements about electrical engineering.\n\nThe number of output pins in 8085 microprocessors are\n', ' 40.')[0]
+, Req_loglikelihood('The following are statements about electrical engineering.\n\nThe number of output pins in 8085 microprocessors are\n', ' 21.')[0]
+, Req_loglikelihood('The following are statements about electrical engineering.\n\nThe number of output pins in 8085 microprocessors are\n', ' 19.')[0]
+]
+Task: hendrycksTest-elementary_mathematics_likelihoodoptioncontent; number of docs: 378
+Task: hendrycksTest-elementary_mathematics_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about elementary mathematics.
+
+Find 13 over 14 + 7 over 14.
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about elementary mathematics.\n\nFind 13 over 14 + 7 over 14.\n', ' 1 and 4 over 7')[0]
+, Req_loglikelihood('The following are statements about elementary mathematics.\n\nFind 13 over 14 + 7 over 14.\n', ' 1 and 3 over 7')[0]
+, Req_loglikelihood('The following are statements about elementary mathematics.\n\nFind 13 over 14 + 7 over 14.\n', ' 1 and 5 over 14')[0]
+, Req_loglikelihood('The following are statements about elementary mathematics.\n\nFind 13 over 14 + 7 over 14.\n', ' 20 over 28')[0]
+]
+Task: hendrycksTest-formal_logic_likelihoodoptioncontent; number of docs: 126
+Task: hendrycksTest-formal_logic_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about formal logic.
+
+Which of the given formulas of PL is the best symbolization of the following sentence?
+Everybody loves Raymond, or not.
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about formal logic.\n\nWhich of the given formulas of PL is the best symbolization of the following sentence?\nEverybody loves Raymond, or not.\n', ' L')[0]
+, Req_loglikelihood('The following are statements about formal logic.\n\nWhich of the given formulas of PL is the best symbolization of the following sentence?\nEverybody loves Raymond, or not.\n', ' ~L')[0]
+, Req_loglikelihood('The following are statements about formal logic.\n\nWhich of the given formulas of PL is the best symbolization of the following sentence?\nEverybody loves Raymond, or not.\n', ' L • ~L')[0]
+, Req_loglikelihood('The following are statements about formal logic.\n\nWhich of the given formulas of PL is the best symbolization of the following sentence?\nEverybody loves Raymond, or not.\n', ' L ∨ ~L')[0]
+]
+Task: hendrycksTest-global_facts_likelihoodoptioncontent; number of docs: 100
+Task: hendrycksTest-global_facts_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about global facts.
+
+As of 2019, which of the following had the lowest life expectancy?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about global facts.\n\nAs of 2019, which of the following had the lowest life expectancy?\n', ' Brazil')[0]
+, Req_loglikelihood('The following are statements about global facts.\n\nAs of 2019, which of the following had the lowest life expectancy?\n', ' China')[0]
+, Req_loglikelihood('The following are statements about global facts.\n\nAs of 2019, which of the following had the lowest life expectancy?\n', ' Mexico')[0]
+, Req_loglikelihood('The following are statements about global facts.\n\nAs of 2019, which of the following had the lowest life expectancy?\n', ' Iran')[0]
+]
+Task: hendrycksTest-high_school_biology_likelihoodoptioncontent; number of docs: 310
+Task: hendrycksTest-high_school_biology_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about high school biology.
+
+In the inherited disorder called Pompe disease, glycogen breakdown in the cytosol occurs normally and blood glucose levels are normal, yet glycogen accumulates in lysosomes. This suggests a malfunction with
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about high school biology.\n\nIn the inherited disorder called Pompe disease, glycogen breakdown in the cytosol occurs normally and blood glucose levels are normal, yet glycogen accumulates in lysosomes. This suggests a malfunction with\n', ' enzymes in the lysosomes')[0]
+, Req_loglikelihood('The following are statements about high school biology.\n\nIn the inherited disorder called Pompe disease, glycogen breakdown in the cytosol occurs normally and blood glucose levels are normal, yet glycogen accumulates in lysosomes. This suggests a malfunction with\n', ' enzymes in the mitochondria')[0]
+, Req_loglikelihood('The following are statements about high school biology.\n\nIn the inherited disorder called Pompe disease, glycogen breakdown in the cytosol occurs normally and blood glucose levels are normal, yet glycogen accumulates in lysosomes. This suggests a malfunction with\n', ' membrane transport during exocytosis')[0]
+, Req_loglikelihood('The following are statements about high school biology.\n\nIn the inherited disorder called Pompe disease, glycogen breakdown in the cytosol occurs normally and blood glucose levels are normal, yet glycogen accumulates in lysosomes. This suggests a malfunction with\n', ' membrane transport during endocytosis')[0]
+]
+Task: hendrycksTest-high_school_chemistry_likelihoodoptioncontent; number of docs: 203
+Task: hendrycksTest-high_school_chemistry_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about high school chemistry.
+
+Based on periodic relationships, the concepts related to bond strength, and the concept relating bond strength to acid strength, which of the following correctly predicts the strength of binary acids from strongest to weakest?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about high school chemistry.\n\nBased on periodic relationships, the concepts related to bond strength, and the concept relating bond strength to acid strength, which of the following correctly predicts the strength of binary acids from strongest to weakest?\n', ' H2Se > H2O > H2S')[0]
+, Req_loglikelihood('The following are statements about high school chemistry.\n\nBased on periodic relationships, the concepts related to bond strength, and the concept relating bond strength to acid strength, which of the following correctly predicts the strength of binary acids from strongest to weakest?\n', ' H2S > H2Se > H2O')[0]
+, Req_loglikelihood('The following are statements about high school chemistry.\n\nBased on periodic relationships, the concepts related to bond strength, and the concept relating bond strength to acid strength, which of the following correctly predicts the strength of binary acids from strongest to weakest?\n', ' H2O < H2S < H2Se')[0]
+, Req_loglikelihood('The following are statements about high school chemistry.\n\nBased on periodic relationships, the concepts related to bond strength, and the concept relating bond strength to acid strength, which of the following correctly predicts the strength of binary acids from strongest to weakest?\n', ' H2Se > H2S > H2O')[0]
+]
+Task: hendrycksTest-high_school_computer_science_likelihoodoptioncontent; number of docs: 100
+Task: hendrycksTest-high_school_computer_science_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about high school computer science.
+
+Consider the code segment below.
+ Line 1: IF (a = 0)
+ Line 2: {
+ Line 3: b ← a + 10
+ Line 4: }
+ Line 5: ELSE
+ Line 6: {
+ Line 7: b ← a + 2O
+ Line 8: }
+ Which of the following changes will NOT affect the results when the code segment is executed?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about high school computer science.\n\nConsider the code segment below.\n Line 1: IF (a = 0)\n Line 2: {\n Line 3: b ← a + 10\n Line 4: }\n Line 5: ELSE\n Line 6: {\n Line 7: b ← a + 2O\n Line 8: }\n Which of the following changes will NOT affect the results when the code segment is executed?\n', ' Changing line 3 to b ← 10')[0]
+, Req_loglikelihood('The following are statements about high school computer science.\n\nConsider the code segment below.\n Line 1: IF (a = 0)\n Line 2: {\n Line 3: b ← a + 10\n Line 4: }\n Line 5: ELSE\n Line 6: {\n Line 7: b ← a + 2O\n Line 8: }\n Which of the following changes will NOT affect the results when the code segment is executed?\n', ' Changing line 3 to a ← b + 10')[0]
+, Req_loglikelihood('The following are statements about high school computer science.\n\nConsider the code segment below.\n Line 1: IF (a = 0)\n Line 2: {\n Line 3: b ← a + 10\n Line 4: }\n Line 5: ELSE\n Line 6: {\n Line 7: b ← a + 2O\n Line 8: }\n Which of the following changes will NOT affect the results when the code segment is executed?\n', ' Changing line 7 to b ← 20')[0]
+, Req_loglikelihood('The following are statements about high school computer science.\n\nConsider the code segment below.\n Line 1: IF (a = 0)\n Line 2: {\n Line 3: b ← a + 10\n Line 4: }\n Line 5: ELSE\n Line 6: {\n Line 7: b ← a + 2O\n Line 8: }\n Which of the following changes will NOT affect the results when the code segment is executed?\n', ' Changing line 7 to a ← b + 10')[0]
+]
+Task: hendrycksTest-high_school_european_history_likelihoodoptioncontent; number of docs: 165
+Task: hendrycksTest-high_school_european_history_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about high school european history.
+
+This question refers to the following information.
+At last it seems to me that I have come to understand why man is the most fortunate of all creatures and consequently worthy of all admiration. … The nature of all other beings is limited. … Imagine! The great generosity of God! The happiness of man! To man it is allowed to be whatever he chooses to be!
+Pico della Mirandola, Oration on the Dignity of Man, 1486
+From the passage, one may infer that Pico rejected the notion
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about high school european history.\n\nThis question refers to the following information.\nAt last it seems to me that I have come to understand why man is the most fortunate of all creatures and consequently worthy of all admiration. … The nature of all other beings is limited. … Imagine! The great generosity of God! The happiness of man! To man it is allowed to be whatever he chooses to be!\nPico della Mirandola, Oration on the Dignity of Man, 1486\nFrom the passage, one may infer that Pico rejected the notion\n', ' that man was a unique kind of creature')[0]
+, Req_loglikelihood('The following are statements about high school european history.\n\nThis question refers to the following information.\nAt last it seems to me that I have come to understand why man is the most fortunate of all creatures and consequently worthy of all admiration. … The nature of all other beings is limited. … Imagine! The great generosity of God! The happiness of man! To man it is allowed to be whatever he chooses to be!\nPico della Mirandola, Oration on the Dignity of Man, 1486\nFrom the passage, one may infer that Pico rejected the notion\n', ' that God intended man to strive to achieve')[0]
+, Req_loglikelihood('The following are statements about high school european history.\n\nThis question refers to the following information.\nAt last it seems to me that I have come to understand why man is the most fortunate of all creatures and consequently worthy of all admiration. … The nature of all other beings is limited. … Imagine! The great generosity of God! The happiness of man! To man it is allowed to be whatever he chooses to be!\nPico della Mirandola, Oration on the Dignity of Man, 1486\nFrom the passage, one may infer that Pico rejected the notion\n', ' that man is unworthy of admiration')[0]
+, Req_loglikelihood('The following are statements about high school european history.\n\nThis question refers to the following information.\nAt last it seems to me that I have come to understand why man is the most fortunate of all creatures and consequently worthy of all admiration. … The nature of all other beings is limited. … Imagine! The great generosity of God! The happiness of man! To man it is allowed to be whatever he chooses to be!\nPico della Mirandola, Oration on the Dignity of Man, 1486\nFrom the passage, one may infer that Pico rejected the notion\n', " that humans are God's equals")[0]
+]
+Task: hendrycksTest-high_school_geography_likelihoodoptioncontent; number of docs: 198
+Task: hendrycksTest-high_school_geography_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about high school geography.
+
+The way of life based on breeding and herding of animals that are used as a source of food, shelter, and clothing is called
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about high school geography.\n\nThe way of life based on breeding and herding of animals that are used as a source of food, shelter, and clothing is called\n', ' swidden.')[0]
+, Req_loglikelihood('The following are statements about high school geography.\n\nThe way of life based on breeding and herding of animals that are used as a source of food, shelter, and clothing is called\n', ' subsistence farming.')[0]
+, Req_loglikelihood('The following are statements about high school geography.\n\nThe way of life based on breeding and herding of animals that are used as a source of food, shelter, and clothing is called\n', ' pastorialism.')[0]
+, Req_loglikelihood('The following are statements about high school geography.\n\nThe way of life based on breeding and herding of animals that are used as a source of food, shelter, and clothing is called\n', ' hunting and gathering.')[0]
+]
+Task: hendrycksTest-high_school_government_and_politics_likelihoodoptioncontent; number of docs: 193
+Task: hendrycksTest-high_school_government_and_politics_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about high school government and politics.
+
+In the majority of cases, federal programs are implemented by
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about high school government and politics.\n\nIn the majority of cases, federal programs are implemented by\n', ' private businesses working as subcontractors to the government')[0]
+, Req_loglikelihood('The following are statements about high school government and politics.\n\nIn the majority of cases, federal programs are implemented by\n', ' state and local governments, by means of federal funding')[0]
+, Req_loglikelihood('The following are statements about high school government and politics.\n\nIn the majority of cases, federal programs are implemented by\n', ' Congress, through the local offices of its elected representatives')[0]
+, Req_loglikelihood('The following are statements about high school government and politics.\n\nIn the majority of cases, federal programs are implemented by\n', ' the federal courts, by means of criminal prosecutions')[0]
+]
+Task: hendrycksTest-high_school_macroeconomics_likelihoodoptioncontent; number of docs: 390
+Task: hendrycksTest-high_school_macroeconomics_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about high school macroeconomics.
+
+Which of the following is true of a typical contraction of the business cycle?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about high school macroeconomics.\n\nWhich of the following is true of a typical contraction of the business cycle?\n', ' Consumption is falling but household wealth is rising.')[0]
+, Req_loglikelihood('The following are statements about high school macroeconomics.\n\nWhich of the following is true of a typical contraction of the business cycle?\n', ' Consumption is increasing.')[0]
+, Req_loglikelihood('The following are statements about high school macroeconomics.\n\nWhich of the following is true of a typical contraction of the business cycle?\n', ' Private investment is rising.')[0]
+, Req_loglikelihood('The following are statements about high school macroeconomics.\n\nWhich of the following is true of a typical contraction of the business cycle?\n', ' Employment and inflation are low.')[0]
+]
+Task: hendrycksTest-high_school_mathematics_likelihoodoptioncontent; number of docs: 270
+Task: hendrycksTest-high_school_mathematics_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about high school mathematics.
+
+Planets X, Y and Z take 360, 450 and 540 days, respectively, to rotate around the same sun. If the three planets are lined up in a ray having the sun as its endpoint, what is the minimum positive number of days before they are all in the exact same locations again?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about high school mathematics.\n\nPlanets X, Y and Z take 360, 450 and 540 days, respectively, to rotate around the same sun. If the three planets are lined up in a ray having the sun as its endpoint, what is the minimum positive number of days before they are all in the exact same locations again?\n', ' 360')[0]
+, Req_loglikelihood('The following are statements about high school mathematics.\n\nPlanets X, Y and Z take 360, 450 and 540 days, respectively, to rotate around the same sun. If the three planets are lined up in a ray having the sun as its endpoint, what is the minimum positive number of days before they are all in the exact same locations again?\n', ' 5400')[0]
+, Req_loglikelihood('The following are statements about high school mathematics.\n\nPlanets X, Y and Z take 360, 450 and 540 days, respectively, to rotate around the same sun. If the three planets are lined up in a ray having the sun as its endpoint, what is the minimum positive number of days before they are all in the exact same locations again?\n', ' 900')[0]
+, Req_loglikelihood('The following are statements about high school mathematics.\n\nPlanets X, Y and Z take 360, 450 and 540 days, respectively, to rotate around the same sun. If the three planets are lined up in a ray having the sun as its endpoint, what is the minimum positive number of days before they are all in the exact same locations again?\n', ' 1200')[0]
+]
+Task: hendrycksTest-high_school_microeconomics_likelihoodoptioncontent; number of docs: 238
+Task: hendrycksTest-high_school_microeconomics_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about high school microeconomics.
+
+Which of the following is the best example of a public good?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about high school microeconomics.\n\nWhich of the following is the best example of a public good?\n', ' Private violin lessons')[0]
+, Req_loglikelihood('The following are statements about high school microeconomics.\n\nWhich of the following is the best example of a public good?\n', ' The volunteer fire department in your community')[0]
+, Req_loglikelihood('The following are statements about high school microeconomics.\n\nWhich of the following is the best example of a public good?\n', ' A $1 ticket for admission to a museum')[0]
+, Req_loglikelihood('The following are statements about high school microeconomics.\n\nWhich of the following is the best example of a public good?\n', ' A bag of potato chips')[0]
+]
+Task: hendrycksTest-high_school_physics_likelihoodoptioncontent; number of docs: 151
+Task: hendrycksTest-high_school_physics_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about high school physics.
+
+The charge on an oil drop is measured in the laboratory. Which of the following measurements should be rejected as highly unlikely to be correct?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about high school physics.\n\nThe charge on an oil drop is measured in the laboratory. Which of the following measurements should be rejected as highly unlikely to be correct?\n', ' 6.4 × 10^-19 C')[0]
+, Req_loglikelihood('The following are statements about high school physics.\n\nThe charge on an oil drop is measured in the laboratory. Which of the following measurements should be rejected as highly unlikely to be correct?\n', ' 8.0 × 10^-19 C')[0]
+, Req_loglikelihood('The following are statements about high school physics.\n\nThe charge on an oil drop is measured in the laboratory. Which of the following measurements should be rejected as highly unlikely to be correct?\n', ' 4.8 × 10^-19 C')[0]
+, Req_loglikelihood('The following are statements about high school physics.\n\nThe charge on an oil drop is measured in the laboratory. Which of the following measurements should be rejected as highly unlikely to be correct?\n', ' 2.4 × 10^-19 C')[0]
+]
+Task: hendrycksTest-high_school_psychology_likelihoodoptioncontent; number of docs: 545
+Task: hendrycksTest-high_school_psychology_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about high school psychology.
+
+The case study of Phineas Gage's brain injury was significant for which of the following reasons?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood("The following are statements about high school psychology.\n\nThe case study of Phineas Gage's brain injury was significant for which of the following reasons?\n", " Gage's accident was one of the first to be treated with drugs that alter the neurotransmitters in the brain.")[0]
+, Req_loglikelihood("The following are statements about high school psychology.\n\nThe case study of Phineas Gage's brain injury was significant for which of the following reasons?\n", ' It was one of the first well-documented examples of a specific brain area being associated with a set of physical and emotional changes.')[0]
+, Req_loglikelihood("The following are statements about high school psychology.\n\nThe case study of Phineas Gage's brain injury was significant for which of the following reasons?\n", ' This accident provided psychiatrists with one of the first opportunities to treat a brain-damaged patient with psychotherapeutic techniques.')[0]
+, Req_loglikelihood("The following are statements about high school psychology.\n\nThe case study of Phineas Gage's brain injury was significant for which of the following reasons?\n", ' The CAT scan was used for the first time in the Phineas Gage case to document the extent of brain injury.')[0]
+]
+Task: hendrycksTest-high_school_statistics_likelihoodoptioncontent; number of docs: 216
+Task: hendrycksTest-high_school_statistics_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about high school statistics.
+
+A large city was interested in annexing part of the surrounding county. In a survey conducted by the local newspaper, 58 percent of respondents said they were against the annexation. During the actual vote, not all eligible voters voted, but 56 percent of the respondents voted against the annexation. Which of the following best describes the difference in the percentages obtained from the newspaper poll and the vote itself?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about high school statistics.\n\nA large city was interested in annexing part of the surrounding county. In a survey conducted by the local newspaper, 58 percent of respondents said they were against the annexation. During the actual vote, not all eligible voters voted, but 56 percent of the respondents voted against the annexation. Which of the following best describes the difference in the percentages obtained from the newspaper poll and the vote itself?\n', ' It is an example of nonresponse bias, the systematic tendency of individuals with particular characteristics to refuse to answer a survey question.')[0]
+, Req_loglikelihood('The following are statements about high school statistics.\n\nA large city was interested in annexing part of the surrounding county. In a survey conducted by the local newspaper, 58 percent of respondents said they were against the annexation. During the actual vote, not all eligible voters voted, but 56 percent of the respondents voted against the annexation. Which of the following best describes the difference in the percentages obtained from the newspaper poll and the vote itself?\n', ' It is the systematic difference between a statistic and parameter caused by the nonrandom selection of surveyed persons.')[0]
+, Req_loglikelihood('The following are statements about high school statistics.\n\nA large city was interested in annexing part of the surrounding county. In a survey conducted by the local newspaper, 58 percent of respondents said they were against the annexation. During the actual vote, not all eligible voters voted, but 56 percent of the respondents voted against the annexation. Which of the following best describes the difference in the percentages obtained from the newspaper poll and the vote itself?\n', ' It is the difference between the same statistics computed from two different samples.')[0]
+, Req_loglikelihood('The following are statements about high school statistics.\n\nA large city was interested in annexing part of the surrounding county. In a survey conducted by the local newspaper, 58 percent of respondents said they were against the annexation. During the actual vote, not all eligible voters voted, but 56 percent of the respondents voted against the annexation. Which of the following best describes the difference in the percentages obtained from the newspaper poll and the vote itself?\n', ' It is the difference between the statistic and the truth due to use of a random sample.')[0]
+]
+Task: hendrycksTest-high_school_us_history_likelihoodoptioncontent; number of docs: 204
+Task: hendrycksTest-high_school_us_history_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about high school us history.
+
+This question refers to the following information.
+"If you analyze it I believe the very heart and soul of conservatism is libertarianism. I think conservatism is really a misnomer just as liberalism is a misnomer for the liberals—if we were back in the days of the Revolution, so-called conservatives today would be the Liberals and the liberals would be the Tories. The basis of conservatism is a desire for less government interference or less centralized authority or more individual freedom and this is a pretty general description also of what libertarianism is. Now, I can't say that I will agree with all the things that the present group who call themselves Libertarians in the sense of a party say, because I think that like in any political movement there are shades, and there are libertarians who are almost over at the point of wanting no government at all or anarchy. I believe there are legitimate government functions. There is a legitimate need in an orderly society for some government to maintain freedom or we will have tyranny by individuals. The strongest man on the block will run the neighborhood. We have government to ensure that we don't each one of us have to carry a club to defend ourselves. But again, I stand on my statement that I think that libertarianism and conservatism are traveling the same path."
+Ronald Reagan, Interview published in Reason magazine, 1975
+Which of the following groups would be most opposed to the sentiments expressed in the excerpt above?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about high school us history.\n\nThis question refers to the following information.\n"If you analyze it I believe the very heart and soul of conservatism is libertarianism. I think conservatism is really a misnomer just as liberalism is a misnomer for the liberals—if we were back in the days of the Revolution, so-called conservatives today would be the Liberals and the liberals would be the Tories. The basis of conservatism is a desire for less government interference or less centralized authority or more individual freedom and this is a pretty general description also of what libertarianism is. Now, I can\'t say that I will agree with all the things that the present group who call themselves Libertarians in the sense of a party say, because I think that like in any political movement there are shades, and there are libertarians who are almost over at the point of wanting no government at all or anarchy. I believe there are legitimate government functions. There is a legitimate need in an orderly society for some government to maintain freedom or we will have tyranny by individuals. The strongest man on the block will run the neighborhood. We have government to ensure that we don\'t each one of us have to carry a club to defend ourselves. But again, I stand on my statement that I think that libertarianism and conservatism are traveling the same path."\nRonald Reagan, Interview published in Reason magazine, 1975\nWhich of the following groups would be most opposed to the sentiments expressed in the excerpt above?\n', ' Neoconservatives')[0]
+, Req_loglikelihood('The following are statements about high school us history.\n\nThis question refers to the following information.\n"If you analyze it I believe the very heart and soul of conservatism is libertarianism. I think conservatism is really a misnomer just as liberalism is a misnomer for the liberals—if we were back in the days of the Revolution, so-called conservatives today would be the Liberals and the liberals would be the Tories. The basis of conservatism is a desire for less government interference or less centralized authority or more individual freedom and this is a pretty general description also of what libertarianism is. Now, I can\'t say that I will agree with all the things that the present group who call themselves Libertarians in the sense of a party say, because I think that like in any political movement there are shades, and there are libertarians who are almost over at the point of wanting no government at all or anarchy. I believe there are legitimate government functions. There is a legitimate need in an orderly society for some government to maintain freedom or we will have tyranny by individuals. The strongest man on the block will run the neighborhood. We have government to ensure that we don\'t each one of us have to carry a club to defend ourselves. But again, I stand on my statement that I think that libertarianism and conservatism are traveling the same path."\nRonald Reagan, Interview published in Reason magazine, 1975\nWhich of the following groups would be most opposed to the sentiments expressed in the excerpt above?\n', ' Reagan Democrats')[0]
+, Req_loglikelihood('The following are statements about high school us history.\n\nThis question refers to the following information.\n"If you analyze it I believe the very heart and soul of conservatism is libertarianism. I think conservatism is really a misnomer just as liberalism is a misnomer for the liberals—if we were back in the days of the Revolution, so-called conservatives today would be the Liberals and the liberals would be the Tories. The basis of conservatism is a desire for less government interference or less centralized authority or more individual freedom and this is a pretty general description also of what libertarianism is. Now, I can\'t say that I will agree with all the things that the present group who call themselves Libertarians in the sense of a party say, because I think that like in any political movement there are shades, and there are libertarians who are almost over at the point of wanting no government at all or anarchy. I believe there are legitimate government functions. There is a legitimate need in an orderly society for some government to maintain freedom or we will have tyranny by individuals. The strongest man on the block will run the neighborhood. We have government to ensure that we don\'t each one of us have to carry a club to defend ourselves. But again, I stand on my statement that I think that libertarianism and conservatism are traveling the same path."\nRonald Reagan, Interview published in Reason magazine, 1975\nWhich of the following groups would be most opposed to the sentiments expressed in the excerpt above?\n', ' Progressive Liberals')[0]
+, Req_loglikelihood('The following are statements about high school us history.\n\nThis question refers to the following information.\n"If you analyze it I believe the very heart and soul of conservatism is libertarianism. I think conservatism is really a misnomer just as liberalism is a misnomer for the liberals—if we were back in the days of the Revolution, so-called conservatives today would be the Liberals and the liberals would be the Tories. The basis of conservatism is a desire for less government interference or less centralized authority or more individual freedom and this is a pretty general description also of what libertarianism is. Now, I can\'t say that I will agree with all the things that the present group who call themselves Libertarians in the sense of a party say, because I think that like in any political movement there are shades, and there are libertarians who are almost over at the point of wanting no government at all or anarchy. I believe there are legitimate government functions. There is a legitimate need in an orderly society for some government to maintain freedom or we will have tyranny by individuals. The strongest man on the block will run the neighborhood. We have government to ensure that we don\'t each one of us have to carry a club to defend ourselves. But again, I stand on my statement that I think that libertarianism and conservatism are traveling the same path."\nRonald Reagan, Interview published in Reason magazine, 1975\nWhich of the following groups would be most opposed to the sentiments expressed in the excerpt above?\n', ' Populists')[0]
+]
+Task: hendrycksTest-high_school_world_history_likelihoodoptioncontent; number of docs: 237
+Task: hendrycksTest-high_school_world_history_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about high school world history.
+
+This question refers to the following information.
+"The struggle against neo-colonialism is not aimed at excluding the capital of the developed world from operating in less developed countries. It is aimed at preventing the financial power of the developed countries being used in such a way as to impoverish the less developed.
+Non-alignment, as practiced by Ghana and many other countries, is based on co-operation with all States whether they be capitalist, socialist or have a mixed economy. Such a policy, therefore, involves foreign investment from capitalist countries, but it must be invested in accordance with a national plan drawn up by the government of the non-aligned State with its own interests in mind. The issue is not what return the foreign investor receives on his investments…The question is one of power. A State in the grip of neo-colonialism is not master of its own destiny."
+Kwame Nkrumah, Neo-Colonialism, 1965
+Which of the following most inspired the national plan advanced by Nkrumah in the second paragraph?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about high school world history.\n\nThis question refers to the following information.\n"The struggle against neo-colonialism is not aimed at excluding the capital of the developed world from operating in less developed countries. It is aimed at preventing the financial power of the developed countries being used in such a way as to impoverish the less developed.\nNon-alignment, as practiced by Ghana and many other countries, is based on co-operation with all States whether they be capitalist, socialist or have a mixed economy. Such a policy, therefore, involves foreign investment from capitalist countries, but it must be invested in accordance with a national plan drawn up by the government of the non-aligned State with its own interests in mind. The issue is not what return the foreign investor receives on his investments…The question is one of power. A State in the grip of neo-colonialism is not master of its own destiny."\nKwame Nkrumah, Neo-Colonialism, 1965\nWhich of the following most inspired the national plan advanced by Nkrumah in the second paragraph?\n', ' Fascism')[0]
+, Req_loglikelihood('The following are statements about high school world history.\n\nThis question refers to the following information.\n"The struggle against neo-colonialism is not aimed at excluding the capital of the developed world from operating in less developed countries. It is aimed at preventing the financial power of the developed countries being used in such a way as to impoverish the less developed.\nNon-alignment, as practiced by Ghana and many other countries, is based on co-operation with all States whether they be capitalist, socialist or have a mixed economy. Such a policy, therefore, involves foreign investment from capitalist countries, but it must be invested in accordance with a national plan drawn up by the government of the non-aligned State with its own interests in mind. The issue is not what return the foreign investor receives on his investments…The question is one of power. A State in the grip of neo-colonialism is not master of its own destiny."\nKwame Nkrumah, Neo-Colonialism, 1965\nWhich of the following most inspired the national plan advanced by Nkrumah in the second paragraph?\n', ' Social Darwinism')[0]
+, Req_loglikelihood('The following are statements about high school world history.\n\nThis question refers to the following information.\n"The struggle against neo-colonialism is not aimed at excluding the capital of the developed world from operating in less developed countries. It is aimed at preventing the financial power of the developed countries being used in such a way as to impoverish the less developed.\nNon-alignment, as practiced by Ghana and many other countries, is based on co-operation with all States whether they be capitalist, socialist or have a mixed economy. Such a policy, therefore, involves foreign investment from capitalist countries, but it must be invested in accordance with a national plan drawn up by the government of the non-aligned State with its own interests in mind. The issue is not what return the foreign investor receives on his investments…The question is one of power. A State in the grip of neo-colonialism is not master of its own destiny."\nKwame Nkrumah, Neo-Colonialism, 1965\nWhich of the following most inspired the national plan advanced by Nkrumah in the second paragraph?\n', ' Classical liberalism')[0]
+, Req_loglikelihood('The following are statements about high school world history.\n\nThis question refers to the following information.\n"The struggle against neo-colonialism is not aimed at excluding the capital of the developed world from operating in less developed countries. It is aimed at preventing the financial power of the developed countries being used in such a way as to impoverish the less developed.\nNon-alignment, as practiced by Ghana and many other countries, is based on co-operation with all States whether they be capitalist, socialist or have a mixed economy. Such a policy, therefore, involves foreign investment from capitalist countries, but it must be invested in accordance with a national plan drawn up by the government of the non-aligned State with its own interests in mind. The issue is not what return the foreign investor receives on his investments…The question is one of power. A State in the grip of neo-colonialism is not master of its own destiny."\nKwame Nkrumah, Neo-Colonialism, 1965\nWhich of the following most inspired the national plan advanced by Nkrumah in the second paragraph?\n', ' Socialism')[0]
+]
+Task: hendrycksTest-human_aging_likelihoodoptioncontent; number of docs: 223
+Task: hendrycksTest-human_aging_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about human aging.
+
+The lifespan perspective says that development is composed of gains and losses; this means that
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about human aging.\n\nThe lifespan perspective says that development is composed of gains and losses; this means that\n', ' We gain while we are younger but lose when we are older')[0]
+, Req_loglikelihood('The following are statements about human aging.\n\nThe lifespan perspective says that development is composed of gains and losses; this means that\n', ' We gain some things and lose others at every age')[0]
+, Req_loglikelihood('The following are statements about human aging.\n\nThe lifespan perspective says that development is composed of gains and losses; this means that\n', ' For every aspect of development there is no overall change since each gain is offset by loss')[0]
+, Req_loglikelihood('The following are statements about human aging.\n\nThe lifespan perspective says that development is composed of gains and losses; this means that\n', ' Gains are far more important than losses but losses occur too')[0]
+]
+Task: hendrycksTest-human_sexuality_likelihoodoptioncontent; number of docs: 131
+Task: hendrycksTest-human_sexuality_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about human sexuality.
+
+The average male genital size is approximately
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about human sexuality.\n\nThe average male genital size is approximately\n', ' 4 inches')[0]
+, Req_loglikelihood('The following are statements about human sexuality.\n\nThe average male genital size is approximately\n', ' 5 inches')[0]
+, Req_loglikelihood('The following are statements about human sexuality.\n\nThe average male genital size is approximately\n', ' 7 inches')[0]
+, Req_loglikelihood('The following are statements about human sexuality.\n\nThe average male genital size is approximately\n', ' 1 foot')[0]
+]
+Task: hendrycksTest-international_law_likelihoodoptioncontent; number of docs: 121
+Task: hendrycksTest-international_law_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about international law.
+
+Which of the following is a treaty-based human rights mechanism?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about international law.\n\nWhich of the following is a treaty-based human rights mechanism?\n', ' The UN Human Rights Committee')[0]
+, Req_loglikelihood('The following are statements about international law.\n\nWhich of the following is a treaty-based human rights mechanism?\n', ' The UN Human Rights Council')[0]
+, Req_loglikelihood('The following are statements about international law.\n\nWhich of the following is a treaty-based human rights mechanism?\n', ' The UN Universal Periodic Review')[0]
+, Req_loglikelihood('The following are statements about international law.\n\nWhich of the following is a treaty-based human rights mechanism?\n', ' The UN special mandates')[0]
+]
+Task: hendrycksTest-jurisprudence_likelihoodoptioncontent; number of docs: 108
+Task: hendrycksTest-jurisprudence_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about jurisprudence.
+
+Bill purchased a can of Sipep from the Ajax Minimart. After he finished drinking the Sipep, Bill noticed that the can contained dead insects stuck on the inside bottom of the can. In a strict product liability tort action against Ajax, Bill must prove, among other things, that:
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about jurisprudence.\n\nBill purchased a can of Sipep from the Ajax Minimart. After he finished drinking the Sipep, Bill noticed that the can contained dead insects stuck on the inside bottom of the can. In a strict product liability tort action against Ajax, Bill must prove, among other things, that:\n', ' Ajax is a merchant selling Sipep.')[0]
+, Req_loglikelihood('The following are statements about jurisprudence.\n\nBill purchased a can of Sipep from the Ajax Minimart. After he finished drinking the Sipep, Bill noticed that the can contained dead insects stuck on the inside bottom of the can. In a strict product liability tort action against Ajax, Bill must prove, among other things, that:\n', ' Ajax knew or should have known of the defective condition')[0]
+, Req_loglikelihood('The following are statements about jurisprudence.\n\nBill purchased a can of Sipep from the Ajax Minimart. After he finished drinking the Sipep, Bill noticed that the can contained dead insects stuck on the inside bottom of the can. In a strict product liability tort action against Ajax, Bill must prove, among other things, that:\n', ' Ajax had prior notice of other similar problems with Sipep products.')[0]
+, Req_loglikelihood('The following are statements about jurisprudence.\n\nBill purchased a can of Sipep from the Ajax Minimart. After he finished drinking the Sipep, Bill noticed that the can contained dead insects stuck on the inside bottom of the can. In a strict product liability tort action against Ajax, Bill must prove, among other things, that:\n', ' Ajax actually placed the dead insects into the can.')[0]
+]
+Task: hendrycksTest-logical_fallacies_likelihoodoptioncontent; number of docs: 163
+Task: hendrycksTest-logical_fallacies_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about logical fallacies.
+
+Which of the following is another name for evading the issue?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about logical fallacies.\n\nWhich of the following is another name for evading the issue?\n', ' "you too" fallacy')[0]
+, Req_loglikelihood('The following are statements about logical fallacies.\n\nWhich of the following is another name for evading the issue?\n', ' irrelevant conclusion')[0]
+, Req_loglikelihood('The following are statements about logical fallacies.\n\nWhich of the following is another name for evading the issue?\n', ' appeal to fear')[0]
+, Req_loglikelihood('The following are statements about logical fallacies.\n\nWhich of the following is another name for evading the issue?\n', ' argument against the person')[0]
+]
+Task: hendrycksTest-machine_learning_likelihoodoptioncontent; number of docs: 112
+Task: hendrycksTest-machine_learning_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about machine learning.
+
+Statement 1| Layer Normalization is used in the original ResNet paper, not Batch Normalization. Statement 2| DCGANs use self-attention to stabilize training.
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about machine learning.\n\nStatement 1| Layer Normalization is used in the original ResNet paper, not Batch Normalization. Statement 2| DCGANs use self-attention to stabilize training.\n', ' True, True')[0]
+, Req_loglikelihood('The following are statements about machine learning.\n\nStatement 1| Layer Normalization is used in the original ResNet paper, not Batch Normalization. Statement 2| DCGANs use self-attention to stabilize training.\n', ' False, False')[0]
+, Req_loglikelihood('The following are statements about machine learning.\n\nStatement 1| Layer Normalization is used in the original ResNet paper, not Batch Normalization. Statement 2| DCGANs use self-attention to stabilize training.\n', ' True, False')[0]
+, Req_loglikelihood('The following are statements about machine learning.\n\nStatement 1| Layer Normalization is used in the original ResNet paper, not Batch Normalization. Statement 2| DCGANs use self-attention to stabilize training.\n', ' False, True')[0]
+]
+Task: hendrycksTest-management_likelihoodoptioncontent; number of docs: 103
+Task: hendrycksTest-management_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about management.
+
+What is the definition of a scenario in scenario planning?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about management.\n\nWhat is the definition of a scenario in scenario planning?\n', ' An imagined sequence of future events')[0]
+, Req_loglikelihood('The following are statements about management.\n\nWhat is the definition of a scenario in scenario planning?\n', ' An unpredictable event')[0]
+, Req_loglikelihood('The following are statements about management.\n\nWhat is the definition of a scenario in scenario planning?\n', ' A planned for event')[0]
+, Req_loglikelihood('The following are statements about management.\n\nWhat is the definition of a scenario in scenario planning?\n', ' An unplanned for event')[0]
+]
+Task: hendrycksTest-marketing_likelihoodoptioncontent; number of docs: 234
+Task: hendrycksTest-marketing_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about marketing.
+
+The process of outsourcing a task or group of tasks to a generally large group of people is known as:
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about marketing.\n\nThe process of outsourcing a task or group of tasks to a generally large group of people is known as:\n', ' Social media marketing.')[0]
+, Req_loglikelihood('The following are statements about marketing.\n\nThe process of outsourcing a task or group of tasks to a generally large group of people is known as:\n', ' Internet advertising.')[0]
+, Req_loglikelihood('The following are statements about marketing.\n\nThe process of outsourcing a task or group of tasks to a generally large group of people is known as:\n', ' Crowdsourcing.')[0]
+, Req_loglikelihood('The following are statements about marketing.\n\nThe process of outsourcing a task or group of tasks to a generally large group of people is known as:\n', ' E-marketing.')[0]
+]
+Task: hendrycksTest-medical_genetics_likelihoodoptioncontent; number of docs: 100
+Task: hendrycksTest-medical_genetics_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about medical genetics.
+
+Tay-Sachs disease is caused by deficiency of _________________?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about medical genetics.\n\nTay-Sachs disease is caused by deficiency of _________________?\n', ' Alpha-L-iduronidase')[0]
+, Req_loglikelihood('The following are statements about medical genetics.\n\nTay-Sachs disease is caused by deficiency of _________________?\n', ' Glucose-6-phosphatase')[0]
+, Req_loglikelihood('The following are statements about medical genetics.\n\nTay-Sachs disease is caused by deficiency of _________________?\n', ' Hexosaminidase A')[0]
+, Req_loglikelihood('The following are statements about medical genetics.\n\nTay-Sachs disease is caused by deficiency of _________________?\n', ' Homogentisic acid oxidase')[0]
+]
+Task: hendrycksTest-miscellaneous_likelihoodoptioncontent; number of docs: 783
+Task: hendrycksTest-miscellaneous_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about miscellaneous.
+
+Which of the following must be obtained by foreigners wishing to permanently reside in the US?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about miscellaneous.\n\nWhich of the following must be obtained by foreigners wishing to permanently reside in the US?\n', ' visa')[0]
+, Req_loglikelihood('The following are statements about miscellaneous.\n\nWhich of the following must be obtained by foreigners wishing to permanently reside in the US?\n', ' bill of landing')[0]
+, Req_loglikelihood('The following are statements about miscellaneous.\n\nWhich of the following must be obtained by foreigners wishing to permanently reside in the US?\n', " driver's license")[0]
+, Req_loglikelihood('The following are statements about miscellaneous.\n\nWhich of the following must be obtained by foreigners wishing to permanently reside in the US?\n', ' carte blanche')[0]
+]
+Task: hendrycksTest-moral_disputes_likelihoodoptioncontent; number of docs: 346
+Task: hendrycksTest-moral_disputes_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about moral disputes.
+
+On Pogge's view, affluent citizens are harming the poor by
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood("The following are statements about moral disputes.\n\nOn Pogge's view, affluent citizens are harming the poor by\n", ' imposing on them the lasting effects of historical crimes.')[0]
+, Req_loglikelihood("The following are statements about moral disputes.\n\nOn Pogge's view, affluent citizens are harming the poor by\n", ' keeping them below welfare in the state-of-nature.')[0]
+, Req_loglikelihood("The following are statements about moral disputes.\n\nOn Pogge's view, affluent citizens are harming the poor by\n", ' both A and B')[0]
+, Req_loglikelihood("The following are statements about moral disputes.\n\nOn Pogge's view, affluent citizens are harming the poor by\n", ' None of the above')[0]
+]
+Task: hendrycksTest-moral_scenarios_likelihoodoptioncontent; number of docs: 895
+Task: hendrycksTest-moral_scenarios_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about moral scenarios.
+
+For which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I wore a fake moustache to the costume party. Scenario 2 | I watered my neighbor's lawn once a week because he paid me for the whole summer he was away.
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood("The following are statements about moral scenarios.\n\nFor which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I wore a fake moustache to the costume party. Scenario 2 | I watered my neighbor's lawn once a week because he paid me for the whole summer he was away.\n", ' Wrong, Wrong')[0]
+, Req_loglikelihood("The following are statements about moral scenarios.\n\nFor which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I wore a fake moustache to the costume party. Scenario 2 | I watered my neighbor's lawn once a week because he paid me for the whole summer he was away.\n", ' Wrong, Not wrong')[0]
+, Req_loglikelihood("The following are statements about moral scenarios.\n\nFor which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I wore a fake moustache to the costume party. Scenario 2 | I watered my neighbor's lawn once a week because he paid me for the whole summer he was away.\n", ' Not wrong, Wrong')[0]
+, Req_loglikelihood("The following are statements about moral scenarios.\n\nFor which of these two scenarios does the main character (who uses I/me/my) do something clearly morally wrong, according to ordinary moral standards in the US as of 2020? Scenario 1 | I wore a fake moustache to the costume party. Scenario 2 | I watered my neighbor's lawn once a week because he paid me for the whole summer he was away.\n", ' Not wrong, Not wrong')[0]
+]
+Task: hendrycksTest-nutrition_likelihoodoptioncontent; number of docs: 306
+Task: hendrycksTest-nutrition_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about nutrition.
+
+What characteristic is not representative of a type IIb muscle fibre?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about nutrition.\n\nWhat characteristic is not representative of a type IIb muscle fibre?\n', ' Low oxidative capacity')[0]
+, Req_loglikelihood('The following are statements about nutrition.\n\nWhat characteristic is not representative of a type IIb muscle fibre?\n', ' High fatigue resistance')[0]
+, Req_loglikelihood('The following are statements about nutrition.\n\nWhat characteristic is not representative of a type IIb muscle fibre?\n', ' High motor unit strength')[0]
+, Req_loglikelihood('The following are statements about nutrition.\n\nWhat characteristic is not representative of a type IIb muscle fibre?\n', ' Fast contractile speed')[0]
+]
+Task: hendrycksTest-philosophy_likelihoodoptioncontent; number of docs: 311
+Task: hendrycksTest-philosophy_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about philosophy.
+
+Anscombe criticizes as absurd Kant’s idea of:
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about philosophy.\n\nAnscombe criticizes as absurd Kant’s idea of:\n', ' the thing in itself.')[0]
+, Req_loglikelihood('The following are statements about philosophy.\n\nAnscombe criticizes as absurd Kant’s idea of:\n', ' the categorical imperative.')[0]
+, Req_loglikelihood('The following are statements about philosophy.\n\nAnscombe criticizes as absurd Kant’s idea of:\n', ' the phenomenal self.')[0]
+, Req_loglikelihood('The following are statements about philosophy.\n\nAnscombe criticizes as absurd Kant’s idea of:\n', ' legislating for oneself.')[0]
+]
+Task: hendrycksTest-prehistory_likelihoodoptioncontent; number of docs: 324
+Task: hendrycksTest-prehistory_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about prehistory.
+
+Archaeological evidence indicates that cattle were first domesticated where and how long ago?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about prehistory.\n\nArchaeological evidence indicates that cattle were first domesticated where and how long ago?\n', ' in western Europe, about 3,500 years ago')[0]
+, Req_loglikelihood('The following are statements about prehistory.\n\nArchaeological evidence indicates that cattle were first domesticated where and how long ago?\n', ' in sub-Saharan Africa, about 8,500 years ago')[0]
+, Req_loglikelihood('The following are statements about prehistory.\n\nArchaeological evidence indicates that cattle were first domesticated where and how long ago?\n', ' in North America, about 9,500 years ago')[0]
+, Req_loglikelihood('The following are statements about prehistory.\n\nArchaeological evidence indicates that cattle were first domesticated where and how long ago?\n', ' in the Middle East, about 10,500 years ago')[0]
+]
+Task: hendrycksTest-professional_accounting_likelihoodoptioncontent; number of docs: 282
+Task: hendrycksTest-professional_accounting_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about professional accounting.
+
+Which of the following procedures does a CPA usually perform when reviewing the financial statements of a nonissuer?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about professional accounting.\n\nWhich of the following procedures does a CPA usually perform when reviewing the financial statements of a nonissuer?\n', ' Make inquiries of management concerning restrictions on the availability of cash balances.')[0]
+, Req_loglikelihood('The following are statements about professional accounting.\n\nWhich of the following procedures does a CPA usually perform when reviewing the financial statements of a nonissuer?\n', " Communicate deficiencies in the design of internal control to the entity's audit committee.")[0]
+, Req_loglikelihood('The following are statements about professional accounting.\n\nWhich of the following procedures does a CPA usually perform when reviewing the financial statements of a nonissuer?\n', " Examine trend analysis to determine the appropriateness of the CPA's assessment of detection risk.")[0]
+, Req_loglikelihood('The following are statements about professional accounting.\n\nWhich of the following procedures does a CPA usually perform when reviewing the financial statements of a nonissuer?\n', " Evaluate management's plans for dealing with negative trends and financial difficulties.")[0]
+]
+Task: hendrycksTest-professional_law_likelihoodoptioncontent; number of docs: 1534
+Task: hendrycksTest-professional_law_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about professional law.
+
+The owner of a large unimproved tract of land leased it to a tenant for five years at a monthly rental of $1,500. The rental agreement provided that the land was to be used as farmland. Shortly after the tenant took possession of the tract of land, he built thereon, at his own expense, a barn made of lumber, which was 15 feet wide, 20 feet long, and set on loose bricks. The barn increased the appraised market value of the tract of land from $250,000 to $275,000. The tenant then began farming operations on the land. Toward the end of the lease period, the owner informed the tenant that he was going to put the tract of land up for sale. The next month, when the lease expired, the parties settled a dispute over the tenant's right, if any, to compensation for the improvements by the following written agreement:"On the sale of the tract of land, the owner hereby agrees to pay the tenant two-thirds of any sale proceeds in excess of $250,000, provided that tenant may remain on the farm for the next year, rent-free, while the owner tries to sell it. After that time, the tenant may remain on the land until closing of the sale, at a monthly rental of $1,000. "The owner initially set the asking price at $300,000. After receiving scant interest, the owner decided to reduce the price to $260,000. This price reduction so infuriated the tenant that he thereafter made negative comments about the farm to all of the prospective buyers. Finally, 14 months after the agreement between the owner and the tenant was executed, and after rejecting offers for $240,000 and $250,000, the owner sold the tract of land for $256,000 to a buyer who visited the land while the tenant was away on vacation. Thereupon, the tenant, who had failed to pay the last two months rent as per the agreement, moved out. After closing, the owner refused to pay the tenant any of the sale proceeds, and the tenant brought suit to recover damages for breach of contract. Which of the following is the owner's most persuasive argument in defense of the tenant's suit?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about professional law.\n\nThe owner of a large unimproved tract of land leased it to a tenant for five years at a monthly rental of $1,500. The rental agreement provided that the land was to be used as farmland. Shortly after the tenant took possession of the tract of land, he built thereon, at his own expense, a barn made of lumber, which was 15 feet wide, 20 feet long, and set on loose bricks. The barn increased the appraised market value of the tract of land from $250,000 to $275,000. The tenant then began farming operations on the land. Toward the end of the lease period, the owner informed the tenant that he was going to put the tract of land up for sale. The next month, when the lease expired, the parties settled a dispute over the tenant\'s right, if any, to compensation for the improvements by the following written agreement:"On the sale of the tract of land, the owner hereby agrees to pay the tenant two-thirds of any sale proceeds in excess of $250,000, provided that tenant may remain on the farm for the next year, rent-free, while the owner tries to sell it. After that time, the tenant may remain on the land until closing of the sale, at a monthly rental of $1,000. "The owner initially set the asking price at $300,000. After receiving scant interest, the owner decided to reduce the price to $260,000. This price reduction so infuriated the tenant that he thereafter made negative comments about the farm to all of the prospective buyers. Finally, 14 months after the agreement between the owner and the tenant was executed, and after rejecting offers for $240,000 and $250,000, the owner sold the tract of land for $256,000 to a buyer who visited the land while the tenant was away on vacation. Thereupon, the tenant, who had failed to pay the last two months rent as per the agreement, moved out. After closing, the owner refused to pay the tenant any of the sale proceeds, and the tenant brought suit to recover damages for breach of contract. Which of the following is the owner\'s most persuasive argument in defense of the tenant\'s suit?\n', " The tenant committed an uncured material breach of an implied promise to cooperate in the owner's efforts to sell the property, or at least not to hinder the proposed sale.")[0]
+, Req_loglikelihood('The following are statements about professional law.\n\nThe owner of a large unimproved tract of land leased it to a tenant for five years at a monthly rental of $1,500. The rental agreement provided that the land was to be used as farmland. Shortly after the tenant took possession of the tract of land, he built thereon, at his own expense, a barn made of lumber, which was 15 feet wide, 20 feet long, and set on loose bricks. The barn increased the appraised market value of the tract of land from $250,000 to $275,000. The tenant then began farming operations on the land. Toward the end of the lease period, the owner informed the tenant that he was going to put the tract of land up for sale. The next month, when the lease expired, the parties settled a dispute over the tenant\'s right, if any, to compensation for the improvements by the following written agreement:"On the sale of the tract of land, the owner hereby agrees to pay the tenant two-thirds of any sale proceeds in excess of $250,000, provided that tenant may remain on the farm for the next year, rent-free, while the owner tries to sell it. After that time, the tenant may remain on the land until closing of the sale, at a monthly rental of $1,000. "The owner initially set the asking price at $300,000. After receiving scant interest, the owner decided to reduce the price to $260,000. This price reduction so infuriated the tenant that he thereafter made negative comments about the farm to all of the prospective buyers. Finally, 14 months after the agreement between the owner and the tenant was executed, and after rejecting offers for $240,000 and $250,000, the owner sold the tract of land for $256,000 to a buyer who visited the land while the tenant was away on vacation. Thereupon, the tenant, who had failed to pay the last two months rent as per the agreement, moved out. After closing, the owner refused to pay the tenant any of the sale proceeds, and the tenant brought suit to recover damages for breach of contract. Which of the following is the owner\'s most persuasive argument in defense of the tenant\'s suit?\n', " The tenant's negative comments about the farm to prospective buyers amounted to an anticipatory repudiation of the agreement between the owner and the tenant.")[0]
+, Req_loglikelihood('The following are statements about professional law.\n\nThe owner of a large unimproved tract of land leased it to a tenant for five years at a monthly rental of $1,500. The rental agreement provided that the land was to be used as farmland. Shortly after the tenant took possession of the tract of land, he built thereon, at his own expense, a barn made of lumber, which was 15 feet wide, 20 feet long, and set on loose bricks. The barn increased the appraised market value of the tract of land from $250,000 to $275,000. The tenant then began farming operations on the land. Toward the end of the lease period, the owner informed the tenant that he was going to put the tract of land up for sale. The next month, when the lease expired, the parties settled a dispute over the tenant\'s right, if any, to compensation for the improvements by the following written agreement:"On the sale of the tract of land, the owner hereby agrees to pay the tenant two-thirds of any sale proceeds in excess of $250,000, provided that tenant may remain on the farm for the next year, rent-free, while the owner tries to sell it. After that time, the tenant may remain on the land until closing of the sale, at a monthly rental of $1,000. "The owner initially set the asking price at $300,000. After receiving scant interest, the owner decided to reduce the price to $260,000. This price reduction so infuriated the tenant that he thereafter made negative comments about the farm to all of the prospective buyers. Finally, 14 months after the agreement between the owner and the tenant was executed, and after rejecting offers for $240,000 and $250,000, the owner sold the tract of land for $256,000 to a buyer who visited the land while the tenant was away on vacation. Thereupon, the tenant, who had failed to pay the last two months rent as per the agreement, moved out. After closing, the owner refused to pay the tenant any of the sale proceeds, and the tenant brought suit to recover damages for breach of contract. Which of the following is the owner\'s most persuasive argument in defense of the tenant\'s suit?\n', " The tenant's failure to pay any rent for the last two months was a material breach of contract that discharged the owner's remaining duties of performance.")[0]
+, Req_loglikelihood('The following are statements about professional law.\n\nThe owner of a large unimproved tract of land leased it to a tenant for five years at a monthly rental of $1,500. The rental agreement provided that the land was to be used as farmland. Shortly after the tenant took possession of the tract of land, he built thereon, at his own expense, a barn made of lumber, which was 15 feet wide, 20 feet long, and set on loose bricks. The barn increased the appraised market value of the tract of land from $250,000 to $275,000. The tenant then began farming operations on the land. Toward the end of the lease period, the owner informed the tenant that he was going to put the tract of land up for sale. The next month, when the lease expired, the parties settled a dispute over the tenant\'s right, if any, to compensation for the improvements by the following written agreement:"On the sale of the tract of land, the owner hereby agrees to pay the tenant two-thirds of any sale proceeds in excess of $250,000, provided that tenant may remain on the farm for the next year, rent-free, while the owner tries to sell it. After that time, the tenant may remain on the land until closing of the sale, at a monthly rental of $1,000. "The owner initially set the asking price at $300,000. After receiving scant interest, the owner decided to reduce the price to $260,000. This price reduction so infuriated the tenant that he thereafter made negative comments about the farm to all of the prospective buyers. Finally, 14 months after the agreement between the owner and the tenant was executed, and after rejecting offers for $240,000 and $250,000, the owner sold the tract of land for $256,000 to a buyer who visited the land while the tenant was away on vacation. Thereupon, the tenant, who had failed to pay the last two months rent as per the agreement, moved out. After closing, the owner refused to pay the tenant any of the sale proceeds, and the tenant brought suit to recover damages for breach of contract. Which of the following is the owner\'s most persuasive argument in defense of the tenant\'s suit?\n', ' The agreement between the owner and the tenant was voidable because it was a restraint on alienation, since it conditioned a promise to pay for a conveyance of land upon an otherwise invalid leasehold contract.')[0]
+]
+Task: hendrycksTest-professional_medicine_likelihoodoptioncontent; number of docs: 272
+Task: hendrycksTest-professional_medicine_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about professional medicine.
+
+A 53-year-old man comes to the physician because of a 6-month history of intermittent blood in his stool. He has had no pain with defecation. Physical examination shows a 1-cm, visible anal mass located below the dentate line. A biopsy of the mass is scheduled. If the mass if found to be malignant, it is most appropriate to evaluate which of the following lymph nodes for possible metastasis?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about professional medicine.\n\nA 53-year-old man comes to the physician because of a 6-month history of intermittent blood in his stool. He has had no pain with defecation. Physical examination shows a 1-cm, visible anal mass located below the dentate line. A biopsy of the mass is scheduled. If the mass if found to be malignant, it is most appropriate to evaluate which of the following lymph nodes for possible metastasis?\n', ' Internal iliac')[0]
+, Req_loglikelihood('The following are statements about professional medicine.\n\nA 53-year-old man comes to the physician because of a 6-month history of intermittent blood in his stool. He has had no pain with defecation. Physical examination shows a 1-cm, visible anal mass located below the dentate line. A biopsy of the mass is scheduled. If the mass if found to be malignant, it is most appropriate to evaluate which of the following lymph nodes for possible metastasis?\n', ' Popliteal')[0]
+, Req_loglikelihood('The following are statements about professional medicine.\n\nA 53-year-old man comes to the physician because of a 6-month history of intermittent blood in his stool. He has had no pain with defecation. Physical examination shows a 1-cm, visible anal mass located below the dentate line. A biopsy of the mass is scheduled. If the mass if found to be malignant, it is most appropriate to evaluate which of the following lymph nodes for possible metastasis?\n', ' Sacral')[0]
+, Req_loglikelihood('The following are statements about professional medicine.\n\nA 53-year-old man comes to the physician because of a 6-month history of intermittent blood in his stool. He has had no pain with defecation. Physical examination shows a 1-cm, visible anal mass located below the dentate line. A biopsy of the mass is scheduled. If the mass if found to be malignant, it is most appropriate to evaluate which of the following lymph nodes for possible metastasis?\n', ' Superficial inguinal')[0]
+]
+Task: hendrycksTest-professional_psychology_likelihoodoptioncontent; number of docs: 612
+Task: hendrycksTest-professional_psychology_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about professional psychology.
+
+Individuals with Moderate Mental Retardation
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about professional psychology.\n\nIndividuals with Moderate Mental Retardation\n', ' constitute 2% - 3% of the mentally retarded population')[0]
+, Req_loglikelihood('The following are statements about professional psychology.\n\nIndividuals with Moderate Mental Retardation\n', ' can be trained to perform unskilled work under close supervision')[0]
+, Req_loglikelihood('The following are statements about professional psychology.\n\nIndividuals with Moderate Mental Retardation\n', ' usually acquire academic skills up to approximately eighth-grade level')[0]
+, Req_loglikelihood('The following are statements about professional psychology.\n\nIndividuals with Moderate Mental Retardation\n', ' display minimal or no impairment in sensorimotor functioning')[0]
+]
+Task: hendrycksTest-public_relations_likelihoodoptioncontent; number of docs: 110
+Task: hendrycksTest-public_relations_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about public relations.
+
+According to Macnamara's (2005) pyramid of evaluation, at which stage is media coverage most likely to be measured?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood("The following are statements about public relations.\n\nAccording to Macnamara's (2005) pyramid of evaluation, at which stage is media coverage most likely to be measured?\n", ' Inputs')[0]
+, Req_loglikelihood("The following are statements about public relations.\n\nAccording to Macnamara's (2005) pyramid of evaluation, at which stage is media coverage most likely to be measured?\n", ' Outputs')[0]
+, Req_loglikelihood("The following are statements about public relations.\n\nAccording to Macnamara's (2005) pyramid of evaluation, at which stage is media coverage most likely to be measured?\n", ' Outtakes')[0]
+, Req_loglikelihood("The following are statements about public relations.\n\nAccording to Macnamara's (2005) pyramid of evaluation, at which stage is media coverage most likely to be measured?\n", ' Outcomes')[0]
+]
+Task: hendrycksTest-security_studies_likelihoodoptioncontent; number of docs: 245
+Task: hendrycksTest-security_studies_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about security studies.
+
+Which of these statements best describes the HM approach to sectoral security analysis?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about security studies.\n\nWhich of these statements best describes the HM approach to sectoral security analysis?\n', ' HM agrees with the idea that security can be viewed using a sectoral framework, and recognises the depth of analysis that is enabled by such an approach.')[0]
+, Req_loglikelihood('The following are statements about security studies.\n\nWhich of these statements best describes the HM approach to sectoral security analysis?\n', " HM rejects Buzan et al.'s theory of sectoral security analysis, on the grounds that securitization is a product of a state-centric approach.")[0]
+, Req_loglikelihood('The following are statements about security studies.\n\nWhich of these statements best describes the HM approach to sectoral security analysis?\n', ' HM rejects the assertion by Buzan et al. that there are distinct and separate sectors of security, instead adopting a holistic view of security within which national and transnational class is an important factor.')[0]
+, Req_loglikelihood('The following are statements about security studies.\n\nWhich of these statements best describes the HM approach to sectoral security analysis?\n', ' HM favours the sectoral approach to security analysis, in particular prioritising the state as a referent object and drawing much of its theoretical foundations from the realist principles that underpin the sectoral approach.')[0]
+]
+Task: hendrycksTest-sociology_likelihoodoptioncontent; number of docs: 201
+Task: hendrycksTest-sociology_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about sociology.
+
+Murray thought that the 'underclass' consisted of people who:
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood("The following are statements about sociology.\n\nMurray thought that the 'underclass' consisted of people who:\n", " formed an inferior 'race' with low levels of intelligence")[0]
+, Req_loglikelihood("The following are statements about sociology.\n\nMurray thought that the 'underclass' consisted of people who:\n", ' lived morally unsound lives of crime and squalor')[0]
+, Req_loglikelihood("The following are statements about sociology.\n\nMurray thought that the 'underclass' consisted of people who:\n", ' were too reliant upon welfare benefits')[0]
+, Req_loglikelihood("The following are statements about sociology.\n\nMurray thought that the 'underclass' consisted of people who:\n", ' all of the above')[0]
+]
+Task: hendrycksTest-us_foreign_policy_likelihoodoptioncontent; number of docs: 100
+Task: hendrycksTest-us_foreign_policy_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about us foreign policy.
+
+Why might the 'Philadelphian System' be linked to the idea of American exceptionalism?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood("The following are statements about us foreign policy.\n\nWhy might the 'Philadelphian System' be linked to the idea of American exceptionalism?\n", ' It encouraged greater involvement in European politics')[0]
+, Req_loglikelihood("The following are statements about us foreign policy.\n\nWhy might the 'Philadelphian System' be linked to the idea of American exceptionalism?\n", ' It was designed as the antithesis of European politics')[0]
+, Req_loglikelihood("The following are statements about us foreign policy.\n\nWhy might the 'Philadelphian System' be linked to the idea of American exceptionalism?\n", ' It created a large standing army')[0]
+, Req_loglikelihood("The following are statements about us foreign policy.\n\nWhy might the 'Philadelphian System' be linked to the idea of American exceptionalism?\n", ' It encouraged the centralization of political power in the US')[0]
+]
+Task: hendrycksTest-virology_likelihoodoptioncontent; number of docs: 166
+Task: hendrycksTest-virology_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about virology.
+
+How are antibody producing cells stimulated?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about virology.\n\nHow are antibody producing cells stimulated?\n', ' Interacting with a virus short peptide')[0]
+, Req_loglikelihood('The following are statements about virology.\n\nHow are antibody producing cells stimulated?\n', ' Interacting with a T helper cell.')[0]
+, Req_loglikelihood('The following are statements about virology.\n\nHow are antibody producing cells stimulated?\n', ' Interacting with a plasma cell')[0]
+, Req_loglikelihood('The following are statements about virology.\n\nHow are antibody producing cells stimulated?\n', ' Interacting with a virus infected cell')[0]
+]
+Task: hendrycksTest-world_religions_likelihoodoptioncontent; number of docs: 171
+Task: hendrycksTest-world_religions_likelihoodoptioncontent; document 0; context prompt (starting on next line):
+The following are statements about world religions.
+
+Rome claimed that their bishop (pope) was the director successor of which leader?
+
+(end of prompt on previous line)
+Requests: [Req_loglikelihood('The following are statements about world religions.\n\nRome claimed that their bishop (pope) was the director successor of which leader?\n', ' Peter')[0]
+, Req_loglikelihood('The following are statements about world religions.\n\nRome claimed that their bishop (pope) was the director successor of which leader?\n', ' Paul')[0]
+, Req_loglikelihood('The following are statements about world religions.\n\nRome claimed that their bishop (pope) was the director successor of which leader?\n', ' Jesus')[0]
+, Req_loglikelihood('The following are statements about world religions.\n\nRome claimed that their bishop (pope) was the director successor of which leader?\n', ' Matthew')[0]
+]
+Running loglikelihood requests

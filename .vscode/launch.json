@@ -1,0 +1,32 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: no parallel eval and dump File",
+            "type": "python",
+            "request": "launch",
+            "program": "/lm-evaluation-harness/eval_and_dumping_result.py",
+            "args": [
+                "--leaderboard_task=hellaswag_likelihoodoptionkeycircular",
+                "--hf_model_name=distilgpt2",
+                "--no_cache",
+                // "--limit=100",
+                "--batch_size=auto",
+                // "--device=cuda:1",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+    ]
+}
