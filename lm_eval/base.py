@@ -557,7 +557,8 @@ class BaseLM(LM):
 
         if not disable_same_ctx_requests_grouping:
             num_answer_elements = len(res[0])
-            res = np.array(res).reshape(len(grouped_requests), -1, num_answer_elements)
+            num_options = sorted(set([len(x[2]) for x in grouped_requests]))[0] # sort and pick the smaller number to avoid repeated dataset rows influence the options counting.
+            res = np.array(res).reshape(-1, num_options, num_answer_elements)
             return list(np.array(re_ord.get_original(res)).reshape(-1, num_answer_elements))
         return re_ord.get_original(res)
 
