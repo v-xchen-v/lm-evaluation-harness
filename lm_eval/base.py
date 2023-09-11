@@ -552,11 +552,19 @@ class BaseLM(LM):
                         res.append(answer)
 
         if not disable_same_ctx_requests_grouping:
+            def group_res(lst1, lst2):
+                last = 0
+                res = []
+                for ele in lst1:
+                    res.append(lst2[last : last + len(ele)])
+                    last += len(ele)
+                    
+                return res
+            
+            # group results as requests to get original order
+            grouped_res = group_res(res, grouped_requests)
             num_answer_elements = len(res[0])
-            # len(set([len(x[2]) for x in grouped_requests])>1, means it exist repeat rows in dataset.
-            num_options = sorted(set([len(x[2]) for x in grouped_requests]))[0] # sort and pick the smaller number to avoid repeated dataset rows influence the options counting.
-            res = np.array(res).reshape(-1, num_options, num_answer_elements)
-            return list(np.array(re_ord.get_original(res)).reshape(-1, num_answer_elements))
+            return list(np.array(re_ord.get_original(grouped_res)).reshape(-1, num_answer_elements))
         return re_ord.get_original(res)
 
     def greedy_until(self, requests):
