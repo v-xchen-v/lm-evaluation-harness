@@ -565,6 +565,7 @@ class BaseLM(LM):
 
         if not disable_same_ctx_requests_grouping:
             def group_res(lst1, lst2):
+                """ Reshape a list according to given multi list """
                 last = 0
                 res = []
                 for ele in lst1:
@@ -574,7 +575,7 @@ class BaseLM(LM):
                 return res
             
             # group results as requests to get original order
-            grouped_res = group_res(res, grouped_requests)
+            grouped_res = group_res(group_res([x[2] for x in grouped_requests], res), res)
             num_answer_elements = len(res[0])
             return list(np.array(re_ord.get_original(grouped_res)).reshape(-1, num_answer_elements))
         return re_ord.get_original(res)
