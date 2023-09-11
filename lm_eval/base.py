@@ -488,7 +488,19 @@ class BaseLM(LM):
                 return answer
             
             if self.distributed_state:
+                batch_length = len(batched_inps) # batch
+                num_samples_per_process =  math.ceil(batch_length/self.distributed_state.num_processes)
                 
+                # padding inps if batch_length is not n x num_processes
+                is_inps_need_padding = batch_length < num_samples_per_process*self.distributed_state.num_processes
+                pad_length = num_samples_per_process*self.distributed_state.num_processes - batch_length
+                if is_inps_need_padding:
+                    batched_inps_pad = batched_inps[-1].repeat(pad_length, 1).to(self.distributed_state.device)
+                    batched_inps = torch.cat((batched_inps, batched_inps_pad), dim=0)
+                    chunk = chunk + chunk[:-pad_length]
+                    inplens = inplens + inplens[:-pad_length]
+                    cont_toks_list = cont_toks_list + cont_toks_list[:-pad_length]
+
                 distributed_res = []
                 # distribute input to different GPUs
                 with self.distributed_state.split_between_processes(batched_inps) as distributed_batched_inps: # [batch_size/num_process, padding_length]
@@ -500,12 +512,10 @@ class BaseLM(LM):
                     # gathered_multi_logits_gpu = gather(multi_logits_gpu).detach().cpu()
                     
                     # distributed splits, figure out distributes splits on each GPU
-                    length = len(batched_inps) # batch
-                    num_samples_per_process =  math.ceil(length/self.distributed_state.num_processes)
                     start_index = self.distributed_state.process_index * num_samples_per_process
                     end_index = start_index + num_samples_per_process
                     if (len(batched_inps) % self.distributed_state.num_processes != 0) and (self.distributed_state.process_index == self.distributed_state.num_processes - 1):
-                        end_index = length
+                        end_index = batch_length
                     distributed_chunk = chunk[start_index:end_index]
                     distributed_inplens = inplens[start_index:end_index]
                     disrtibuted_cont_toks_list = cont_toks_list[start_index:end_index]
@@ -532,7 +542,9 @@ class BaseLM(LM):
                     for(gathered_log_prob, gathered_is_exact_match) in zip(gathered_log_probs, gathered_is_exact_matchs):
                         answer = (float(gathered_log_prob), bool(gathered_is_exact_match))
                         gathered_res.append(answer)
-                        
+                    
+                    if is_inps_need_padding:
+                        gathered_res = gathered_res[:-pad_length]
                     res += gathered_res
             else:
                 multi_logits = F.log_softmax(
