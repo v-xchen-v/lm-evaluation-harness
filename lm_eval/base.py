@@ -497,9 +497,9 @@ class BaseLM(LM):
                 if is_inps_need_padding:
                     batched_inps_pad = batched_inps[-1].repeat(pad_length, 1).to(self.distributed_state.device)
                     batched_inps = torch.cat((batched_inps, batched_inps_pad), dim=0)
-                    chunk = chunk + chunk[:-pad_length]
-                    inplens = inplens + inplens[:-pad_length]
-                    cont_toks_list = cont_toks_list + cont_toks_list[:-pad_length]
+                    chunk = chunk + [chunk[0]]*pad_length
+                    inplens = inplens + [inplens[0]]*pad_length
+                    cont_toks_list = cont_toks_list + [cont_toks_list[0]]*pad_length
 
                 distributed_res = []
                 # distribute input to different GPUs
@@ -575,7 +575,7 @@ class BaseLM(LM):
                 return res
             
             # group results as requests to get original order
-            grouped_res = group_res(group_res([x[2] for x in grouped_requests], res), res)
+            grouped_res = group_res([x[2] for x in grouped_requests], res)
             num_answer_elements = len(res[0])
             return list(np.array(re_ord.get_original(grouped_res)).reshape(-1, num_answer_elements))
         return re_ord.get_original(res)
