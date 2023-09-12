@@ -13,6 +13,7 @@ import torch
 import torch.nn.functional as F
 from accelerate import find_executable_batch_size
 from accelerate.utils import gather
+from itertools import chain
 
 from lm_eval.metrics import mean, weighted_perplexity, weighted_mean, bits_per_byte
 from lm_eval import utils
@@ -576,8 +577,8 @@ class BaseLM(LM):
             
             # group results as requests to get original order
             grouped_res = group_res([x[2] for x in grouped_requests], res)
-            num_answer_elements = len(res[0])
-            return list(np.array(re_ord.get_original(grouped_res)).reshape(-1, num_answer_elements))
+            # flatten to ungrouped
+            return list(chain.from_iterable(re_ord.get_original(grouped_res)))
         return re_ord.get_original(res)
 
     def greedy_until(self, requests):
