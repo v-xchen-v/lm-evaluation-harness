@@ -2,6 +2,7 @@ import gradio as gr
 import pandas as pd
 from leaderboard.display import get_leaderboard_df_data
 
+# https://huggingface.co/spaces/mteb/leaderboard/blob/main/app.py
 def get_leaderboard_df():
     # example = pd.DataFrame.from_records([
     #     {
@@ -18,7 +19,7 @@ def get_leaderboard_df():
     # )
     # return example
 
-    df = pd.DataFrame.from_records(get_leaderboard_df_data())
+    df = pd.DataFrame.from_records(get_leaderboard_df_data("HellaSwag", 0, False))
     return df
 
 # def refresh():
@@ -26,14 +27,16 @@ def get_leaderboard_df():
 
 with gr.Blocks() as demo:
     gr.Markdown("Leader Board")
-    leaderboard_table = gr.Dataframe(
-        headers=["Model Name", "MMLU(5-s)", "TruthfulQA(0-s)", "Hellaswag(10-s)", "ARC(25-s)", "AGIEval(0-s)", "AGIEval(5-s)", "AGIEval(0-s CoT)", "AGIEval(5-s CoT)"],
-        datatype=["markdown", "number", "number", "number", "number", "number", "number", "number", "number"],
-        interactive=False,
-        value=get_leaderboard_df(),
-        # set wrap to true, so that the many columns can show in one page
-        wrap=True
-    )
+    with gr.Tabs():
+        with gr.Tab("MMLU"):
+            leaderboard_table = gr.components.Dataframe(
+                datatype=["markdown", "number", "number", "number", "number", "number", "number", "number"],
+                interactive=False,
+                value=get_leaderboard_df(),
+                type="pandas",
+                # set wrap to true, so that the many columns can show in one page
+                wrap=True
+            )
     # refresh_btn = gr.Button("Refresh")
     # refresh_btn.click(
     #     refresh,

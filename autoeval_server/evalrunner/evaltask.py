@@ -1,4 +1,4 @@
-from leaderboard.leaderboardtasks import LeaderBoardTask
+from leaderboardtask import LeaderBoardTask
 from dataclasses import dataclass
 
 @dataclass

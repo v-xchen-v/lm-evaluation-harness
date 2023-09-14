@@ -8,7 +8,7 @@ import threading
 import time
 import pickle
 from pathlib import Path
-from evalrunner.runeval import run_eval
+from autoeval_server.evalrunner.runeval import run_eval
 
 verbose = False
 class TaskQueue:
@@ -79,7 +79,7 @@ class TaskQueue:
     
     def serialize_tasks(self):
         tasks = {
-            'pending_tasks': self.list_pending_tasks() + [self.processing_task],
+            'pending_tasks': self.list_pending_tasks() + ([] if self.processing_task is None else [self.processing_task]),
             'finished_tasks': self.finished_tasks
         }
         try:

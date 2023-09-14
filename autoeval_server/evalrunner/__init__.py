@@ -1,1 +1,1 @@
-from config import LEADERBOARDTASK_REGISTRY, LEADERBOARDTASKS
+from eval_and_dumping_result import LEADERBOARDTASK_REGISTRY

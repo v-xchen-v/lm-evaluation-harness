@@ -1,16 +1,24 @@
 import gradio as gr
-from config import LEADERBOARDTASKS, LEADERBOARDTASK_REGISTRY
+from eval_and_dumping_result import LEADERBOARDTASK_REGISTRY, leaderboard_tasks
+from config import RESULTS_SAVE_ROOT
 from evalrunner.evaltask import EvalModelTask
 from evalrunner.taskqueue import task_queue
 from evalrunner.taskstatus import get_finished_evaluations, get_pending_evaluations, get_running_evaluations
-from resultparser.loadresults import is_result_exists
+from resultparser.loadresults import EvalTaskResultInfo
 from typing import List
+from leaderboardtask import LeaderBoardTask
+
+LEADERBOARDTASK_ABBR_REGISTRY = \
+{ item.abbr: item for item in leaderboard_tasks }
+LEADERBOARDTASK_ABBR = [
+    item.abbr for item in leaderboard_tasks
+]
 
 def submit_tasks(model_name, selection_tasks, overwrite_if_exists):
     # print(model_name)
     # print(selection_tasks)
-    for selected_task in [LEADERBOARDTASK_REGISTRY[x] for x in selection_tasks]:
-        if is_result_exists(model_name=model_name, task_name=selected_task.name, version=selected_task.task_version, num_fewshot=selected_task.num_fewshot) and not overwrite_if_exists:
+    for selected_task in [LEADERBOARDTASK_ABBR_REGISTRY[x] for x in selection_tasks]:
+        if EvalTaskResultInfo.from_evaltask(results_save_root=RESULTS_SAVE_ROOT, model_id=model_name, leaderboardtask=selected_task).is_result_exists() and not overwrite_if_exists:
             continue
         task_queue.add_task(EvalModelTask(model=model_name, eval_task=selected_task))
     refresh_evaluation_status_tb()
@@ -74,13 +82,13 @@ with gr.Blocks() as demo:
     # submit new task section
     gr.Markdown("These models will be automatically evaluated on server")
     model_name = gr.Textbox(label="Model name", placeholder="What is your model name")
-    tasks_selection = gr.Dropdown(choices=LEADERBOARDTASKS, value=[LEADERBOARDTASKS[0]], multiselect=True, label="benchmarks", info="Select the eval tasks.", interactive=True)
+    tasks_selection = gr.Dropdown(choices=LEADERBOARDTASK_ABBR, value=[LEADERBOARDTASK_ABBR[0]], multiselect=True, label="benchmarks", info="Select the eval tasks.", interactive=True)
     with gr.Row():
         submit_button = gr.Button('Submit Eval')
         overwrite_result=gr.Checkbox(label="Overwrite If Exists")
     
     out = None
-    
+            
     # submit a task
     submit_button.click(fn=submit_tasks, inputs=[model_name, tasks_selection, overwrite_result], outputs=None)
 
