@@ -5,6 +5,7 @@ import os
 
 from lm_eval import tasks, evaluator, utils
 from lm_eval.tasks.hendrycks_test import SUBJECTS as MMLU_SUBJECTS
+from leaderboardtask import LeaderBoardTask
 
 logging.getLogger("openai").setLevel(logging.WARNING)
 
@@ -12,37 +13,7 @@ def hash_md5(model_name: str):
     import hashlib
     return hashlib.md5(model_name.encode('utf-8')).hexdigest()
 
-from dataclasses import dataclass
-
-@dataclass
-class LeaderBoardTask:
-    # task name, which is also the directory name contains task result files
-    name : str
-
-    # the abbr name of task shows on the leadleader board table header
-    abbr : str
-
-    # # the model to apply evaluation task on
-    # model_name: str
-
-    # the fewshot number
-    num_fewshot: int
-
-    # using cot or not, for AGIEval benchmark
-    use_cot: bool
-
-    # the subtasks included
-    subtasks : list[str]
-
-    # the selected single metric showed in leaderboard table
-    metric: str
-
-    # appragate subtasks, support 'mean' only for now
-    aggregate_op: str
-
-    version: int
-    
-custom_eval_tasks=[ \
+custom_eval_tasktypes=[ \
     "likelihoodoptioncontent",
     "likelihoodoptionkeycircular", 
     "greedyoptionkey", 
@@ -51,10 +22,20 @@ custom_eval_tasks=[ \
 
 # TODO：supports multiple metrics insteads of single metric now.
 custom_eval_metrics=[ \
-    "ppl_argmax_acc", 
-    "next_token_argmax_choices_circular_acc", 
-    "greedy_is_exact_match_acc", 
-    "greedy_is_gpt4_match_acc"
+    ["ppl_argmax_acc"], 
+    ["next_token_argmax_choices_acc", 
+    "next_token_argmax_all_acc",
+    "next_token_argmax_choices_circular_acc",
+    "next_token_argmax_all_circular_acc"],
+    ["greedy_is_exact_match_acc"], 
+    ["greedy_is_gpt4_match_acc"],
+]
+
+custom_eval_metric_aggregate_ops=[\
+    ["mean"],
+    ["mean", "mean", "mean", "mean"],
+    ["mean"],
+    ["mean"]    
 ]
 
 # TODO: as config file
@@ -65,141 +46,150 @@ leaderboard_tasks = [
         num_fewshot=5,
         use_cot=False,
         subtasks= [f'hendrycksTest-{sub}' for sub in  MMLU_SUBJECTS],
-        metric="acc",
-        aggregate_op='mean',
+        metrics=["acc"],
+        aggregate_ops=['mean'],
         version=1,
+        dataset_name="MMLU",
     ),
     LeaderBoardTask(
-        name=f"mmlu_{custom_eval_tasks[0]}",
+        name=f"mmlu_{custom_eval_tasktypes[0]}",
         abbr="MMLU Option Content(0 shot)",
         num_fewshot=0,
         use_cot=False,
-        subtasks= [f"hendrycksTest-{sub}_{custom_eval_tasks[0]}" for sub in MMLU_SUBJECTS],
-        metric=custom_eval_metrics[0],
-        aggregate_op='mean',
+        subtasks= [f"hendrycksTest-{sub}_{custom_eval_tasktypes[0]}" for sub in MMLU_SUBJECTS],
+        metrics=custom_eval_metrics[0],
+        aggregate_ops=custom_eval_metric_aggregate_ops[0],
         version=0,
+        dataset_name="MMLU",
     ),
     LeaderBoardTask(
-        name=f"mmlu_{custom_eval_tasks[1]}",
+        name=f"mmlu_{custom_eval_tasktypes[1]}",
         abbr="MMLU Option Key Circular(0 shot)",
         num_fewshot=0,
         use_cot=False,
-        subtasks= [f"hendrycksTest-{sub}_{custom_eval_tasks[1]}" for sub in MMLU_SUBJECTS],
-        metric=custom_eval_metrics[1],
-        aggregate_op='mean',
+        subtasks= [f"hendrycksTest-{sub}_{custom_eval_tasktypes[1]}" for sub in MMLU_SUBJECTS],
+        metrics=custom_eval_metrics[1],
+        aggregate_ops=custom_eval_metric_aggregate_ops[1],
         version=0,
+        dataset_name="MMLU",
     ),
     LeaderBoardTask(
-        name=f"mmlu_{custom_eval_tasks[2]}",
+        name=f"mmlu_{custom_eval_tasktypes[2]}",
         abbr="MMLU Greedy Option Key(0 shot)",
         num_fewshot=0,
         use_cot=False,
-        subtasks= [f"hendrycksTest-{sub}_{custom_eval_tasks[2]}" for sub in MMLU_SUBJECTS],
-        metric=custom_eval_metrics[2],
-        aggregate_op='mean',
+        subtasks= [f"hendrycksTest-{sub}_{custom_eval_tasktypes[2]}" for sub in MMLU_SUBJECTS],
+        metrics=custom_eval_metrics[2],
+        aggregate_ops=custom_eval_metric_aggregate_ops[2],
         version=0,
+        dataset_name="MMLU",
     ),
     LeaderBoardTask(
-        name=f"mmlu_{custom_eval_tasks[3]}",
+        name=f"mmlu_{custom_eval_tasktypes[3]}",
         abbr="MMLU Greedy Answer(0 shot)",
         num_fewshot=0,
         use_cot=False,
-        subtasks= [f"hendrycksTest-{sub}_{custom_eval_tasks[3]}" for sub in MMLU_SUBJECTS],
-        metric=custom_eval_metrics[3],
-        aggregate_op='mean',
+        subtasks= [f"hendrycksTest-{sub}_{custom_eval_tasktypes[3]}" for sub in MMLU_SUBJECTS],
+        metrics=custom_eval_metrics[3],
+        aggregate_ops=custom_eval_metric_aggregate_ops[3],
         version=0,
+        dataset_name="MMLU",
     ),
+    # LeaderBoardTask(
+    #     name="truthfulqa",
+    #     abbr="TruthfulQA(0 shot)",
+    #     num_fewshot=0,
+    #     use_cot = False,
+    #     subtasks=["truthfulqa_mc"],
+    #     metrics = ["mc2"],
+    #     aggregate_ops=['mean'],
+    #     version=1
+    # ),
+    # LeaderBoardTask(
+    #     name="hellaswag",
+    #     abbr="HellaSwag(10 shot)",
+    #     num_fewshot=10,
+    #     use_cot=False,
+    #     subtasks=["hellaswag"],
+    #     metrics=["acc_norm"],
+    #     aggregate_ops=['mean'],
+    #     version=0,
+    # ),
     LeaderBoardTask(
-        name="truthfulqa",
-        abbr="TruthfulQA(0 shot)",
-        num_fewshot=0,
-        use_cot = False,
-        subtasks=["truthfulqa_mc"],
-        metric = "mc2",
-        aggregate_op='mean',
-        version=1
-    ),
-    LeaderBoardTask(
-        name="hellaswag",
-        abbr="HellaSwag(10 shot)",
-        num_fewshot=10,
-        use_cot=False,
-        subtasks=["hellaswag"],
-        metric="acc_norm",
-        aggregate_op='mean',
-        version=0,
-    ),
-    LeaderBoardTask(
-        name=f"hellaswag_{custom_eval_tasks[0]}",
+        name=f"hellaswag_{custom_eval_tasktypes[0]}",
         abbr="HellaSwag Option Content(0 shot)",
         num_fewshot=0,
         use_cot=False,
-        subtasks=[f"hellaswag_{custom_eval_tasks[0]}"],
-        metric=custom_eval_metrics[0],
-        aggregate_op='mean',
+        subtasks=[f"hellaswag_{custom_eval_tasktypes[0]}"],
+        metrics=custom_eval_metrics[0],
+        aggregate_ops=custom_eval_metric_aggregate_ops[0],
         version=0,
+        dataset_name="HellaSwag",
     ),
     LeaderBoardTask(
-        name=f"hellaswag_{custom_eval_tasks[1]}",
+        name=f"hellaswag_{custom_eval_tasktypes[1]}",
         abbr="HellaSwag Option Key Circular(0 shot)",
         num_fewshot=0,
         use_cot=False,
-        subtasks=[f"hellaswag_{custom_eval_tasks[1]}"],
-        metric=custom_eval_metrics[1],
-        aggregate_op='mean',
+        subtasks=[f"hellaswag_{custom_eval_tasktypes[1]}"],
+        metrics=custom_eval_metrics[1],
+        aggregate_ops=custom_eval_metric_aggregate_ops[1],
         version=0,
+        dataset_name="HellaSwag",
     ),
     LeaderBoardTask(
-        name=f"hellaswag_{custom_eval_tasks[2]}",
+        name=f"hellaswag_{custom_eval_tasktypes[2]}",
         abbr="HellaSwag Greedy Option Key(0 shot)",
         num_fewshot=0,
         use_cot=False,
-        subtasks=[f"hellaswag_{custom_eval_tasks[2]}"],
-        metric=custom_eval_metrics[2],
-        aggregate_op='mean',
+        subtasks=[f"hellaswag_{custom_eval_tasktypes[2]}"],
+        metrics=custom_eval_metrics[2],
+        aggregate_ops=custom_eval_metric_aggregate_ops[2],
         version=0,
+        dataset_name="HellaSwag",
     ),
     LeaderBoardTask(
-        name=f"hellaswag_{custom_eval_tasks[3]}",
+        name=f"hellaswag_{custom_eval_tasktypes[3]}",
         abbr="HellaSwag Answer(0 shot)",
         num_fewshot=0,
         use_cot=False,
-        subtasks=[f"hellaswag_{custom_eval_tasks[3]}"],
-        metric=custom_eval_metrics[3],
-        aggregate_op='mean',
+        subtasks=[f"hellaswag_{custom_eval_tasktypes[3]}"],
+        metrics=custom_eval_metrics[3],
+        aggregate_ops=custom_eval_metric_aggregate_ops[3],
         version=0,
+        dataset_name="HellaSwag",
     ),
-    LeaderBoardTask(
-        name="arc",
-        abbr="ARC(25 shot)",
-        num_fewshot=25,
-        use_cot=False,
-        subtasks=["arc_challenge"],
-        metric="acc_norm",
-        aggregate_op='mean',
-        version=0,
-    ),
-    LeaderBoardTask
-    (
-        name="agieval",
-        abbr="AGIEval Eng QA(3-5 shot)",
-        num_fewshot=5,
-        use_cot=False,
-        subtasks = [
-            "agieval_eng_qa_lsat-ar",
-            "agieval_eng_qa_lsat-lr",
-            "agieval_eng_qa_lsat-rc",
-            "agieval_eng_qa_logiqa-en",
-            "agieval_eng_qa_sat-math",
-            "agieval_eng_qa_sat-en",
-            "agieval_eng_qa_aqua-rat",
-            "agieval_eng_qa_sat-en-without-passage",
-            "agieval_eng_qa_gaokao-english"
-        ],
-        metric="acc",
-        aggregate_op='mean',
-        version=0,
-    )
+    # LeaderBoardTask(
+    #     name="arc",
+    #     abbr="ARC(25 shot)",
+    #     num_fewshot=25,
+    #     use_cot=False,
+    #     subtasks=["arc_challenge"],
+    #     metrics=["acc_norm"],
+    #     aggregate_ops=['mean'],
+    #     version=0,
+    # ),
+    # LeaderBoardTask
+    # (
+    #     name="agieval",
+    #     abbr="AGIEval Eng QA(3-5 shot)",
+    #     num_fewshot=5,
+    #     use_cot=False,
+    #     subtasks = [
+    #         "agieval_eng_qa_lsat-ar",
+    #         "agieval_eng_qa_lsat-lr",
+    #         "agieval_eng_qa_lsat-rc",
+    #         "agieval_eng_qa_logiqa-en",
+    #         "agieval_eng_qa_sat-math",
+    #         "agieval_eng_qa_sat-en",
+    #         "agieval_eng_qa_aqua-rat",
+    #         "agieval_eng_qa_sat-en-without-passage",
+    #         "agieval_eng_qa_gaokao-english"
+    #     ],
+    #     metrics=["acc"],
+    #     aggregate_ops=['mean'],
+    #     version=0,
+    # )
 ]
 
 LEADERBOARDTASK_REGISTRY = \
