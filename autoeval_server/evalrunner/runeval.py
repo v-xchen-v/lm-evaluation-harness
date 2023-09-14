@@ -1,13 +1,13 @@
 """Eval tasks on local machine of model parallel"""
 
 import time
-from evalrunner.evaltask import EvalModelTask
+from autoeval_server.evalrunner.evaltask import EvalModelTask
 import argparse
 from eval_and_dumping_result import eval_and_dump
 from eval_and_dumping_result import LEADERBOARDTASK_REGISTRY
 # sys.path.insert(0, "/repos/lm-evaluation-harness")
 
-from config import results_save_root
+from config import RESULTS_SAVE_ROOT
 
 def run_eval(eval_model_task: EvalModelTask):
     print(f"[INFO] starting evaluation of {eval_model_task.model} on {eval_model_task.eval_task.abbr}")
@@ -19,8 +19,8 @@ def run_eval(eval_model_task: EvalModelTask):
 
 def parse_args(eval_model_task: EvalModelTask):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--leaderboard_task", required=True, choices=LEADERBOARDTASK_REGISTRY, default=eval_model_task.eval_task.name)
-    parser.add_argument("--hf_model_name", type=str, required=True, default=eval_model_task.model)
+    parser.add_argument("--leaderboard_task", choices=LEADERBOARDTASK_REGISTRY, default=eval_model_task.eval_task.name)
+    parser.add_argument("--hf_model_name", type=str, default=eval_model_task.model)
     parser.add_argument("--batch_size", type=str, default="auto")
     parser.add_argument("--device", type=str, default="auto")
     parser.add_argument("--limit", type=float, default=None,
@@ -35,11 +35,11 @@ def parse_args(eval_model_task: EvalModelTask):
     parser.add_argument("--no_cache", action="store_true", default=use_cache)
     parser.add_argument("--use_data_parallel", action="store_true", default=False)
     parser.add_argument("--use_model_parallel", action="store_true", default=True)
-    parser.add_argument("--output_base_path", type=str, default=f"{results_save_root}")
+    parser.add_argument("--output_base_path", type=str, default=f"{RESULTS_SAVE_ROOT}")
     return parser.parse_args()
 
 def call_eval(eval_model_task: EvalModelTask):
-    args = parse_args()
+    args = parse_args(eval_model_task)
 
     if args.limit:
         print(

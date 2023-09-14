@@ -1,6 +1,6 @@
 from leaderboardtask import LeaderBoardTask
 
-results_save_root = "/eval_results"
+RESULTS_SAVE_ROOT = "/eval_results"
 
 # set the evaluation tasks should show on leaderboard table
 # leaderboard_tasks = [

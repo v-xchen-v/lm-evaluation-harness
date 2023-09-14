@@ -4,24 +4,32 @@
 """
 
 import gradio as gr
-from eval_and_dumping_result import LEADERBOARDTASK_REGISTRY
-from evalrunner.evaltask import EvalModelTask
-# from evalrunner.taskqueue import task_queue
-# from evalrunner.taskstatus import get_finished_evaluations, get_pending_evaluations, get_running_evaluations
-# from resultparser.loadresults import is_result_exists
+from eval_and_dumping_result import LEADERBOARDTASK_REGISTRY, leaderboard_tasks
+from autoeval_server.resultparser.loadresults import EvalTaskResultInfo
+from config import RESULTS_SAVE_ROOT
+from autoeval_server.evalrunner.evaltask import EvalModelTask
+from autoeval_server.evalrunner.taskqueue import task_queue
+from autoeval_server.evalrunner.taskstatus import get_finished_evaluations, get_pending_evaluations, get_running_evaluations
 from typing import List
 # import gradio as gr
 import pandas as pd
-from leaderboard.display import get_leaderboard_df_data
+from autoeval_server.leaderboard.display import get_leaderboard_df_data
 from autoeval_server.leaderboard.display import DISPLAY_DATASETS
-# def submit_tasks(model_name, selection_tasks, overwrite_if_exists):
-#     # print(model_name)
-#     # print(selection_tasks)
-#     for selected_task in [LEADERBOARDTASK_REGISTRY[x] for x in selection_tasks]:
-#         if is_result_exists(model_name=model_name, task_name=selected_task.name, version=selected_task.task_version, num_fewshot=selected_task.num_fewshot) and not overwrite_if_exists:
-#             continue
-#         task_queue.add_task(EvalModelTask(model=model_name, eval_task=selected_task))
-#     refresh_evaluation_status_tb()
+
+LEADERBOARDTASK_ABBR_REGISTRY = \
+{ item.abbr: item for item in leaderboard_tasks }
+LEADERBOARDTASK_ABBR = [
+    item.abbr for item in leaderboard_tasks
+]
+
+def submit_tasks(model_name, selection_tasks, overwrite_if_exists):
+    # print(model_name)
+    # print(selection_tasks)
+    for selected_task in [LEADERBOARDTASK_ABBR_REGISTRY[x] for x in selection_tasks]:
+        if EvalTaskResultInfo.from_evaltask(results_save_root=RESULTS_SAVE_ROOT, model_id=model_name, leaderboardtask=selected_task).is_result_exists() and not overwrite_if_exists:
+            continue
+        task_queue.add_task(EvalModelTask(model=model_name, eval_task=selected_task))
+    refresh_evaluation_status_tb()
 
 def get_leaderboard_df(dataset_name: str, num_fewshot: int, use_cot: bool):
     # example = pd.DataFrame.from_records([
@@ -85,17 +93,19 @@ pending_tasks = []
 processing_task = []
 
 
-# finished_tasks = parse_evaluation_table(get_finished_evaluations())
-# pending_tasks = parse_evaluation_table(get_pending_evaluations())
-# processing_task = parse_evaluation_table(get_running_evaluations())
+finished_tasks = parse_evaluation_table(get_finished_evaluations())
+pending_tasks = parse_evaluation_table(get_pending_evaluations())
+processing_task = parse_evaluation_table(get_running_evaluations())
 
-# def refresh_evaluation_status_tb():
-#     print("[INFO] refreshing evaluation tables")
-#     finished_tasks = parse_evaluation_table(get_finished_evaluations())
-#     pending_tasks = parse_evaluation_table(get_pending_evaluations())
-#     processing_task = parse_evaluation_table(get_running_evaluations())
-#     leaderboard_table = get_leaderboard_df()
-#     return [finished_tasks, pending_tasks, processing_task, leaderboard_table]
+def refresh_evaluation_status_tb():
+    print("[INFO] refreshing evaluation tables")
+    finished_tasks = parse_evaluation_table(get_finished_evaluations())
+    pending_tasks = parse_evaluation_table(get_pending_evaluations())
+    processing_task = parse_evaluation_table(get_running_evaluations())
+    # leaderboard_table = get_leaderboard_df()
+    print("[INFO] refreshed")
+    return [finished_tasks, pending_tasks, processing_task]#, leaderboard_table]
+
 
 with gr.Blocks() as demo:
     with gr.Tabs(elem_classes="tab-buttons") as tabs:
@@ -112,69 +122,69 @@ with gr.Blocks() as demo:
                         # col_count=(6, "fixed"),
                         wrap=True,
                     )
-        # with gr.TabItem("✉️✨ Submit here! ", elem_id="llm-benchmark-tab-table", id=1):            
-        #     gr.Markdown("✉️✨ Submit your model here!")
-        #     # submit new task section
-        #     gr.Markdown("These models will be automatically evaluated on server")
-        #     model_name = gr.Textbox(label="Model name", placeholder="What is your model name")
-        #     tasks_selection = gr.Dropdown(choices=LEADERBOARDTASKS, value=[LEADERBOARDTASKS[0]], multiselect=True, label="benchmarks", info="Select the eval tasks.", interactive=True)
-        #     with gr.Row():
-        #         submit_button = gr.Button('Submit Eval')
-        #         overwrite_result=gr.Checkbox(label="Overwrite If Exists")
+        with gr.TabItem("✉️✨ Submit here! ", elem_id="llm-benchmark-tab-table", id=1):            
+            gr.Markdown("✉️✨ Submit your model here!")
+            # submit new task section
+            gr.Markdown("These models will be automatically evaluated on server")
+            model_name = gr.Textbox(label="Model name", placeholder="What is your model name")
+            tasks_selection = gr.Dropdown(choices=LEADERBOARDTASK_ABBR, value=[LEADERBOARDTASK_ABBR[0]], multiselect=True, label="benchmarks", info="Select the eval tasks.", interactive=True)
+            with gr.Row():
+                submit_button = gr.Button('Submit Eval')
+                overwrite_result=gr.Checkbox(label="Overwrite If Exists")
             
-        #     out = None
+            out = None
             
-        #     # submit a task
-        #     submit_button.click(fn=submit_tasks, inputs=[model_name, tasks_selection, overwrite_result], outputs=None)
+            # submit a task
+            submit_button.click(fn=submit_tasks, inputs=[model_name, tasks_selection, overwrite_result], outputs=None)
 
-        #     # # input fewshot number and with/without CoT
-        #     # with gr.Accordion("Evaluation settings", open=False):
-        #     #     gr.Slider(0, 25, value=0, label="n-shot", info="Choose fewshot number, default as MMLU(5-s), TruthfulQA(0-s), ARC(25-s), HellaSwag(10-s), AGIEval(5-s)", step=1)
-        #     #     gr.Checkbox(value=False, label="use CoT or not", info="only AGIEval support CoT", interactive=True)
+            # # input fewshot number and with/without CoT
+            # with gr.Accordion("Evaluation settings", open=False):
+            #     gr.Slider(0, 25, value=0, label="n-shot", info="Choose fewshot number, default as MMLU(5-s), TruthfulQA(0-s), ARC(25-s), HellaSwag(10-s), AGIEval(5-s)", step=1)
+            #     gr.Checkbox(value=False, label="use CoT or not", info="only AGIEval support CoT", interactive=True)
 
-        #     # list finished tasks section
-        #     with gr.Accordion("✅Finished Evaluations", open=False):
-        #         finished_eval_table = gr.components.Dataframe(
-        #             value=finished_tasks,
-        #             headers=["Model name", "Task name"],
-        #             datatype=["str", "str"], 
-        #             max_rows=5)
+            # list finished tasks section
+            with gr.Accordion("✅Finished Evaluations", open=False):
+                finished_eval_table = gr.components.Dataframe(
+                    value=finished_tasks,
+                    headers=["Model name", "Task name"],
+                    datatype=["str", "str"], 
+                    max_rows=5)
                 
-        #     # list pending tasks section
-        #     with gr.Accordion("⏳Pending Evaluations", open=False):
-        #         pending_eval_table = gr.components.Dataframe(
-        #             value=pending_tasks,
-        #             headers=["Model name", "Task name"],
-        #             datatype=["str", "str"], 
-        #             max_rows=5)
+            # list pending tasks section
+            with gr.Accordion("⏳Pending Evaluations", open=False):
+                pending_eval_table = gr.components.Dataframe(
+                    value=pending_tasks,
+                    headers=["Model name", "Task name"],
+                    datatype=["str", "str"], 
+                    max_rows=5)
                 
-        #     # list  tasks section
-        #     with gr.Accordion("🔄Running Evaluations", open=False):
-        #         running_eval_table = gr.components.Dataframe(
-        #             value=processing_task,
-        #             headers=["Model name", "Task name"],
-        #             datatype=["str", "str"],  
-        #             max_rows=5)
+            # list  tasks section
+            with gr.Accordion("🔄Running Evaluations", open=False):
+                running_eval_table = gr.components.Dataframe(
+                    value=processing_task,
+                    headers=["Model name", "Task name"],
+                    datatype=["str", "str"],  
+                    max_rows=5)
             
-        #     refresh_btn = gr.Button("Refresh")
-        #     refresh_btn.click(
-        #         refresh_evaluation_status_tb,
-        #         inputs=[],
-        #         outputs=[
-        #             finished_eval_table,
-        #             pending_eval_table,
-        #             running_eval_table,
-        #             leaderboard_table
-        #         ]
-        #     )
+            refresh_btn = gr.Button("Refresh")
+            refresh_btn.click(
+                refresh_evaluation_status_tb,
+                inputs=[],
+                outputs=[
+                    finished_eval_table,
+                    pending_eval_table,
+                    running_eval_table,
+                    # leaderboard_table
+                ]
+            )
 
-    # # refresh the evalution status table every 1 minite.
+    # refresh the evalution status table every 1 minite.
     # REFRESH_INTERNAL = 60*1
     # demo.load(fn=refresh_evaluation_status_tb, inputs=[], outputs=[
     #         finished_eval_table,
     #         pending_eval_table,
     #         running_eval_table,
-    #         leaderboard_table
+    #         # leaderboard_table
     #     ], every=REFRESH_INTERNAL)
     
 if __name__ == "__main__":

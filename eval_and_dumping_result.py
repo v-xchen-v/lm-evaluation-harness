@@ -40,17 +40,17 @@ custom_eval_metric_aggregate_ops=[\
 
 # TODO: as config file
 leaderboard_tasks = [
-    LeaderBoardTask(
-        name="mmlu",
-        abbr="MMLU(5 shot)",
-        num_fewshot=5,
-        use_cot=False,
-        subtasks= [f'hendrycksTest-{sub}' for sub in  MMLU_SUBJECTS],
-        metrics=["acc"],
-        aggregate_ops=['mean'],
-        version=1,
-        dataset_name="MMLU",
-    ),
+    # LeaderBoardTask(
+    #     name="mmlu",
+    #     abbr="MMLU(5 shot)",
+    #     num_fewshot=5,
+    #     use_cot=False,
+    #     subtasks= [f'hendrycksTest-{sub}' for sub in  MMLU_SUBJECTS],
+    #     metrics=["acc"],
+    #     aggregate_ops=['mean'],
+    #     version=1,
+    #     dataset_name="MMLU",
+    # ),
     LeaderBoardTask(
         name=f"mmlu_{custom_eval_tasktypes[0]}",
         abbr="MMLU Option Content(0 shot)",

@@ -1,7 +1,7 @@
 import json
 from autoeval_server.resultparser.getmodelinfo import ModelInfo
 from typing import Tuple
-from config import results_save_root
+from config import RESULTS_SAVE_ROOT
 from eval_and_dumping_result import LEADERBOARDTASK_REGISTRY
 from collections import defaultdict
 # from dataclasses import dataclass
@@ -49,7 +49,7 @@ def list_models():
     """
     list model have results
     """
-    model_dirs = [Path(dirname) for dirname in _list_subdirectories_by_level(results_save_root, 1)]
+    model_dirs = [Path(dirname) for dirname in _list_subdirectories_by_level(RESULTS_SAVE_ROOT, 1)]
     
     have_results_model_dirs = [x for x in model_dirs if _contains_results_json_file(x)]
     
@@ -127,7 +127,7 @@ def list_models():
 #     return metrics
 
 def get_leaderboard_aggregated_metrics(model_name, leaderboard_task):
-    aggregated_metrics = EvalTaskResultInfo.from_evaltask(results_save_root, model_name, leaderboard_task).list_aggregated_metrics(allow_none=True)
+    aggregated_metrics = EvalTaskResultInfo.from_evaltask(RESULTS_SAVE_ROOT, model_name, leaderboard_task).list_aggregated_metrics(allow_none=True)
     return aggregated_metrics
 
 def get_tasks_aggregated_metrics(model_name: str, leaderboard_tasks: list[LeaderBoardTask]):
@@ -202,6 +202,9 @@ class EvalTaskResultInfo:
             "num_fewshot": self.num_fewshot,
             "subtask_names": self.subtask_names,
         })
+    
+    def is_result_exists(self):
+        return Path(self.results_filepath).exists()
         
     def list_subtasknames(self):
         return self.subtask_names
