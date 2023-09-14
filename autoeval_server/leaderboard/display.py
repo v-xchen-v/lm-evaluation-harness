@@ -18,7 +18,8 @@ class DisplayDataset:
     
     # the display name
     abbr: str
-    
+
+# pick some dataset want to show, the others will be hidden.   
 DISPLAY_DATASETS = [ \
     DisplayDataset(
         dataset_name="MMLU",
@@ -31,6 +32,18 @@ DISPLAY_DATASETS = [ \
         num_fewshot=0,
         use_cot=False,
         abbr="HellaSwag(0-s)"
+    ),
+    DisplayDataset(
+        dataset_name="MMLU",
+        num_fewshot=5,
+        use_cot=False,
+        abbr="MMLU(5-s)"
+    ),
+    DisplayDataset(
+        dataset_name="HellaSwag",
+        num_fewshot=5,
+        use_cot=False,
+        abbr="HellaSwag(5-s)"
     ),
 ]
 
@@ -73,9 +86,9 @@ def get_leaderboard_df_data(dataset_name: str, num_fewshot: int, use_cot: bool):
 
 
 if __name__ == "__main__":
-    pass
-    # df_data = get_leaderboard_df_data("MMLU", 0, False)
-    # print(df_data)
+    # pass
+    df_data = get_leaderboard_df_data("MMLU", 0, False)
+    print(df_data)
     # import pandas as pd
     # df = pd.DataFrame.from_records(df_data)
     # sortedDf = df.sort_index(axis=1)
