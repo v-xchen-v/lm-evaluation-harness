@@ -181,7 +181,7 @@ with gr.Blocks() as demo:
             )
 
     # refresh the evalution status table every 3 minite.
-    REFRESH_INTERNAL = 60*3
+    REFRESH_INTERNAL = 60*10
     demo.load(
                 fn=refresh_evaluation_status_tb,
                 inputs=[],

@@ -22,21 +22,22 @@ def parse_args(eval_model_task: EvalModelTask):
     parser.add_argument("--leaderboard_task", choices=LEADERBOARDTASK_REGISTRY, default=eval_model_task.eval_task.name)
     parser.add_argument("--hf_model_name", type=str, default=eval_model_task.model)
     parser.add_argument("--batch_size", type=str, default="auto")
-    parser.add_argument("--device", type=str, default="auto")
+    parser.add_argument("--device", type=str, default=None)
     parser.add_argument("--limit", type=float, default=None,
                         help="Limit the number of examples per task. "
                              "If <1, limit is a percentage of the total number of examples.")
     parser.add_argument("--num_fewshot", type=int, default=eval_model_task.eval_task.num_fewshot)
     
     if eval_model_task.eval_task.name.find("circular")!=-1:
-        use_cache=False
-    else:
         use_cache=True
+    else:
+        use_cache=False
     parser.add_argument("--no_cache", action="store_true", default=use_cache)
     parser.add_argument("--use_data_parallel", action="store_true", default=False)
     parser.add_argument("--use_model_parallel", action="store_true", default=True)
     parser.add_argument("--output_base_path", type=str, default=f"{RESULTS_SAVE_ROOT}")
-    return parser.parse_args()
+    args = parser.parse_args()
+    return args
 
 def call_eval(eval_model_task: EvalModelTask):
     args = parse_args(eval_model_task)
