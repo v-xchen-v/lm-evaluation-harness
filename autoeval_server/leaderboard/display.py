@@ -73,9 +73,10 @@ def get_leaderboard_df_data(dataset_name: str, num_fewshot: int, use_cot: bool):
 
 
 if __name__ == "__main__":
-    df_data = get_leaderboard_df_data("MMLU", 0, False)
-    print(df_data)
-    import pandas as pd
-    df = pd.DataFrame.from_records(df_data)
-    sortedDf = df.sort_index(axis=1)
-    print(sortedDf)
+    pass
+    # df_data = get_leaderboard_df_data("MMLU", 0, False)
+    # print(df_data)
+    # import pandas as pd
+    # df = pd.DataFrame.from_records(df_data)
+    # sortedDf = df.sort_index(axis=1)
+    # print(sortedDf)

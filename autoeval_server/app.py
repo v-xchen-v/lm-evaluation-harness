@@ -86,7 +86,8 @@ def parse_evaluation_table(tasks: List[EvalModelTask]):
         # print(tasks)
         return [[t.model, t.eval_task.abbr] for t in tasks]
     else:
-        return []
+        # should have a least one element, otherwise web UI will hang (I think it's a bug of gradio)
+        return [['-'], ['-']]
 
 finished_tasks = []
 pending_tasks = []
@@ -97,14 +98,17 @@ finished_tasks = parse_evaluation_table(get_finished_evaluations())
 pending_tasks = parse_evaluation_table(get_pending_evaluations())
 processing_task = parse_evaluation_table(get_running_evaluations())
 
+display_dataset_dict = {}
+
 def refresh_evaluation_status_tb():
     print("[INFO] refreshing evaluation tables")
     finished_tasks = parse_evaluation_table(get_finished_evaluations())
     pending_tasks = parse_evaluation_table(get_pending_evaluations())
     processing_task = parse_evaluation_table(get_running_evaluations())
-    # leaderboard_table = get_leaderboard_df()
+    leaderboard_dfs = [get_leaderboard_df(dataset.dataset_name, dataset.num_fewshot, dataset.use_cot) for dataset in DISPLAY_DATASETS]
     print("[INFO] refreshed")
-    return [finished_tasks, pending_tasks, processing_task]#, leaderboard_table]
+    return [finished_tasks, pending_tasks, processing_task, *leaderboard_dfs]
+
 
 
 with gr.Blocks() as demo:
@@ -113,7 +117,8 @@ with gr.Blocks() as demo:
             gr.Markdown("Leader Board")
             for dataset in DISPLAY_DATASETS:
                 with gr.TabItem(dataset.abbr):
-                    leaderboard_table = gr.Dataframe(
+                    display_dataset_dict[dataset.abbr] = gr.Dataframe(
+                    # leaderboard_table = gr.Dataframe(
                         # headers=["Model Name", "MMLU(5-s)", "TruthfulQA(0-s)", "Hellaswag(10-s)", "ARC(25-s)", "AGIEval(0-s)", "AGIEval(5-s)", "AGIEval(0-s CoT)", "AGIEval(5-s CoT)"],
                         datatype=["markdown", "number", "number", "number", "number", "number"],
                         interactive=False,
@@ -147,46 +152,48 @@ with gr.Blocks() as demo:
                 finished_eval_table = gr.components.Dataframe(
                     value=finished_tasks,
                     headers=["Model name", "Task name"],
-                    datatype=["str", "str"], 
-                    max_rows=5)
+                    datatype=["str", "str"])
                 
             # list pending tasks section
             with gr.Accordion("⏳Pending Evaluations", open=False):
                 pending_eval_table = gr.components.Dataframe(
                     value=pending_tasks,
                     headers=["Model name", "Task name"],
-                    datatype=["str", "str"], 
-                    max_rows=5)
+                    datatype=["str", "str"])
                 
             # list  tasks section
             with gr.Accordion("🔄Running Evaluations", open=False):
                 running_eval_table = gr.components.Dataframe(
                     value=processing_task,
                     headers=["Model name", "Task name"],
-                    datatype=["str", "str"],  
-                    max_rows=5)
+                    datatype=["str", "str"])
             
             refresh_btn = gr.Button("Refresh")
             refresh_btn.click(
-                refresh_evaluation_status_tb,
+                fn=refresh_evaluation_status_tb,
                 inputs=[],
                 outputs=[
                     finished_eval_table,
                     pending_eval_table,
                     running_eval_table,
-                    # leaderboard_table
+                    *list(display_dataset_dict.values())
                 ]
             )
 
-    # refresh the evalution status table every 1 minite.
-    # REFRESH_INTERNAL = 60*1
-    # demo.load(fn=refresh_evaluation_status_tb, inputs=[], outputs=[
-    #         finished_eval_table,
-    #         pending_eval_table,
-    #         running_eval_table,
-    #         # leaderboard_table
-    #     ], every=REFRESH_INTERNAL)
+    # refresh the evalution status table every 3 minite.
+    REFRESH_INTERNAL = 60*3
+    demo.load(
+                fn=refresh_evaluation_status_tb,
+                inputs=[],
+                outputs=[
+                    finished_eval_table,
+                    pending_eval_table,
+                    running_eval_table,
+                    *list(display_dataset_dict.values())
+                ],
+                every=REFRESH_INTERNAL
+            )
     
 if __name__ == "__main__":
-    demo.queue().launch()
+    demo.queue().launch(debug=True)
     # demo.queue().launch(share=True)

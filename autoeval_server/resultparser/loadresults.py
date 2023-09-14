@@ -10,10 +10,12 @@ from pathlib import Path
 import numpy as np
 import os
 from collections import ChainMap
-
+import pickle
 from leaderboardtask import LeaderBoardTask
 # list_models, is_result_exists, get_leaderboard_aggregated_metrics
 import itertools
+
+num_of_doc_cache_filepath = '.num_of_doc.pkl'
 
 def _list_subdirectories_by_level(directory, slevel=1):
     """
@@ -144,7 +146,7 @@ def get_tasks_aggregated_metrics(model_name: str, leaderboard_tasks: list[Leader
 
 class EvalTaskResultInfo:
     """model + task + version + num_fewshot """
-    def __init__(self,results_save_root: str, model_id:str, task_name: str, task_ver: int, num_fewshot :int, subtask_names: list[str], metric_names: list[str], metric_aggregate_ops: list[str]) -> None:
+    def __init__(self,results_save_root: str, model_id:str, task_name: str, task_ver: int, num_fewshot :int, subtask_names: list[str], metric_names: list[str], metric_aggregate_ops: list[str], dataset_name: str) -> None:
         # eval task info
         self.results_save_root = results_save_root
         
@@ -156,6 +158,7 @@ class EvalTaskResultInfo:
         
         self.metric_names = metric_names
         self.metric_aggregate_ops = metric_aggregate_ops
+        self.dataset_name = dataset_name
         
         # more eval task info
         self.results_filepath = self._get_results_filepath()
@@ -181,6 +184,7 @@ class EvalTaskResultInfo:
         
         obj.metric_names = leaderboardtask.metrics
         obj.metric_aggregate_ops = leaderboardtask.aggregate_ops
+        obj.dataset_name = leaderboardtask.dataset_name
         
         # more eval task info
         obj.results_filepath = obj._get_results_filepath()
@@ -225,6 +229,11 @@ class EvalTaskResultInfo:
     
     def get_subtask_num_doc(self, subtask_name:str):
         """get task subject(vs generate) doc number to calculate aggregate metric"""
+        
+        cached_num_doc = self.search_num_of_docs_in_cache(subtask_name)
+        if cached_num_doc:
+            return cached_num_doc
+    
         write_out_info_jsonpath = self._get_subtask_write_out_info_filepath( subtask_name)
         
         if not Path(write_out_info_jsonpath).exists():
@@ -234,15 +243,58 @@ class EvalTaskResultInfo:
             # dict of subtask name to dict of metricname to value
             write_out_info = json.load(f)
             num_doc = len(write_out_info)
+            
+            self.update_num_of_docs_cache(subtask_name, num_doc)
         return num_doc
-    
+        
     def list_subtask_num_doc(self):
+
         subtasks = self.list_subtasknames()
         num_doc = {}
         for subtask in subtasks:
             num_doc[subtask] = self.get_subtask_num_doc(subtask)
+        
         return num_doc
     
+    def search_num_of_docs_in_cache(self, subtask_name):
+        if Path(num_of_doc_cache_filepath).exists():
+            try:
+                with open(num_of_doc_cache_filepath, 'rb') as file:
+                    num_of_doc_dict = pickle.load(file)
+                    if num_of_doc_dict is None:
+                        return None
+                    if subtask_name in num_of_doc_dict:
+                        return num_of_doc_dict[subtask_name]
+                    else:
+                        return None
+            except FileNotFoundError:
+                print("no recovery file.")
+        else:
+            return None
+            
+    def update_num_of_docs_cache(self, subtask_name, num_doc):
+        """
+        subtask:
+            num_of_doc
+        """
+        try:
+            # update
+            if Path(num_of_doc_cache_filepath).exists():
+                with open(num_of_doc_cache_filepath, 'rb') as file:
+                    cached_num_of_doc_dict = pickle.load(file)
+                    if cached_num_of_doc_dict is None:
+                        cached_num_of_doc_dict = {}
+                    if cached_num_of_doc_dict is None or subtask_name not in cached_num_of_doc_dict:
+                        cached_num_of_doc_dict[subtask_name] = num_doc
+            # create
+            else:
+                cached_num_of_doc_dict = { subtask_name: num_doc }
+                
+            with open(num_of_doc_cache_filepath, 'wb') as file:
+                pickle.dump(cached_num_of_doc_dict, file)
+        except FileNotFoundError:
+            print("warning: not cache file specified.")
+            
     def list_metricnames(self):
         """list the name of metrics"""
         return self.metric_names
@@ -355,28 +407,6 @@ if __name__ == "__main__":
     # print(sample_taskresultinfo)
 
     # print(sample_taskresultinfo.list_metrics(allow_none=True))
-
-    # print(sample_taskresultinfo.list_aggregated_metrics(allow_none=True))
-
-
-    # sample_taskresultinfo = EvalTaskResultInfo(results_save_root, 'huggyllama/llama-7b', 'mmlu_likelihooodoptioncontent', 0, 0, ['hellaswag_likelihoodoptioncontent'], ["ppl_argmax_acc"], ["mean"])
-
-    # print(sample_taskresultinfo)
-    # """{'model_id': 'huggyllama/llama-7b', 'task_name': 'hellaswag_likelihoodoptioncontent', 'task_ver': 0, 'num_fewshot': 0, 'subtask_names': ['hellaswag_likelihoodoptioncontent']}"""
-    # print(sample_taskresultinfo.list_subtasknames())
-    # """['hellaswag_likelihoodoptioncontent']"""
-    # print(sample_taskresultinfo.list_write_out_info_filepaths(existing_files_only=False))
-    # """['/eval_results/huggyllama.llama-7b/hellaswag_likelihoodoptioncontent/0/0shot/hellaswag_likelihoodoptioncontent_write_out_info.json']"""
-    # print(sample_taskresultinfo.list_write_out_info_filepaths(existing_files_only=True))
-    # """['/eval_results/huggyllama.llama-7b/hellaswag_likelihoodoptioncontent/0/0shot/hellaswag_likelihoodoptioncontent_write_out_info.json']"""
-    # print(sample_taskresultinfo.get_subtask_num_doc("hellaswag_likelihoodoptioncontent"))
-    # """10042"""
-    # print(sample_taskresultinfo.list_subtask_num_doc())
-    # """{'hellaswag_likelihoodoptioncontent': 10042}"""
-    # print(sample_taskresultinfo.list_metricnames())
-
-    # print(sample_taskresultinfo.list_metrics(allow_none=True))
-    # print(sample_taskresultinfo.get_aggregate_op('ppl_argmax_acc'))
 
     # print(sample_taskresultinfo.list_aggregated_metrics(allow_none=True))
 
