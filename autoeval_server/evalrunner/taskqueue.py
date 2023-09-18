@@ -16,12 +16,12 @@ class TaskQueue:
         self.filename = filename
         if self.filename is None or not Path(self.filename).is_file():
             self.task_queue = queue.Queue()
-            self.processing_task = None
             self.finished_tasks = []
 
         else:
             self.recover_tasks() 
 
+        self.processing_task = None
         self.worker_thread = threading.Thread(target=self._process_tasks)
         self.worker_thread.daemon = True
         self.worker_thread.start()
@@ -55,7 +55,7 @@ class TaskQueue:
             run_eval(task)
         except EnvironmentError as e: # wrong name of huggingface model
             print(e)
-
+        
     def list_pending_tasks(self):
         if self.task_queue.queue is None:
             return []

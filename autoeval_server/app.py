@@ -48,6 +48,10 @@ def get_leaderboard_df(dataset_name: str, num_fewshot: int, use_cot: bool):
     # return example
 
     df = pd.DataFrame.from_records(get_leaderboard_df_data(dataset_name, num_fewshot, use_cot))
+    
+    # should have a least one element, otherwise web UI will hang (I think it's a bug of gradio)
+    if len(df)==0:
+        return [['-', '-1', '-1', '-1', '-1', '-1', '-1', '-1']]
     return df
 
 # example_finished_tasks =
@@ -87,7 +91,7 @@ def parse_evaluation_table(tasks: List[EvalModelTask]):
         return [[t.model, t.eval_task.abbr] for t in tasks]
     else:
         # should have a least one element, otherwise web UI will hang (I think it's a bug of gradio)
-        return [['-'], ['-']]
+        return [['-', '-']]
 
 finished_tasks = []
 pending_tasks = []
@@ -100,8 +104,8 @@ processing_task = parse_evaluation_table(get_running_evaluations())
 
 display_dataset_dict = {}
 
-def refresh_evaluation_status_tb():
-    print("[INFO] refreshing evaluation tables")
+def refresh_all_status_tb():
+    print("[INFO] refreshing all tables")
     finished_tasks = parse_evaluation_table(get_finished_evaluations())
     pending_tasks = parse_evaluation_table(get_pending_evaluations())
     processing_task = parse_evaluation_table(get_running_evaluations())
@@ -109,6 +113,19 @@ def refresh_evaluation_status_tb():
     print("[INFO] refreshed")
     return [finished_tasks, pending_tasks, processing_task, *leaderboard_dfs]
 
+def refresh_evaluation_status_tb():
+    print("[INFO] refreshing task queue tables")
+    leaderboard_dfs = [get_leaderboard_df(dataset.dataset_name, dataset.num_fewshot, dataset.use_cot) for dataset in DISPLAY_DATASETS]
+    print("[INFO] refreshed")
+    return [*leaderboard_dfs]
+
+def refresh_task_queue_tb():
+    print("[INFO] refreshing evaluation tables")
+    finished_tasks = parse_evaluation_table(get_finished_evaluations())
+    pending_tasks = parse_evaluation_table(get_pending_evaluations())
+    processing_task = parse_evaluation_table(get_running_evaluations())
+    print("[INFO] refreshed")
+    return [finished_tasks, pending_tasks, processing_task]
 
 
 with gr.Blocks() as demo:
@@ -127,6 +144,14 @@ with gr.Blocks() as demo:
                         # col_count=(6, "fixed"),
                         wrap=True,
                     )
+            leaderboard_refresh_btn = gr.Button("Refresh")
+            leaderboard_refresh_btn.click(
+                fn=refresh_evaluation_status_tb,
+                inputs=[],
+                outputs=[
+                    *list(display_dataset_dict.values())
+                ]
+            )
         with gr.TabItem("✉️✨ Submit here! ", elem_id="llm-benchmark-tab-table", id=1):            
             gr.Markdown("✉️✨ Submit your model here!")
             # submit new task section
@@ -168,22 +193,21 @@ with gr.Blocks() as demo:
                     headers=["Model name", "Task name"],
                     datatype=["str", "str"])
             
-            refresh_btn = gr.Button("Refresh")
-            refresh_btn.click(
-                fn=refresh_evaluation_status_tb,
+            task_refresh_btn = gr.Button("Refresh")
+            task_refresh_btn.click(
+                fn=refresh_task_queue_tb,
                 inputs=[],
                 outputs=[
                     finished_eval_table,
                     pending_eval_table,
                     running_eval_table,
-                    *list(display_dataset_dict.values())
                 ]
             )
 
-    # refresh the evalution status table every 3 minite.
+    # refresh the evalution status table every 10 minite.
     REFRESH_INTERNAL = 60*10
     demo.load(
-                fn=refresh_evaluation_status_tb,
+                fn=refresh_all_status_tb,
                 inputs=[],
                 outputs=[
                     finished_eval_table,

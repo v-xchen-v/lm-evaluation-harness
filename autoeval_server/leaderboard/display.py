@@ -41,9 +41,9 @@ DISPLAY_DATASETS = [ \
     ),
     DisplayDataset(
         dataset_name="HellaSwag",
-        num_fewshot=5,
+        num_fewshot=10,
         use_cot=False,
-        abbr="HellaSwag(5-s)"
+        abbr="HellaSwag(10-s)"
     ),
 ]
 
