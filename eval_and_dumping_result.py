@@ -22,7 +22,7 @@ custom_eval_tasktypes=[ \
 
 # TODO：supports multiple metrics insteads of single metric now.
 custom_eval_metrics=[ \
-    ["ppl_argmax_acc"], 
+    ["acc", "acc_norm", "ppl_argmin_acc"], 
     ["next_token_argmax_choices_acc", 
     "next_token_argmax_all_acc",
     "next_token_argmax_choices_circular_acc",
