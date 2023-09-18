@@ -26,7 +26,7 @@ def get_running_evaluations():
 
 if __name__ == '__main__':
     # print(get_finished_evaluations())
-    # print(get_pending_evaluations())
-    # print(get_running_evaluations())
+    print(get_pending_evaluations())
+    print(get_running_evaluations())
     pass
      

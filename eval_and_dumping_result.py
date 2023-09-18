@@ -97,7 +97,7 @@ leaderboard_tasks = [
     ),
        LeaderBoardTask(
         name=f"mmlu_{custom_eval_tasktypes[0]}_5s",
-        abbr="MMLU Option Content(0 shot)",
+        abbr="MMLU Option Content(5 shot)",
         num_fewshot=5,
         use_cot=False,
         subtasks= [f"hendrycksTest-{sub}_{custom_eval_tasktypes[0]}" for sub in MMLU_SUBJECTS],

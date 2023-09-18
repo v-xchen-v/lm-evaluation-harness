@@ -225,6 +225,10 @@ class BaseLM(LM):
         if self.distributed_state:
             return batch_size * self.distributed_state.num_processes
 
+        # temporarily make detected batch_size smaller to avoid OOM in some unexpected cases
+        if batch_size > 8:
+            batch_size //= 2
+
         if batch_size == 0:
             raise Exception("OOM with minimal batch_size:1")
         return batch_size
@@ -1129,11 +1133,11 @@ class LikelihoodOptionKeyMultipleCircularChoiceTask(MultipleChoiceTask):
         # the one with biggest probility is match the label, treat is as right
         circular_gold = np.array([((gold+i)%choice_size) for i in range(0, choice_size)])
         next_token_argmax_choices_circular_acc = 1.0 if np.all(np.argmax(logits, axis=-1) == circular_gold) else 0.0
-        next_token_argmax_choices_acc = 1.0 if np.all(np.argmax(logits[0]) == gold) else 0.0
+        next_token_argmax_choices_acc = 1.0 if np.argmax(logits[0]) == gold else 0.0
 
         # the one fully match the label, treat it as right. If it has higgest probility but not exactly match treat it as not right.
         next_token_argmax_all_circular_acc = 1.0 if np.all(max_equals[np.arange(0, choice_size), circular_gold]) else 0.0
-        next_token_argmax_all_acc = 1.0 if np.all(max_equals[0, circular_gold[0]]) else 0.0
+        next_token_argmax_all_acc = 1.0 if max_equals[0, gold] else 0.0
         
         
         completion_len = []
