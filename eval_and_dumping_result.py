@@ -32,7 +32,7 @@ custom_eval_metrics=[ \
 ]
 
 custom_eval_metric_aggregate_ops=[\
-    ["mean"],
+    ["mean", "mean", "mean"],
     ["mean", "mean", "mean", "mean"],
     ["mean"],
     ["mean"]    
