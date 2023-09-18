@@ -478,8 +478,8 @@ class BaseLM(LM):
                     -1
                 )  # [1, seq]
 
-                # Answer: (log prob, is-exact-match)
-                answer = (float(logits.sum()), bool(max_equal))
+                # Answer: (log prob, is-exact-match, cont ppl)
+                answer = (float(logits.sum()), bool(max_equal), float(torch.exp(-logits.sum()/logits.size()[-1])))
 
                 # partial caching
                 if cache_key is not None:
@@ -535,13 +535,15 @@ class BaseLM(LM):
                     # dispatch answer to distributed gpus and gather back to get full answer
                     distributed_log_probs = torch.tensor([item[0] for item in distributed_res], device=self.distributed_state.device)
                     distributed_is_exact_match=torch.tensor([item[1] for item in distributed_res], device=self.distributed_state.device)
+                    distributed_ppl=torch.tensor([item[2] for item in distributed_res], device=self.distributed_state.device)
                     
                     # gather will do on each GPU, later may limit it to main process to save unnecessary computation
                     gathered_log_probs = gather(distributed_log_probs).cpu()
                     gathered_is_exact_matchs = gather(distributed_is_exact_match).cpu()
+                    gathered_ppls = gather(distributed_ppl).cpu()
                     gathered_res=[]
-                    for(gathered_log_prob, gathered_is_exact_match) in zip(gathered_log_probs, gathered_is_exact_matchs):
-                        answer = (float(gathered_log_prob), bool(gathered_is_exact_match))
+                    for(gathered_log_prob, gathered_is_exact_match, gathered_ppl) in zip(gathered_log_probs, gathered_is_exact_matchs, gathered_ppls):
+                        answer = (float(gathered_log_prob), bool(gathered_is_exact_match), float(gathered_ppl))
                         gathered_res.append(answer)
                     
                     if is_inps_need_padding:
@@ -951,6 +953,38 @@ class MultipleChoiceTask(Task):
             "acc_norm": mean,
         }
 
+class LikelihoodOptionContentMultipleChoiceTask(MultipleChoiceTask):
+    def process_results(self, doc, results):
+        gold = doc["gold"]
+        
+        logits_sums = [x[0] for x in results]
+        ppls =[x[2] for x in results]
+        
+        acc = 1.0 if np.argmax(logits_sums) == gold else 0.0
+        completion_len = np.array([float(len(i)) for i in doc["choices"]])
+        acc_norm = 1.0 if np.argmax(logits_sums / completion_len) == gold else 0.0
+        ppl_argmin_acc = 1.0 if np.argmin(ppls) == gold else 0.0
+
+        return {
+            "acc": acc,
+            "acc_norm": acc_norm,
+            "ppl_argmin_acc": ppl_argmin_acc,
+        }
+
+    def higher_is_better(self):
+        return {
+            "acc": True,
+            "acc_norm": True,
+            "ppl_argmin_acc": True,
+        }
+
+    def aggregation(self):
+        return {
+            "acc": mean,
+            "acc_norm": mean,
+            "ppl_argmin_acc": mean
+        }
+    
 class GreedyGenerateOptionKeyTask(Task):
     """given the description, question and multiple options with format as below:
     -----------
@@ -1184,26 +1218,6 @@ class LikelihoodOptionKeyMultipleCircularChoiceTask(MultipleChoiceTask):
         example = self.doc_to_text(doc, circular_index)
         return description + labeled_examples + example
         # return self.doc_to_text(doc, num_fewshot)
-
-class LikelihoodOptionContentMultipleChoiceTask(MultipleChoiceTask):
-    def process_results(self, doc, results):
-        gold = doc["gold"]
-
-        # ppls = results
-        acc = 1.0 if np.argmax(results) == gold else 0.0
-        return {
-            "ppl_argmax_acc": acc,
-        }
-
-    def higher_is_better(self):
-        return {
-            "ppl_argmax_acc": True,
-        }
-
-    def aggregation(self):
-        return {
-            "ppl_argmax_acc": mean,
-        }
     
 class PerplexityTask(Task, abc.ABC):
     def should_decontaminate(self):

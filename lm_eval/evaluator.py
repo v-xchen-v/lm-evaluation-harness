@@ -311,7 +311,7 @@ def evaluate(
 
         for idx, (resp, (i, task_name, doc, doc_id)) in enumerate(zip(resps, requests_origin[reqtype])):
             if isinstance(task, lm_eval.base.LikelihoodOptionContentMultipleChoiceTask):
-                process_res_queue[(task_name, doc_id)].append((i, resp))
+                process_res_queue[(task_name, doc_id)].append((i, resultpersentence[idx]))
             elif task_name.startswith("hellaswag") or task_name.startswith("hendrycksTest-"):
                 process_res_queue[(task_name, doc_id)].append((i, resultpersentence[idx]))
             else:
