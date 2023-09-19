@@ -203,12 +203,16 @@ class BaseLM(LM):
                 for _ in range(5):
                     _ = F.log_softmax(self._model_call(test_batch), dim=-1).cpu()
 
-                batch_size *= 2
                 print(f"detected batch_size: {batch_size} on {self.device}")
-                utils.clear_torch_cache()
+                if batch_size >= 128:
+                    break
+                    
+                batch_size *= 2
+                    
             except RuntimeError: # OOM
                 batch_size //= 2
                 break
+        utils.clear_torch_cache()
 
         # if OOM, then halves batch_size and tries again
         # @find_executable_batch_size(starting_batch_size=self.max_batch_size)
