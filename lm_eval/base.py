@@ -204,6 +204,7 @@ class BaseLM(LM):
                     _ = F.log_softmax(self._model_call(test_batch), dim=-1).cpu()
 
                 print(f"detected batch_size: {batch_size} on {self.device}")
+                # temporarily, set max batch_size to 64 to avoid blocking in same cases
                 if batch_size >= 128:
                     break
                     
@@ -324,7 +325,7 @@ class BaseLM(LM):
             #   automatic adaptive batches much much easier to implement
             # - any OOMs will happen right away rather than near the end
 
-            
+            # x is (('The following are mu...y.\nAnswer:', ' A'), [450, 1494, 526, 2999, 7348, 5155,...], [])
             if  isinstance(x[2][0], list):
                 toks = x[1] + x[2][0]
             else:
@@ -332,9 +333,11 @@ class BaseLM(LM):
             return -len(toks), tuple(toks)
 
         # To avoid repeat logits calculation: zip the same model_call input request, ...Answer: A(B, C, D) to ...Answer: [A, B, C, D] and unzip conts later in answer calcution and caching step
+        # The repeated ctx with options should be appended as a new grouped request instead of being merged to the previous one to rightly get original requests after reordering. 
         def group_conts_with_same_ctx(reqs):
             grouped_reqs = []
             dicpos = {} # {ctx: grouped_request_list_idx}
+            append=True
             for req in reqs:
                 ctx_cnt_pos, ctx_toks_pos, cnt_toks_pos = 0, 1, 2
                 ctx, cnt = req[ctx_cnt_pos] # (ctx, cnt)
@@ -342,7 +345,12 @@ class BaseLM(LM):
                 cnt_toks = req[cnt_toks_pos] # []
                 if len(cnt_toks) != 1:
                     raise Exception("The continous token length should be 1 when using grouping same context requests for efficiency")
-                if ctx in dicpos:
+                # if ctx in dicpos:
+                
+                if ctx not in dicpos or (isinstance(grouped_reqs[dicpos[ctx]][cnt_toks_pos][0], list) and cnt in grouped_reqs[dicpos[ctx]][ctx_cnt_pos][1])  :
+                    grouped_reqs.append(req)
+                    dicpos[ctx] = len(grouped_reqs)-1
+                else:
                     grouped_req_idx = dicpos[ctx]
                     if isinstance(grouped_reqs[grouped_req_idx][cnt_toks_pos][0], list):
                         grouped_reqs[grouped_req_idx] = list(grouped_reqs[grouped_req_idx])
@@ -354,9 +362,6 @@ class BaseLM(LM):
                         grouped_reqs[grouped_req_idx][ctx_cnt_pos] = (ctx, [grouped_reqs[grouped_req_idx][ctx_cnt_pos][1], cnt]) 
                         grouped_reqs[grouped_req_idx][cnt_toks_pos] = [grouped_reqs[grouped_req_idx][cnt_toks_pos], cnt_toks]
                         grouped_reqs[grouped_req_idx] = tuple(grouped_reqs[grouped_req_idx])
-                else:
-                    grouped_reqs.append(req)
-                    dicpos[ctx] = len(grouped_reqs)-1
             return grouped_reqs
         
         if disable_same_ctx_requests_grouping:
@@ -586,7 +591,7 @@ class BaseLM(LM):
                 return res
             
             # group results as requests to get original order
-            grouped_res = group_res([x[2] for x in grouped_requests], res)
+            grouped_res = group_res([x[2] for x in reordered_requests], res)
             # flatten to ungrouped
             return list(chain.from_iterable(re_ord.get_original(grouped_res)))
         return re_ord.get_original(res)
