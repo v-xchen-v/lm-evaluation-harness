@@ -45,6 +45,18 @@ DISPLAY_DATASETS = [ \
         use_cot=False,
         abbr="HellaSwag(10-s)"
     ),
+    DisplayDataset(
+        dataset_name="ARC",
+        num_fewshot=25,
+        use_cot=False,
+        abbr="ARC(25-s)"
+    ),
+    DisplayDataset(
+        dataset_name="ARC",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="ARC(0-s)"
+    ),
 ]
 
 # function that filters eval tasks
@@ -87,7 +99,7 @@ def get_leaderboard_df_data(dataset_name: str, num_fewshot: int, use_cot: bool):
 
 if __name__ == "__main__":
     # pass
-    df_data = get_leaderboard_df_data("MMLU", 0, False)
+    df_data = get_leaderboard_df_data("MMLU", 5, False)
     print(df_data)
     # import pandas as pd
     # df = pd.DataFrame.from_records(df_data)

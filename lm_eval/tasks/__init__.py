@@ -7,6 +7,7 @@ import lm_eval.base
 from . import superglue
 from . import glue
 from . import arc
+from . import arc_custom
 from . import coqa
 from . import race
 from . import webqs
@@ -148,6 +149,8 @@ TASK_REGISTRY = {
     "triviaqa": triviaqa.TriviaQA,
     "arc_easy": arc.ARCEasy,
     "arc_challenge": arc.ARCChallenge,
+    "arc_challenge_likelihoodoptioncontent": arc_custom.LikelihoodOptionContentMultipleChoiceARCChallenge,
+    "arc_challenge_likelihoodoptionkeycircular": arc_custom.LikelihoodOptionKeyMultipleCircularChoiceARCChallenge,
     # "quac": quac.QuAC, # not implemented yet
     "logiqa": logiqa.LogiQA,
     "hellaswag": hellaswag.HellaSwag,
