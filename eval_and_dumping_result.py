@@ -6,6 +6,7 @@ import os
 from lm_eval import tasks, evaluator, utils
 from lm_eval.tasks.hendrycks_test import SUBJECTS as MMLU_SUBJECTS
 from leaderboardtask import LeaderBoardTask
+from autoeval_server.resultparser.getmodelinfo import ModelInfo
 
 logging.getLogger("openai").setLevel(logging.WARNING)
 
@@ -370,12 +371,6 @@ LEADERBOARDTASK_REGISTRY = \
 # print(TASK)
 # OUTPUT_DIR = f'/eval_results/{hash_md5(MODEL_NAME)}/{TASK.name}/{TASK.version}/{NUM_FEWSHOT}shot'
 # os.makedirs(OUTPUT_DIR, exist_ok=True)
-def encode_modelname(model_name):
-    # can not
-    return model_name.replace("/", ".")
-
-def decoded_modelname(encoded_model_name):
-    return encoded_model_name.replace(".", "/")
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -402,7 +397,7 @@ def eval_and_dump(leaderboardtask_name, hf_model_name, batch_size, device, no_ca
     else:
         num_fewshot=task.num_fewshot
 
-    output_dir=f'{output_base_path}/{encode_modelname(hf_model_name)}/{task.name}/{task.version}/{num_fewshot}shot'
+    output_dir=f'{output_base_path}/{ModelInfo.encode_modelname(hf_model_name)}/{task.name}/{task.version}/{num_fewshot}shot'
     os.makedirs(output_dir, exist_ok=True)
     output_path=f"{output_dir}/results.json"
 
