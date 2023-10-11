@@ -53,12 +53,11 @@ def list_models():
     """
     model_dirs = [Path(dirname) for dirname in _list_subdirectories_by_level(RESULTS_SAVE_ROOT, 1)]
     
-    have_results_model_dirs = [x for x in model_dirs if _contains_results_json_file(x)]
+    # have_results_model_dirs = [x for x in model_dirs if _contains_results_json_file(x)]
     
-    model_ids = [ModelInfo.get_decoded_modelname(Path(dirname).name) for dirname in have_results_model_dirs]
+    model_ids = [ModelInfo.get_decoded_modelname(Path(dirname).name) for dirname in model_dirs]
     return model_ids
-
-
+    
 # def list_tasks(model_name):
 #     return [Path(dirname).name for dirname in list_subdirectories_by_level(Path(results_save_root)/ModelInfo.get_decoded_modelname(model_name), 1)]
 
