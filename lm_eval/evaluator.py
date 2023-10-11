@@ -9,6 +9,7 @@ import lm_eval.base
 from lm_eval.utils import positional_deprecated, run_task_tests
 from lm_eval.tasks.agieval_eng_qa_cot import GeneralAGIEvalEngQACoT
 from lm_eval.tasks.agieval_eng_cloze_cot import AGIEvalEngClozeCoT
+import torch, gc
 
 @positional_deprecated
 def simple_evaluate(
@@ -118,7 +119,14 @@ def simple_evaluate(
         "bootstrap_iters": bootstrap_iters,
         "description_dict": description_dict,
     }
-
+    
+    if hasattr(lm, 'lm'):
+        del lm.lm
+    else:
+        del lm
+    gc.collect()
+    torch.cuda.empty_cache()
+    
     return results
 
 decontaminate_suffix = "_decontaminate"
