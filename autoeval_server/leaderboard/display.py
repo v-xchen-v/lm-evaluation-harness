@@ -34,6 +34,18 @@ DISPLAY_DATASETS = [ \
         abbr="HellaSwag(0-s)"
     ),
     DisplayDataset(
+        dataset_name="ARC",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="ARC-c(0-s)"
+    ),
+    DisplayDataset(
+        dataset_name="ARC-e",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="ARC-e(0-s)"
+    ),
+    DisplayDataset(
         dataset_name="MMLU",
         num_fewshot=5,
         use_cot=False,
@@ -50,12 +62,6 @@ DISPLAY_DATASETS = [ \
         num_fewshot=25,
         use_cot=False,
         abbr="ARC(25-s)"
-    ),
-    DisplayDataset(
-        dataset_name="ARC",
-        num_fewshot=0,
-        use_cot=False,
-        abbr="ARC(0-s)"
     ),
 ]
 
@@ -99,10 +105,29 @@ def get_leaderboard_df_data(dataset_name: str, num_fewshot: int, use_cot: bool):
 
 if __name__ == "__main__":
     # pass
-    import cProfile
-    cProfile.run('get_leaderboard_df_data("MMLU", 5, False)')
-    # df_data = get_leaderboard_df_data("MMLU", 5, False)
-    # print(df_data)
+    # import cProfile
+    # cProfile.run('get_leaderboard_df_data("MMLU", 5, False)')
+    # dataset_name='MMLU'
+    # dataset_name='ARC'
+    dataset_name='HellaSwag'
+    num_fewshot=0
+    df_data = get_leaderboard_df_data(dataset_name, num_fewshot, False)
+    print(df_data)
+    
+    import csv
+
+    # to_csv = [
+    #     {'name': 'bob', 'age': 25, 'weight': 200},
+    #     {'name': 'jim', 'age': 31, 'weight': 180},
+    # ]
+
+    keys = df_data[0].keys()
+
+    with open(f'{dataset_name}_{num_fewshot}s.csv', 'w', newline='') as output_file:
+        dict_writer = csv.DictWriter(output_file, keys)
+        dict_writer.writeheader()
+        dict_writer.writerows(df_data)
+    
     # import pandas as pd
     # df = pd.DataFrame.from_records(df_data)
     # sortedDf = df.sort_index(axis=1)

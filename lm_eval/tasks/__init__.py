@@ -151,6 +151,8 @@ TASK_REGISTRY = {
     "arc_challenge": arc.ARCChallenge,
     "arc_challenge_likelihoodoptioncontent": arc_custom.LikelihoodOptionContentMultipleChoiceARCChallenge,
     "arc_challenge_likelihoodoptionkeycircular": arc_custom.LikelihoodOptionKeyMultipleCircularChoiceARCChallenge,
+    "arc_easy_likelihoodoptioncontent": arc_custom.LikelihoodOptionContentMultipleChoiceARCEasy,
+    "arc_easy_likelihoodoptionkeycircular": arc_custom.LikelihoodOptionKeyMultipleCircularChoiceARCEasy,
     # "quac": quac.QuAC, # not implemented yet
     "logiqa": logiqa.LogiQA,
     "hellaswag": hellaswag.HellaSwag,
