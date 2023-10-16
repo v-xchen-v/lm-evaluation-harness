@@ -5,6 +5,7 @@ import sacrebleu
 import lm_eval.base
 
 from . import superglue
+from . import boolq_custom
 from . import glue
 from . import arc
 from . import arc_custom
@@ -118,6 +119,8 @@ TASK_REGISTRY = {
     "wnli": glue.WNLI,
     # SuperGLUE
     "boolq": superglue.BoolQ,
+    "boolq_likelihoodoptioncontent": boolq_custom.BoolQCustomOptionContent,
+    "boolq_likelihoodoptionkeycircular": boolq_custom.BoolQCustomOptionKeyCircular,
     "cb": superglue.CommitmentBank,
     "copa": superglue.Copa,
     "multirc": superglue.MultiRC,
