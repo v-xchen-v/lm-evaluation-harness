@@ -29,6 +29,7 @@ from . import sat
 from . import arithmetic
 from . import lambada
 from . import piqa
+from . import piqa_custom
 from . import prost
 from . import mc_taco
 from . import triviaqa
@@ -140,6 +141,8 @@ TASK_REGISTRY = {
     # "cbt-cn": cbt.CBTCN, # disabled pending context length fix
     # "cbt-ne": cbt.CBTNE, # disabled pending context length fix
     "piqa": piqa.PiQA,
+    "piqa_likelihoodoptioncontent": piqa_custom.PIQACustomOptionContent,
+    "piqa_likelihoodoptionkeycircular": piqa_custom.PIQACustomOptionKeyCircular,
     "prost": prost.PROST,
     "mc_taco": mc_taco.MCTACO,
     # Science related

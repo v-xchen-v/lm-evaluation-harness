@@ -259,7 +259,7 @@ leaderboard_tasks = [
         metrics=custom_eval_metrics[0],
         aggregate_ops=custom_eval_metric_aggregate_ops[0],
         version=0,
-        dataset_name="ARC",
+        dataset_name="ARC-c",
     ),
     LeaderBoardTask(
         name=f"arc_challenge_{custom_eval_tasktypes[1]}_25s",
@@ -270,7 +270,7 @@ leaderboard_tasks = [
         metrics=custom_eval_metrics[1],
         aggregate_ops=custom_eval_metric_aggregate_ops[1],
         version=0,
-        dataset_name="ARC",
+        dataset_name="ARC-c",
     ),
     
     LeaderBoardTask(
@@ -282,7 +282,7 @@ leaderboard_tasks = [
         metrics=custom_eval_metrics[0],
         aggregate_ops=custom_eval_metric_aggregate_ops[0],
         version=0,
-        dataset_name="ARC",
+        dataset_name="ARC-c",
     ),
     LeaderBoardTask(
         name=f"arc_challenge_{custom_eval_tasktypes[1]}_0s",
@@ -293,7 +293,7 @@ leaderboard_tasks = [
         metrics=custom_eval_metrics[1],
         aggregate_ops=custom_eval_metric_aggregate_ops[1],
         version=0,
-        dataset_name="ARC",
+        dataset_name="ARC-c",
     ),
     
     LeaderBoardTask(
@@ -342,6 +342,28 @@ leaderboard_tasks = [
         dataset_name="BoolQ",
     ),
     
+    LeaderBoardTask(
+        name=f"piqa_{custom_eval_tasktypes[0]}_0s",
+        abbr="PIQA Option Content(0 shot)",
+        num_fewshot=0,
+        use_cot=False,
+        subtasks=[f"piqa_{custom_eval_tasktypes[0]}"],
+        metrics=custom_eval_metrics[0],
+        aggregate_ops=custom_eval_metric_aggregate_ops[0],
+        version=0,
+        dataset_name="PIQA",
+    ),
+    LeaderBoardTask(
+        name=f"piqa_{custom_eval_tasktypes[1]}_0s",
+        abbr="PIQA Option Key Circular(0 shot)",
+        num_fewshot=0,
+        use_cot=False,
+        subtasks=[f"piqa_{custom_eval_tasktypes[1]}"],
+        metrics=custom_eval_metrics[1],
+        aggregate_ops=custom_eval_metric_aggregate_ops[1],
+        version=0,
+        dataset_name="PIQA",
+    ),
     # LeaderBoardTask(
     #     name="arc",
     #     abbr="ARC(25 shot)",

@@ -34,7 +34,7 @@ DISPLAY_DATASETS = [ \
         abbr="HellaSwag(0-s)"
     ),
     DisplayDataset(
-        dataset_name="ARC",
+        dataset_name="ARC-c",
         num_fewshot=0,
         use_cot=False,
         abbr="ARC-c(0-s)"
@@ -52,6 +52,12 @@ DISPLAY_DATASETS = [ \
         abbr="BoolQ(0-s)"
     ),
     DisplayDataset(
+        dataset_name="PIQA",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="PIQA(0-s)"
+    ),
+    DisplayDataset(
         dataset_name="MMLU",
         num_fewshot=5,
         use_cot=False,
@@ -64,7 +70,7 @@ DISPLAY_DATASETS = [ \
         abbr="HellaSwag(10-s)"
     ),
     DisplayDataset(
-        dataset_name="ARC",
+        dataset_name="ARC-c",
         num_fewshot=25,
         use_cot=False,
         abbr="ARC(25-s)"
@@ -95,7 +101,8 @@ def get_leaderboard_df_data(dataset_name: str, num_fewshot: int, use_cot: bool):
     for model_name in models:
         row_data_dict = \
         {
-            "Model Name": make_clickable_model(model_name),
+            # "Model Name": make_clickable_model(model_name),
+            "Model Name": model_name,
         }
         
         # filter out the dataset with settings related eval tasks
@@ -113,9 +120,11 @@ if __name__ == "__main__":
     # pass
     # import cProfile
     # cProfile.run('get_leaderboard_df_data("MMLU", 5, False)')
-    # dataset_name='MMLU'
+    dataset_name='MMLU'
     # dataset_name='ARC'
-    dataset_name='HellaSwag'
+    # dataset_name='HellaSwag'
+    # dataset_name="BoolQ"
+    # dataset_name="ARC-e"
     num_fewshot=0
     df_data = get_leaderboard_df_data(dataset_name, num_fewshot, False)
     print(df_data)
