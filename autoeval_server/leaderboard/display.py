@@ -46,6 +46,12 @@ DISPLAY_DATASETS = [ \
         abbr="ARC-e(0-s)"
     ),
     DisplayDataset(
+        dataset_name="BoolQ",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="BoolQ(0-s)"
+    ),
+    DisplayDataset(
         dataset_name="MMLU",
         num_fewshot=5,
         use_cot=False,

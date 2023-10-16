@@ -319,6 +319,29 @@ leaderboard_tasks = [
         dataset_name="ARC-e",
     ),
     
+    LeaderBoardTask(
+        name=f"boolq_{custom_eval_tasktypes[0]}_0s",
+        abbr="BoolQ Option Content(0 shot)",
+        num_fewshot=0,
+        use_cot=False,
+        subtasks=[f"boolq_{custom_eval_tasktypes[0]}"],
+        metrics=custom_eval_metrics[0],
+        aggregate_ops=custom_eval_metric_aggregate_ops[0],
+        version=0,
+        dataset_name="BoolQ",
+    ),
+    LeaderBoardTask(
+        name=f"boolq_{custom_eval_tasktypes[1]}_0s",
+        abbr="BoolQ Option Key Circular(0 shot)",
+        num_fewshot=0,
+        use_cot=False,
+        subtasks=[f"boolq_{custom_eval_tasktypes[1]}"],
+        metrics=custom_eval_metrics[1],
+        aggregate_ops=custom_eval_metric_aggregate_ops[1],
+        version=0,
+        dataset_name="BoolQ",
+    ),
+    
     # LeaderBoardTask(
     #     name="arc",
     #     abbr="ARC(25 shot)",

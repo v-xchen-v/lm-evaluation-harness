@@ -114,13 +114,13 @@ def refresh_all_status_tb():
     return [finished_tasks, pending_tasks, processing_task, *leaderboard_dfs]
 
 def refresh_evaluation_status_tb():
-    print("[INFO] refreshing task queue tables")
+    print("[INFO] refreshing evaluation tables")
     leaderboard_dfs = [get_leaderboard_df(dataset.dataset_name, dataset.num_fewshot, dataset.use_cot) for dataset in DISPLAY_DATASETS]
     print("[INFO] refreshed")
     return [*leaderboard_dfs]
 
 def refresh_task_queue_tb():
-    print("[INFO] refreshing evaluation tables")
+    print("[INFO] refreshing task queue tables")
     finished_tasks = parse_evaluation_table(get_finished_evaluations())
     pending_tasks = parse_evaluation_table(get_pending_evaluations())
     processing_task = parse_evaluation_table(get_running_evaluations())
