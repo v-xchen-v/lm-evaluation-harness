@@ -58,6 +58,12 @@ DISPLAY_DATASETS = [ \
         abbr="PIQA(0-s)"
     ),
     DisplayDataset(
+        dataset_name="SIQA",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="SIQA(0-s)"
+    ),
+    DisplayDataset(
         dataset_name="MMLU",
         num_fewshot=5,
         use_cot=False,

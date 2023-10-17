@@ -75,6 +75,7 @@ from . import agieval_eng_qa
 from . import agieval_eng_cloze
 from . import agieval_eng_qa_cot
 from . import agieval_eng_cloze_cot
+from . import siqa_custom
 
 ########################################
 # Translation tasks
@@ -215,6 +216,8 @@ TASK_REGISTRY = {
     "arithmetic_1dc": arithmetic.Arithmetic1DComposite,
     "agieval_eng_cloze": agieval_eng_cloze.AGIEvalEngCloze,
     "agieval_eng_cloze_cot": agieval_eng_cloze_cot.AGIEvalEngClozeCoT,
+    "siqa_likelihoodoptioncontent": siqa_custom.SIQACustomOptionContent,
+    "siqa_likelihoodoptionkeycircular": siqa_custom.SIQACustomOptionKeyCircular,
     # TODO Perhaps make these groups of tasks
     #   e.g. anli, arithmetic, openai_translations, harness_translations
     # AGIEvalEngQA (9 tasks)
