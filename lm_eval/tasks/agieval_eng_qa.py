@@ -27,7 +27,7 @@ SUBJECTS = [
     "sat-math",
     "sat-en",
     "aqua-rat",
-    "sat-en-without-passage",
+    # "sat-en-without-passage",
     "gaokao-english"
 ]
 

@@ -64,6 +64,12 @@ DISPLAY_DATASETS = [ \
         abbr="SIQA(0-s)"
     ),
     DisplayDataset(
+        dataset_name="AGIEvalEng",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="AGIEvalEng(0-s)"
+    ),
+    DisplayDataset(
         dataset_name="MMLU",
         num_fewshot=5,
         use_cot=False,

@@ -5,6 +5,7 @@ import os
 
 from lm_eval import tasks, evaluator, utils
 from lm_eval.tasks.hendrycks_test import SUBJECTS as MMLU_SUBJECTS
+from lm_eval.tasks.agieval_eng_qa import SUBJECTS as AGIEval_SUBJECTS
 from leaderboardtask import LeaderBoardTask
 from autoeval_server.resultparser.getmodelinfo import ModelInfo
 
@@ -386,6 +387,28 @@ leaderboard_tasks = [
         aggregate_ops=custom_eval_metric_aggregate_ops[1],
         version=0,
         dataset_name="SIQA",
+    ),
+    LeaderBoardTask(
+        name=f"agieval_eng_qa_{custom_eval_tasktypes[0]}_5s",
+        abbr="AGIEval Eng QA Option Content(0 shot)",
+        num_fewshot=0,
+        use_cot=False,
+        subtasks= [f"agieval_eng_qa_{sub}" for sub in AGIEval_SUBJECTS],
+        metrics=["acc", "acc_norm"],
+        aggregate_ops=["mean", "mean"],
+        version=0,
+        dataset_name="AGIEvalEng",
+    ),
+    LeaderBoardTask(
+        name=f"agieval_eng_qa_{custom_eval_tasktypes[1]}_5s",
+        abbr="AGIEval Eng QA  Option Key Circular(0 shot)",
+        num_fewshot=0,
+        use_cot=False,
+        subtasks= [f"agieval_eng_qa_{sub}" for sub in AGIEval_SUBJECTS],
+        metrics=["acc", "acc_norm"],
+        aggregate_ops=["mean", "mean"],
+        version=0,
+        dataset_name="AGIEvalEng",
     ),
     # LeaderBoardTask(
     #     name="arc",
