@@ -391,7 +391,7 @@ leaderboard_tasks = [
     LeaderBoardTask(
         name=f"agieval_eng_qa_{custom_eval_tasktypes[0]}_5s",
         abbr="AGIEval Eng QA Option Content(0 shot)",
-        num_fewshot=0,
+        num_fewshot=5,
         use_cot=False,
         subtasks= [f"agieval_eng_qa_{sub}" for sub in AGIEval_SUBJECTS],
         metrics=["acc", "acc_norm"],
@@ -402,7 +402,7 @@ leaderboard_tasks = [
     LeaderBoardTask(
         name=f"agieval_eng_qa_{custom_eval_tasktypes[1]}_5s",
         abbr="AGIEval Eng QA  Option Key Circular(0 shot)",
-        num_fewshot=0,
+        num_fewshot=5,
         use_cot=False,
         subtasks= [f"agieval_eng_qa_{sub}" for sub in AGIEval_SUBJECTS],
         metrics=["acc", "acc_norm"],
