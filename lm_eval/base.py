@@ -204,8 +204,8 @@ class BaseLM(LM):
                     _ = F.log_softmax(self._model_call(test_batch), dim=-1).cpu()
 
                 print(f"detected batch_size: {batch_size} on {self.device}")
-                # temporarily, set max batch_size to 64 to avoid blocking in same cases
-                if batch_size >= 128:
+                # temporarily, set max batch_size to 16 to avoid blocking in same cases
+                if batch_size >= 32:
                     break
                     
                 batch_size *= 2
@@ -233,7 +233,7 @@ class BaseLM(LM):
         # temporarily make detected batch_size smaller to avoid OOM in some unexpected cases
         if batch_size > 8:
             batch_size //= 2
-
+        
         if batch_size == 0:
             raise Exception("OOM with minimal batch_size:1")
         return batch_size

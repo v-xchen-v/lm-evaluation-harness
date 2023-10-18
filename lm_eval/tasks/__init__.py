@@ -76,6 +76,7 @@ from . import agieval_eng_cloze
 from . import agieval_eng_qa_cot
 from . import agieval_eng_cloze_cot
 from . import siqa_custom
+from . import winogrande_custom
 
 ########################################
 # Translation tasks
@@ -179,6 +180,8 @@ TASK_REGISTRY = {
     "webqs": webqs.WebQs,
     "wsc273": wsc273.WinogradSchemaChallenge273,
     "winogrande": winogrande.Winogrande,
+    "winogrande_likelihoodoptioncontent": winogrande_custom.WinograndeCustomOptionContent,
+    "winogrande_likelihoodoptionkeycircular": winogrande_custom.WinograndeCustomOptionKeyCircular,
     "anli_r1": anli.ANLIRound1,
     "anli_r2": anli.ANLIRound2,
     "anli_r3": anli.ANLIRound3,

@@ -58,6 +58,18 @@ DISPLAY_DATASETS = [ \
         abbr="PIQA(0-s)"
     ),
     DisplayDataset(
+        dataset_name="Winogrande-ori",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="Winogrande-ori(0-s)"
+    ),
+    DisplayDataset(
+        dataset_name="Winogrande",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="Winogrande(0-s)"
+    ),
+    DisplayDataset(
         dataset_name="SIQA",
         num_fewshot=0,
         use_cot=False,
