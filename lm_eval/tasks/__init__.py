@@ -77,6 +77,7 @@ from . import agieval_eng_qa_cot
 from . import agieval_eng_cloze_cot
 from . import siqa_custom
 from . import winogrande_custom
+from . import agieval_custom
 
 ########################################
 # Translation tasks
@@ -227,6 +228,8 @@ TASK_REGISTRY = {
     **agieval_eng_qa.create_all_tasks(),
      # AGIEvalEngQACoT (9 tasks)
     **agieval_eng_qa_cot.create_all_tasks(),
+    **agieval_custom.create_all_optionkeycircular_tasks(),
+    **agieval_custom.create_all_optioncontent_tasks(),
     # hendrycksTest (57 tasks)
     **hendrycks_test.create_all_tasks(),
     # hendrycksCircularChoicesTtest(57 tasks),

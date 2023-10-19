@@ -77,6 +77,12 @@ DISPLAY_DATASETS = [ \
     ),
     DisplayDataset(
         dataset_name="AGIEvalEng",
+        num_fewshot=5,
+        use_cot=False,
+        abbr="AGIEvalEng ori(3-5-s)"
+    ),
+    DisplayDataset(
+        dataset_name="AGIEvalEng",
         num_fewshot=0,
         use_cot=False,
         abbr="AGIEvalEng(0-s)"
