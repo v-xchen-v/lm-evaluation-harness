@@ -245,6 +245,21 @@ class EvalTaskResultInfo:
             
             self.update_num_of_docs_cache(subtask_name, num_doc)
         return num_doc
+    
+    def get_subtask_pred_logits(self, subtask_name: str):
+        write_out_info_jsonpath = self._get_subtask_write_out_info_filepath( subtask_name)
+        
+        records_logits = []
+        with open(write_out_info_jsonpath, 'r') as f:
+            # dict of subtask name to dict of metricname to value
+            write_out_info = json.load(f)
+            for item in write_out_info:
+                item_logits = []
+                for k, v in item.items():
+                    if k.startswith("logit_"):
+                        item_logits.append(v)
+                        records_logits.append(item_logits)
+        return records_logits
         
     def list_subtask_num_doc(self):
 
@@ -253,7 +268,16 @@ class EvalTaskResultInfo:
         for subtask in subtasks:
             num_doc[subtask] = self.get_subtask_num_doc(subtask)
         
-        return num_doc
+        return 
+    
+    def list_subtask_logits(self):
+
+        subtasks = self.list_subtasknames()
+        logits = {}
+        for subtask in subtasks:
+            logits[subtask] = self.get_subtask_pred_logits(subtask)
+        
+        return logits
     
     def search_num_of_docs_in_cache(self, subtask_name):
         if Path(num_of_doc_cache_filepath).exists():
@@ -398,15 +422,15 @@ class EvalTaskResultInfo:
         return dict(metrics)
 
 if __name__ == "__main__":
-    print(list_models())
+    # print(list_models())
     # print(is_result_exists())
     
-    # sample_taskresultinfo = EvalTaskResultInfo.from_evaltask(results_save_root, 'huggyllama/llama-7b', LEADERBOARDTASK_REGISTRY['mmlu_likelihoodoptionkeycircular'])
+    sample_taskresultinfo = EvalTaskResultInfo.from_evaltask(RESULTS_SAVE_ROOT, 'huggyllama/llama-7b', LEADERBOARDTASK_REGISTRY['mmlu_likelihoodoptionkeycircular'])
 
-    # print(sample_taskresultinfo)
+    print(sample_taskresultinfo)
 
     # print(sample_taskresultinfo.list_metrics(allow_none=True))
 
-    # print(sample_taskresultinfo.list_aggregated_metrics(allow_none=True))
+    print(sample_taskresultinfo.list_aggregated_metrics(allow_none=True))
 
 
