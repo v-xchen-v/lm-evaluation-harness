@@ -23,6 +23,7 @@ from . import hellaswag_greedygenerateoptionkey
 from . import hellaswag_greedygenerateanswer
 from . import swag
 from . import openbookqa
+from . import openbookqa_custom
 from . import squad
 from . import naturalqs
 from . import sat
@@ -171,6 +172,10 @@ TASK_REGISTRY = {
     "hellaswag_greedyoptionkey": hellaswag_greedygenerateoptionkey.GreedyGenerateOptionKeyHellaswag,
     "swag": swag.SWAG,
     "openbookqa": openbookqa.OpenBookQA,
+    "openbookqa_likelihoodoptioncontent": openbookqa_custom.OpenBookQACustomOptionContent,
+    "openbookqa_likelihoodoptionkeycircular": openbookqa_custom.OpenBookQACustomOptionKeyCircular,
+    "openbookqa_fact_likelihoodoptioncontent": openbookqa_custom.OpenBookQAWithFactCustomOptionContent,
+    "openbookqa_fact_likelihoodoptionkeycircular": openbookqa_custom.OpenBookQAWithFactCustomOptionKeyCircular,
     "squad2": squad.SQuAD2,
     "race": race.RACE,
     # "naturalqs": naturalqs.NaturalQs, # not implemented yet

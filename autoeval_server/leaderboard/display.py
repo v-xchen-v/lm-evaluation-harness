@@ -88,6 +88,18 @@ DISPLAY_DATASETS = [ \
         abbr="AGIEvalEng(0-s)"
     ),
     DisplayDataset(
+        dataset_name="OpenBookQA",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="OpenBookQA(0-s)"
+    ),
+    DisplayDataset(
+        dataset_name="OpenBookQA_Fact",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="OpenBookQA with Fact(0-s)"
+    ),
+    DisplayDataset(
         dataset_name="MMLU",
         num_fewshot=5,
         use_cot=False,

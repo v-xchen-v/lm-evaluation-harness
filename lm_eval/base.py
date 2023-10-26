@@ -1204,9 +1204,10 @@ class LikelihoodOptionKeyMultipleCircularChoiceTask(MultipleChoiceTask):
                 "WARNING: provide_description is deprecated and will be removed in a future version in favor of description_dict"
             )
 
-        subject = self.DATASET_NAME or self.SUBJECT
-        if subject:
-            description = f"The following are multiple choice questions (with answers) about {self._format_subject(subject)}."
+        if description is None and (self.DATASET_NAME is not None or self.SUBJECT is not None):
+            subject = self.DATASET_NAME or self.SUBJECT
+            if subject:
+                description = f"The following are multiple choice questions (with answers) about {self._format_subject(subject)}."
         description = description + "\n\n" if description else ""
 
         if num_fewshot == 0:
