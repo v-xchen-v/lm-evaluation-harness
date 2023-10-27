@@ -79,6 +79,7 @@ from . import agieval_eng_cloze_cot
 from . import siqa_custom
 from . import winogrande_custom
 from . import agieval_custom
+from . import commonsenseqa_custom
 
 ########################################
 # Translation tasks
@@ -227,6 +228,8 @@ TASK_REGISTRY = {
     "agieval_eng_cloze_cot": agieval_eng_cloze_cot.AGIEvalEngClozeCoT,
     "siqa_likelihoodoptioncontent": siqa_custom.SIQACustomOptionContent,
     "siqa_likelihoodoptionkeycircular": siqa_custom.SIQACustomOptionKeyCircular,
+    "commonsenseqa_likelihoodoptioncontent": commonsenseqa_custom.CommonSenseQACustomOptionContent,
+    "commonsenseqa_likelihoodoptionkeycircular": commonsenseqa_custom.CommonSenseQACustomOptionKeyCircular,
     # TODO Perhaps make these groups of tasks
     #   e.g. anli, arithmetic, openai_translations, harness_translations
     # AGIEvalEngQA (9 tasks)
