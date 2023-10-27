@@ -80,6 +80,7 @@ from . import siqa_custom
 from . import winogrande_custom
 from . import agieval_custom
 from . import commonsenseqa_custom
+from . import race_custom
 
 ########################################
 # Translation tasks
@@ -179,6 +180,12 @@ TASK_REGISTRY = {
     "openbookqa_fact_likelihoodoptionkeycircular": openbookqa_custom.OpenBookQAWithFactCustomOptionKeyCircular,
     "squad2": squad.SQuAD2,
     "race": race.RACE,
+    "race_high_likelihoodoptioncontent": race_custom.RACEHighCustomOptionContent,
+    "race_middle_likelihoodoptioncontent": race_custom.RACEMiddleCustomOptionContent,
+    "race_all_likelihoodiotioncontent": race_custom.RACEAllCustomOptionContent,
+    "race_high_likelihoodoptionkeycircular": race_custom.RACEHighCustomOptionKeyCircular,
+    "race_middle_likelihoodoptionkeycircular": race_custom.RACEMiddleCustomOptionKeyCircular,
+    "race_all_likelihoodoptionkeycircular": race_custom.RACEAllCustomOptionKeyCircular,
     # "naturalqs": naturalqs.NaturalQs, # not implemented yet
     "headqa": headqa.HeadQAEsDeprecated,  # for backwards compat - headqa used to default to es
     "headqa_es": headqa.HeadQAEs,

@@ -106,6 +106,24 @@ DISPLAY_DATASETS = [ \
         abbr="CommonSenseQA(0-s)"
     ),
     DisplayDataset(
+        dataset_name="RACE_high",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="RACE_high(0-s)"
+    ),
+    DisplayDataset(
+        dataset_name="RACE_middle",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="RACE_middle(0-s)"
+    ),
+    DisplayDataset(
+        dataset_name="RACE_all",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="RACE_all(0-s)"
+    ),
+    DisplayDataset(
         dataset_name="CommonSenseQA",
         num_fewshot=0,
         use_cot=False,
