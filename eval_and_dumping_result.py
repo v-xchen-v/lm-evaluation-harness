@@ -659,8 +659,8 @@ def eval_and_dump(leaderboardtask_name, hf_model_name, batch_size, device, no_ca
     model='hf-causal-experimental'
     model_args=f"pretrained={hf_model_name}"
     if use_model_parallel:
-        # model_args+=",use_accelerate=True"
-        device="cuda:0"
+        model_args+=",use_accelerate=True"
+        device="auto"
 
     print(f"[INFO] num_fewshot: {num_fewshot}")
     results = evaluator.simple_evaluate(
