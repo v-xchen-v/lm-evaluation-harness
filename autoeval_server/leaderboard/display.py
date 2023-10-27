@@ -100,6 +100,18 @@ DISPLAY_DATASETS = [ \
         abbr="OpenBookQA with Fact(0-s)"
     ),
     DisplayDataset(
+        dataset_name="CommonSenseQA",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="CommonSenseQA(0-s)"
+    ),
+    DisplayDataset(
+        dataset_name="CommonSenseQA",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="CommonSenseQA(7-s)"
+    ),
+    DisplayDataset(
         dataset_name="MMLU",
         num_fewshot=5,
         use_cot=False,

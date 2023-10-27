@@ -69,6 +69,9 @@ class CommonSenseQACustomOptionContent(CommonSenseQACustom, LikelihoodOptionCont
         }
         return out_doc
     
+    def doc_to_text(self, doc):
+        return doc["query"]
+    
 class CommonSenseQACustomOptionKeyCircular(CommonSenseQACustom, LikelihoodOptionKeyMultipleCircularChoiceTask):
     VERSION = 0
     
