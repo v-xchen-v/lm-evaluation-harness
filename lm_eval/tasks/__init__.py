@@ -23,6 +23,7 @@ from . import hellaswag_greedygenerateoptionkey
 from . import hellaswag_greedygenerateanswer
 from . import swag
 from . import openbookqa
+from . import openbookqa_custom
 from . import squad
 from . import naturalqs
 from . import sat
@@ -76,6 +77,10 @@ from . import agieval_eng_cloze
 from . import agieval_eng_qa_cot
 from . import agieval_eng_cloze_cot
 from . import siqa_custom
+from . import winogrande_custom
+from . import agieval_custom
+from . import commonsenseqa_custom
+from . import race_custom
 
 ########################################
 # Translation tasks
@@ -169,8 +174,18 @@ TASK_REGISTRY = {
     "hellaswag_greedyoptionkey": hellaswag_greedygenerateoptionkey.GreedyGenerateOptionKeyHellaswag,
     "swag": swag.SWAG,
     "openbookqa": openbookqa.OpenBookQA,
+    "openbookqa_likelihoodoptioncontent": openbookqa_custom.OpenBookQACustomOptionContent,
+    "openbookqa_likelihoodoptionkeycircular": openbookqa_custom.OpenBookQACustomOptionKeyCircular,
+    "openbookqa_fact_likelihoodoptioncontent": openbookqa_custom.OpenBookQAWithFactCustomOptionContent,
+    "openbookqa_fact_likelihoodoptionkeycircular": openbookqa_custom.OpenBookQAWithFactCustomOptionKeyCircular,
     "squad2": squad.SQuAD2,
     "race": race.RACE,
+    "race_high_likelihoodoptioncontent": race_custom.RACEHighCustomOptionContent,
+    "race_middle_likelihoodoptioncontent": race_custom.RACEMiddleCustomOptionContent,
+    "race_all_likelihoodiotioncontent": race_custom.RACEAllCustomOptionContent,
+    "race_high_likelihoodoptionkeycircular": race_custom.RACEHighCustomOptionKeyCircular,
+    "race_middle_likelihoodoptionkeycircular": race_custom.RACEMiddleCustomOptionKeyCircular,
+    "race_all_likelihoodoptionkeycircular": race_custom.RACEAllCustomOptionKeyCircular,
     # "naturalqs": naturalqs.NaturalQs, # not implemented yet
     "headqa": headqa.HeadQAEsDeprecated,  # for backwards compat - headqa used to default to es
     "headqa_es": headqa.HeadQAEs,
@@ -179,6 +194,8 @@ TASK_REGISTRY = {
     "webqs": webqs.WebQs,
     "wsc273": wsc273.WinogradSchemaChallenge273,
     "winogrande": winogrande.Winogrande,
+    "winogrande_likelihoodoptioncontent": winogrande_custom.WinograndeCustomOptionContent,
+    "winogrande_likelihoodoptionkeycircular": winogrande_custom.WinograndeCustomOptionKeyCircular,
     "anli_r1": anli.ANLIRound1,
     "anli_r2": anli.ANLIRound2,
     "anli_r3": anli.ANLIRound3,
@@ -218,12 +235,16 @@ TASK_REGISTRY = {
     "agieval_eng_cloze_cot": agieval_eng_cloze_cot.AGIEvalEngClozeCoT,
     "siqa_likelihoodoptioncontent": siqa_custom.SIQACustomOptionContent,
     "siqa_likelihoodoptionkeycircular": siqa_custom.SIQACustomOptionKeyCircular,
+    "commonsenseqa_likelihoodoptioncontent": commonsenseqa_custom.CommonSenseQACustomOptionContent,
+    "commonsenseqa_likelihoodoptionkeycircular": commonsenseqa_custom.CommonSenseQACustomOptionKeyCircular,
     # TODO Perhaps make these groups of tasks
     #   e.g. anli, arithmetic, openai_translations, harness_translations
     # AGIEvalEngQA (9 tasks)
     **agieval_eng_qa.create_all_tasks(),
      # AGIEvalEngQACoT (9 tasks)
     **agieval_eng_qa_cot.create_all_tasks(),
+    **agieval_custom.create_all_optionkeycircular_tasks(),
+    **agieval_custom.create_all_optioncontent_tasks(),
     # hendrycksTest (57 tasks)
     **hendrycks_test.create_all_tasks(),
     # hendrycksCircularChoicesTtest(57 tasks),

@@ -204,8 +204,8 @@ class BaseLM(LM):
                     _ = F.log_softmax(self._model_call(test_batch), dim=-1).cpu()
 
                 print(f"detected batch_size: {batch_size} on {self.device}")
-                # temporarily, set max batch_size to 64 to avoid blocking in same cases
-                if batch_size >= 128:
+                # temporarily, set max batch_size to 16 to avoid blocking in same cases
+                if batch_size >= 32:
                     break
                     
                 batch_size *= 2
@@ -233,7 +233,7 @@ class BaseLM(LM):
         # temporarily make detected batch_size smaller to avoid OOM in some unexpected cases
         if batch_size > 8:
             batch_size //= 2
-
+        
         if batch_size == 0:
             raise Exception("OOM with minimal batch_size:1")
         return batch_size
@@ -1204,9 +1204,10 @@ class LikelihoodOptionKeyMultipleCircularChoiceTask(MultipleChoiceTask):
                 "WARNING: provide_description is deprecated and will be removed in a future version in favor of description_dict"
             )
 
-        subject = self.DATASET_NAME or self.SUBJECT
-        if subject:
-            description = f"The following are multiple choice questions (with answers) about {self._format_subject(subject)}."
+        if description is None and (self.DATASET_NAME is not None or self.SUBJECT is not None):
+            subject = self.DATASET_NAME or self.SUBJECT
+            if subject:
+                description = f"The following are multiple choice questions (with answers) about {self._format_subject(subject)}."
         description = description + "\n\n" if description else ""
 
         if num_fewshot == 0:

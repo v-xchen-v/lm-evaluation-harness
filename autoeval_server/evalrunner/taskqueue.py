@@ -55,6 +55,9 @@ class TaskQueue:
             run_eval(task)
         except EnvironmentError as e: # wrong name of huggingface model
             print(e)
+        except Exception as e:
+            print("Evaluation cancelled by unhandled exception:")
+            print(e)
         
     def list_pending_tasks(self):
         if self.task_queue.queue is None:

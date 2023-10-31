@@ -27,8 +27,8 @@ SUBJECTS = [
     "sat-math",
     "sat-en",
     "aqua-rat",
-    # "sat-en-without-passage",
-    "gaokao-english"
+    "sat-en-without-passage",
+    # "gaokao-english"
 ]
 
 def create_all_tasks():
@@ -83,18 +83,24 @@ class GeneralAGIEvalEngQA(MultipleChoiceTask):
             return map(self._process_doc, self.dataset["test"])
 
     def _process_doc(self, doc):
-
-        choice_names = ["A", "B", "C", "D", "E"]
+        if self.DATASET_NAME in ("lsat-ar", "lsat-lr", "lsat-rc", "aqua-rat"):
+            choice_names = ["A", "B", "C", "D", "E"]
+        else:
+            choice_names = ["A", "B", "C", "D"]
+            
         return {
             "doc": doc,  # The doc to generate query prompt.
             "choices": choice_names,  # The list of choices.
-            "gold": doc["label"],  # The integer used to index into the correct element of `"choices"`.
+            "gold": int(doc["label"]),  # The integer used to index into the correct element of `"choices"`.
         }
     
     def doc_to_zeroshot_prompt(self, doc):
         prompt = ("" if doc["passage"] is None else doc["passage"]) + "Q: " +   doc["question"] + " " \
-            + "Answer Choices: " + " ".join(doc["options"]) + "\n" + \
-           "A: Among A through E, the answer is"
+            + "Answer Choices: " + " ".join(doc["options"]) + "\n" 
+        if self.DATASET_NAME in ("lsat-ar", "lsat-lr", "lsat-rc", "aqua-rat"):    
+            prompt += "A: Among A through E, the answer is"
+        else:
+            prompt += "A: Among A through D, the answer is"
         return prompt
     
     def doc_to_fewshot_prompt(self, doc, num_fewshot):

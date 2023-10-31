@@ -58,6 +58,18 @@ DISPLAY_DATASETS = [ \
         abbr="PIQA(0-s)"
     ),
     DisplayDataset(
+        dataset_name="Winogrande-ori",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="Winogrande-ori(0-s)"
+    ),
+    DisplayDataset(
+        dataset_name="Winogrande",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="Winogrande(0-s)"
+    ),
+    DisplayDataset(
         dataset_name="SIQA",
         num_fewshot=0,
         use_cot=False,
@@ -65,9 +77,57 @@ DISPLAY_DATASETS = [ \
     ),
     DisplayDataset(
         dataset_name="AGIEvalEng",
+        num_fewshot=5,
+        use_cot=False,
+        abbr="AGIEvalEng ori(3-5-s)"
+    ),
+    DisplayDataset(
+        dataset_name="AGIEvalEng",
         num_fewshot=0,
         use_cot=False,
         abbr="AGIEvalEng(0-s)"
+    ),
+    DisplayDataset(
+        dataset_name="OpenBookQA",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="OpenBookQA(0-s)"
+    ),
+    DisplayDataset(
+        dataset_name="OpenBookQA_Fact",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="OpenBookQA with Fact(0-s)"
+    ),
+    DisplayDataset(
+        dataset_name="CommonSenseQA",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="CommonSenseQA(0-s)"
+    ),
+    DisplayDataset(
+        dataset_name="RACE_high",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="RACE_high(0-s)"
+    ),
+    DisplayDataset(
+        dataset_name="RACE_middle",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="RACE_middle(0-s)"
+    ),
+    DisplayDataset(
+        dataset_name="RACE_all",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="RACE_all(0-s)"
+    ),
+    DisplayDataset(
+        dataset_name="CommonSenseQA",
+        num_fewshot=0,
+        use_cot=False,
+        abbr="CommonSenseQA(7-s)"
     ),
     DisplayDataset(
         dataset_name="MMLU",
