@@ -60,13 +60,16 @@ class TaskQueue:
             print(e)
         
     def list_pending_tasks(self):
-        if self.task_queue.queue is None:
+        if self.task_queue is None:
             return []
         return list(self.task_queue.queue)
     
     def add_task(self, task):
-        self.task_queue.put(task)
-        print(f"Task '{task}' added to the queue")
+        if task not in self.task_queue.queue and task != self.processing_task:
+            self.task_queue.put(task)
+            print(f"Task '{task}' added to the queue")
+        else:
+            print(f"Task '{task}' already there! Skip.")
 
     def list_tasks(self):
         print("-------- Pending Tasks --------")
