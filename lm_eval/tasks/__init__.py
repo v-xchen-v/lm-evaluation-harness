@@ -81,6 +81,7 @@ from . import winogrande_custom
 from . import agieval_custom
 from . import commonsenseqa_custom
 from . import race_custom
+from . import mmlu_filtered_for_freeform
 
 ########################################
 # Translation tasks
@@ -182,7 +183,7 @@ TASK_REGISTRY = {
     "race": race.RACE,
     "race_high_likelihoodoptioncontent": race_custom.RACEHighCustomOptionContent,
     "race_middle_likelihoodoptioncontent": race_custom.RACEMiddleCustomOptionContent,
-    "race_all_likelihoodiotioncontent": race_custom.RACEAllCustomOptionContent,
+    "race_all_likelihoodoptioncontent": race_custom.RACEAllCustomOptionContent,
     "race_high_likelihoodoptionkeycircular": race_custom.RACEHighCustomOptionKeyCircular,
     "race_middle_likelihoodoptionkeycircular": race_custom.RACEMiddleCustomOptionKeyCircular,
     "race_all_likelihoodoptionkeycircular": race_custom.RACEAllCustomOptionKeyCircular,
@@ -237,6 +238,8 @@ TASK_REGISTRY = {
     "siqa_likelihoodoptionkeycircular": siqa_custom.SIQACustomOptionKeyCircular,
     "commonsenseqa_likelihoodoptioncontent": commonsenseqa_custom.CommonSenseQACustomOptionContent,
     "commonsenseqa_likelihoodoptionkeycircular": commonsenseqa_custom.CommonSenseQACustomOptionKeyCircular,
+    "mmlu_filtered_for_freeform_likelihoodoptionkeycircular": mmlu_filtered_for_freeform.LikelihoodOptionKeyCircularMMLUFilteredForFreeformTest,
+    "mmlu_filtered_for_freeform_likelihoodoptioncontent": mmlu_filtered_for_freeform.LikelihoodOptionContentMMLUFilteredForFreeformTest,
     # TODO Perhaps make these groups of tasks
     #   e.g. anli, arithmetic, openai_translations, harness_translations
     # AGIEvalEngQA (9 tasks)

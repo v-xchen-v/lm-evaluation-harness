@@ -15,13 +15,15 @@ logging.getLogger("openai").setLevel(logging.WARNING)
 # task_name="hellaswag_greedyoptionkey"
 # task_name="hellaswag_greedyanswer"
 # task_name="hellaswag_likelihoodoptionkeycircular"
-task_name="winogrande_likelihoodoptioncontent"
+# task_name="winogrande_likelihoodoptioncontent"
+# task_name="mmlu_filtered_for_freeform_likelihoodoptionkeycircular"
+task_name="mmlu_filtered_for_freeform_likelihoodoptioncontent"
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default='hf-causal-experimental')
     # parser.add_argument("--model_args", default="pretrained=meta-llama/Llama-2-7b-chat-hf,use_accelerate=True")
-    parser.add_argument("--model_args", default="pretrained=meta-llama/Llama-2-7b-hf")
+    parser.add_argument("--model_args", default="pretrained=meta-llama/Llama-2-13b-chat-hf")
     # parser.add_argument("--tasks", default="hellaswag", choices=utils.MultiChoice(tasks.ALL_TASKS))
     # parser.add_argument("--tasks", default=f"{task_name}", choices=utils.MultiChoice(tasks.ALL_TASKS))
     parser.add_argument("--tasks", default=f"{task_name}", choices=utils.MultiChoice(tasks.ALL_TASKS))

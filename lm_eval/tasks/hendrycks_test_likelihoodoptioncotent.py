@@ -65,11 +65,11 @@ class LikelihoodOptionContentMultipleChoiceGeneralHendrycksTest(LikelihoodOption
         words = subject.split("_")
         return " ".join(words)
 
-    def fewshot_context(self, doc, num_fewshot, **kwargs):
-        subject = self.DATASET_NAME
-        description = f"The following are statements about {self._format_subject(subject)}."
-        kwargs["description"] = description
-        return super().fewshot_context(doc=doc, num_fewshot=num_fewshot, **kwargs)
+    # def fewshot_context(self, doc, num_fewshot, **kwargs):
+    #     subject = self.DATASET_NAME
+    #     description = f"The following are statements about {self._format_subject(subject)}."
+    #     kwargs["description"] = description
+    #     return super().fewshot_context(doc=doc, num_fewshot=num_fewshot, **kwargs)
 
     def _process_doc(self, doc):
         def format_example(doc, keys):
