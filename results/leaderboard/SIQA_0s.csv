@@ -1,0 +1,27 @@
+Model Name,next token argmax choices acc,next token argmax all acc,next token argmax choices circular acc,next token argmax all circular acc,acc,acc norm,ppl argmin acc
+WizardLM/WizardLM-13B-V1.2,66.7,66.7,51.5,51.6,49.3,49.2,46.7
+WizardLM/WizardLM-70B-V1.0,73.8,73.8,59.1,59.1,49.8,49.8,47.9
+WizardLM/WizardLM-7B-V1.0,33.6,0.0,0.0,0.0,33.6,37.3,33.1
+Xwin-LM/Xwin-LM-13B-V0.1,62.0,62.0,41.5,41.4,46.5,48.3,45.5
+Xwin-LM/Xwin-LM-70B-V0.1,68.0,64.5,51.9,45.6,48.5,50.7,46.6
+Xwin-LM/Xwin-LM-7B-V0.1,56.9,56.9,28.1,28.0,47.5,49.3,45.5
+chavinlo/alpaca-13b,56.8,56.7,34.3,34.1,48.5,48.4,45.4
+chavinlo/alpaca-native,50.7,50.7,23.8,23.8,48.3,49.2,45.3
+huggyllama/llama-13b,53.0,53.2,14.8,14.8,45.0,48.0,44.3
+huggyllama/llama-30b,66.1,66.0,49.0,48.8,45.7,49.4,45.2
+huggyllama/llama-65b,67.2,67.1,49.7,49.8,47.5,50.1,46.3
+huggyllama/llama-7b,44.6,44.5,11.5,11.6,44.8,47.0,44.3
+lmsys/vicuna-13b-v1.5,67.2,67.1,50.3,50.5,46.6,47.3,44.6
+lmsys/vicuna-33b-v1.3,63.2,62.5,42.2,41.1,46.6,48.2,46.0
+lmsys/vicuna-7b-v1.5,63.3,63.3,42.5,42.3,45.8,47.6,44.3
+meta-llama/Llama-2-13b-chat-hf,62.6,62.7,41.6,41.5,49.2,50.3,46.0
+meta-llama/Llama-2-13b-hf,58.5,58.3,36.4,36.1,44.7,48.4,44.8
+meta-llama/Llama-2-70b-chat-hf,67.2,67.2,46.7,46.7,49.2,50.6,47.4
+meta-llama/Llama-2-70b-hf,70.9,70.8,55.3,55.2,46.3,49.4,45.3
+meta-llama/Llama-2-7b-chat-hf,56.9,56.9,31.8,31.9,46.1,48.6,45.1
+meta-llama/Llama-2-7b-hf,51.4,51.0,21.2,20.6,43.5,47.3,44.2
+mosaicml/mpt-30b,58.5,57.3,34.9,31.9,46.0,48.9,45.6
+mosaicml/mpt-30b-chat,63.4,63.2,42.5,41.6,48.8,49.6,48.3
+mosaicml/mpt-7b,37.7,38.6,2.4,2.0,45.6,48.2,45.9
+tiiuae/falcon-40b,65.6,65.6,46.8,46.7,49.2,51.0,47.8
+tiiuae/falcon-7b,36.5,36.5,1.2,1.2,45.4,48.7,47.0

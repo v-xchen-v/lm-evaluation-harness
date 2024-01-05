@@ -1,0 +1,27 @@
+Model Name
+WizardLM/WizardLM-13B-V1.2
+WizardLM/WizardLM-70B-V1.0
+WizardLM/WizardLM-7B-V1.0
+Xwin-LM/Xwin-LM-13B-V0.1
+Xwin-LM/Xwin-LM-70B-V0.1
+Xwin-LM/Xwin-LM-7B-V0.1
+chavinlo/alpaca-13b
+chavinlo/alpaca-native
+huggyllama/llama-13b
+huggyllama/llama-30b
+huggyllama/llama-65b
+huggyllama/llama-7b
+lmsys/vicuna-13b-v1.5
+lmsys/vicuna-33b-v1.3
+lmsys/vicuna-7b-v1.5
+meta-llama/Llama-2-13b-chat-hf
+meta-llama/Llama-2-13b-hf
+meta-llama/Llama-2-70b-chat-hf
+meta-llama/Llama-2-70b-hf
+meta-llama/Llama-2-7b-chat-hf
+meta-llama/Llama-2-7b-hf
+mosaicml/mpt-30b
+mosaicml/mpt-30b-chat
+mosaicml/mpt-7b
+tiiuae/falcon-40b
+tiiuae/falcon-7b
