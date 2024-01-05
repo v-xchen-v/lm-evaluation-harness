@@ -1,22 +1,21 @@
 <|im_start|>system
-You are a helpful assistant, that can find the closest choice based on the question and answer provided.
+You are a helpful assistant.
 <|im_end|>
 <|im_start|>user
-I will give you a question and multiple choices, and I will also give you an answer. Please tell me which is the closest choice according to the question and the answer.
+Given two responses from different models to a specific question, evaluate the quality, accuracy, and relevance of each answer. Assign a score of 1 to the answer that is superior, a score of 0 to the answer that is inferior, and a score of 0.5 in case of a tie where both answers are equally good. If one of the model is scored 0, another should be 1. Otherwise all 0.5. Provide a brief justification for your scoring.
 
-Compare the factual content of the choices with the answer. Ignore any differences in style, grammar, or punctuation. 
-
-Only return one single capital character to represent the sequence number of the choice. If no choice is related to the answer, please return 'None'.
-
-[The Start of Question]
+Question:
 {question}
-[The End of Question]
 
-[The Start of Provided Answer]
-{answer}
-[The End of Provided Answer]
+Model 1's Answer:
+{model1_answer}
 
-[The Start of Choices]
-{choices}
-[The End of Choices]
+Model 2's Answer:
+{model2_answer}
+
+Format of the Response:
+- Score of Model 1 in numerical options of 1, 0.5 and 0.
+- Brief Explanation: End with newline.
+
+GPT-4's Evaluation and Scoring:
 <|im_end|>

@@ -219,5 +219,6 @@ with gr.Blocks() as demo:
             )
     
 if __name__ == "__main__":
-    demo.queue().launch(debug=True)
+    # demo.queue().launch(debug=True)
     # demo.queue().launch(share=True)
+    demo.queue().launch(share=True, share_server_address="agieval.cxtechlab.com:7000")
