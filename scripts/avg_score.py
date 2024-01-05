@@ -102,13 +102,13 @@ models = [
     'tiiuae/falcon-40b', 
     ]
 custom_eval_metrics = [
-    "acc",
-    "acc_norm",
-    "ppl_argmin_acc",
     "next_token_argmax_choices_acc",
     "next_token_argmax_all_acc",
     "next_token_argmax_choices_circular_acc",
-    "next_token_argmax_all_circular_acc"
+    "next_token_argmax_all_circular_acc",
+    "acc",
+    "acc_norm",
+    "ppl_argmin_acc",
 ]
 dataset_names = [x.dataset_name for x in DISPLAY_DATASETS]
 
@@ -138,12 +138,12 @@ def avg_metric_across_dataset(model_names, metric_names, parsed_data):
     for model_name in model_names:
         for metric_name in metric_names:
             metric_list = [x['value'] for x in parsed_data if x['metric']==metric_name and x['model']==model_name]
-            metric_avg = np.average(np.array(metric_list)) 
+            metric_avg = np.round(np.average(np.array(metric_list)), 1)
             avg_metrics.append({
                 'model': model_name,
                 'metric': metric_name,
                 'avg': metric_avg
             })      
-    pd.DataFrame.from_dict(avg_metrics).to_csv('avg.csv')
+    pd.DataFrame.from_dict(avg_metrics).to_csv('./scripts/outputs/avg.csv')
 avg_metric_across_dataset(models, custom_eval_metrics, parse_data(dataset_names, models, custom_eval_metrics))
     
