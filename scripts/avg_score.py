@@ -136,14 +136,14 @@ import pandas as pd
 def avg_metric_across_dataset(model_names, metric_names, parsed_data):
     avg_metrics = []
     for model_name in model_names:
+        avg_metric = {
+            'model': model_name,
+        }
         for metric_name in metric_names:
             metric_list = [x['value'] for x in parsed_data if x['metric']==metric_name and x['model']==model_name]
             metric_avg = np.round(np.average(np.array(metric_list)), 1)
-            avg_metrics.append({
-                'model': model_name,
-                'metric': metric_name,
-                'avg': metric_avg
-            })      
+            avg_metric[metric_name] = metric_avg
+        avg_metrics.append(avg_metric)
     pd.DataFrame.from_dict(avg_metrics).to_csv('./scripts/outputs/avg.csv')
 avg_metric_across_dataset(models, custom_eval_metrics, parse_data(dataset_names, models, custom_eval_metrics))
     
