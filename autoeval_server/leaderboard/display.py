@@ -192,11 +192,18 @@ if __name__ == "__main__":
     # pass
     # import cProfile
     # cProfile.run('get_leaderboard_df_data("MMLU", 5, False)')
-    dataset_name='MMLU'
-    # dataset_name='ARC'
+    # dataset_name='MMLU'
     # dataset_name='HellaSwag'
-    # dataset_name="BoolQ"
+    # dataset_name='ARC-c'
     # dataset_name="ARC-e"
+    # dataset_name="BoolQ"
+    # dataset_name="SIQA"
+    # dataset_name="PIQA"
+    # dataset_name = 'AGIEvalEng'
+    # dataset_name = 'OpenBookQA'
+    # dataset_name = 'OpenBookQA_Fact'
+    # dataset_name = 'CommonSenseQA'
+    dataset_name = 'RACE-all'
     num_fewshot=0
     df_data = get_leaderboard_df_data(dataset_name, num_fewshot, False)
     print(df_data)
@@ -210,7 +217,7 @@ if __name__ == "__main__":
 
     keys = df_data[0].keys()
 
-    with open(f'{dataset_name}_{num_fewshot}s.csv', 'w', newline='') as output_file:
+    with open(f'./results/leaderboard/{dataset_name}_{num_fewshot}s.csv', 'w', newline='') as output_file:
         dict_writer = csv.DictWriter(output_file, keys)
         dict_writer.writeheader()
         dict_writer.writerows(df_data)
